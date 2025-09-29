@@ -1,0 +1,28 @@
+name: 🐛 버그 리포트
+title: '🐛 버그: '
+description: 문제가 발생했어요! 버그를 제보해주세요.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 어떤 문제가 발생했나요?
+      placeholder: 예) 로그인 시 500 오류 발생
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 어떻게 재현하나요?
+      placeholder: 재현 순서를 단계별로 작성해주세요
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대한 동작
+      placeholder: 예) 로그인 성공 후 메인 페이지로 이동해야 해요
+    validations:
+      required: false

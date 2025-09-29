@@ -1,0 +1,20 @@
+name: ✨ 기능 제안
+title: '✨ 기능 제안: '
+description: 새로운 기능을 제안하고 싶어요!
+labels: [feature]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: 어떤 기능인가요?
+      placeholder: 예) 다크 모드 토글 기능 추가
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: 왜 필요한가요?
+      placeholder: 사용자가 야간에 눈이 덜 피로했으면 좋겠어요
+    validations:
+      required: false
