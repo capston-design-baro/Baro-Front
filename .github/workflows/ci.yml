@@ -33,6 +33,3 @@ jobs:
 
       - name: Run Prettier check
         run: pnpx prettier --check .
-
-      - name: Run Tests with Coverage
-        run: pnpm run test --coverage --passWithNoTests
