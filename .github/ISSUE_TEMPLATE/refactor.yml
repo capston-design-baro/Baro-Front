@@ -1,0 +1,20 @@
+name: 🔧 리팩토링 제안
+title: '🔧 리팩토링 제안: '
+description: 구조 개선이나 코드 정리를 제안하고 싶어요!
+labels: [refactor]
+body:
+  - type: textarea
+    id: target
+    attributes:
+      label: 리팩토링 대상
+      placeholder: 예) Header 컴포넌트의 중복 CSS
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: 왜 리팩토링이 필요한가요?
+      placeholder: 유지보수를 위해 코드 중복 제거가 필요해요
+    validations:
+      required: false
