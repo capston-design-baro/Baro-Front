@@ -6,6 +6,7 @@ import ServiceCard from './ServiceCard';
 const meta = {
   title: 'Components/ServiceCard',
   component: ServiceCard,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
@@ -26,6 +27,13 @@ export const Default: Story = {
   args: {
     service: sample,
   },
+  parameters: {
+    docs: {
+      description: {
+        story: '기본 서비스 버튼 렌더링 상태입니다.',
+      },
+    },
+  },
 };
 
 export const Hover: Story = {
@@ -38,6 +46,13 @@ export const Hover: Story = {
     // mouseover 이벤트로 hover 유도
     card?.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
   },
+  parameters: {
+    docs: {
+      description: {
+        story: 'hover 시 서비스 버튼 상태입니다.',
+      },
+    },
+  },
 };
 
 export const Focus: Story = {
@@ -48,17 +63,11 @@ export const Focus: Story = {
     const card = canvasElement.querySelector('[role="button"]') as HTMLElement;
     card?.focus();
   },
-};
-
-export const KeyboardActivate: Story = {
-  args: {
-    service: sample,
-  },
-  play: async ({ canvasElement }) => {
-    const card = canvasElement.querySelector('[role="button"]') as HTMLElement;
-    card?.focus();
-    // Space/Enter 키로 onClick 트리거 되는지 확인 (Actions 패널에서 "clicked" 이벤트 확인)
-    card?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-    card?.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+  parameters: {
+    docs: {
+      description: {
+        story: 'focus 시 서비스 버튼 상태입니다.',
+      },
+    },
   },
 };
