@@ -4,13 +4,9 @@ import React from 'react';
 type Props = { service: Service; onClick?: (s: Service) => void };
 
 const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
-  <div
+  <button
     role="button"
-    tabIndex={0}
     onClick={() => onClick?.(service)}
-    onKeyDown={(e) => {
-      if (e.key === 'Enter' || e.key === ' ') onClick?.(service);
-    }}
     className={[
       // 크기 & 레이아웃
       'group inline-flex h-[220px] w-[360px] items-center justify-center',
@@ -21,8 +17,8 @@ const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
       'transition-all duration-300',
       'hover:bg-blue-50/[0.35]',
       'hover:shadow-[0_4px_12px_rgba(37,99,235,0.1)]',
-      // 포커스 접근성
-      'focus:ring-2 focus:ring-blue-500/40 focus:outline-none',
+      // 키보드로 접근할 때만 포커스 표시
+      'focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:outline-none',
     ].join(' ')}
   >
     <div className="flex flex-col items-center gap-3 text-center">
@@ -53,7 +49,7 @@ const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
         {service.title}
       </h3>
     </div>
-  </div>
+  </button>
 );
 
 export default ServiceCard;
