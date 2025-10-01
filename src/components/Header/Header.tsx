@@ -1,4 +1,4 @@
-import logoUrl from '@/assets/BaLawCharacter.svg';
+import logoUrl from '@/assets/BaLawCharacter-mini.svg';
 import React from 'react';
 
 const Header: React.FC = () => {
