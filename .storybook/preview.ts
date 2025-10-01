@@ -4,7 +4,7 @@ import '../src/styles/index.css';
 
 const preview: Preview = {
   parameters: {
-    layout: 'centeded',
+    layout: 'centered',
 
     controls: {
       matchers: {
