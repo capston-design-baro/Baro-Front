@@ -4,8 +4,6 @@ import '../src/styles/index.css';
 
 const preview: Preview = {
   parameters: {
-    layout: 'centeded',
-
     controls: {
       matchers: {
         color: /(background|color)$/i,
