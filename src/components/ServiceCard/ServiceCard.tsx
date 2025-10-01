@@ -9,7 +9,8 @@ const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
     onClick={() => onClick?.(service)}
     className={[
       // 크기 & 레이아웃
-      'group inline-flex h-[220px] w-[360px] items-center justify-center',
+      'group inline-flex items-center justify-center',
+      'h-[180px] w-full max-w-[360px] sm:h-[200px] md:h-[220px]',
       'rounded-2xl bg-white',
       // 기본 섀도우
       'shadow-[0_4px_12px_rgba(0,0,0,0.1)]',
@@ -25,7 +26,8 @@ const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
       <span
         className={[
           'material-symbols-outlined',
-          '!text-[120px]',
+          '!text-[64px] sm:text-[80px] md:text-[100px] lg:text-[120px]',
+          'text-slate-900 transition-colors group-hover:text-blue-600',
           // 기본 아이콘 컬러
           'text-slate-900',
           // hover 시 아이콘 컬러
@@ -40,7 +42,8 @@ const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
       <h3
         className={[
           // 텍스트 32px, medium, 중앙, 기본색
-          'text-[32px] font-medium text-slate-900',
+          'text-lg sm:text-xl md:text-2xl lg:text-[32px]',
+          'font-medium text-slate-900',
           // hover 시 텍스트 색
           'group-hover:text-blue-600',
           'transition-colors duration-300',
