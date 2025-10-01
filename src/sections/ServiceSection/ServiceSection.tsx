@@ -34,9 +34,6 @@ const ServiceSection: React.FC<Props> = ({ onClickCard }) => {
             />
           ))}
         </div>
-
-        {/* 필요 시 전체 높이를 비슷하게 맞추고 싶다면 아래 패딩 조절 */}
-        <div className="pb-12 sm:pb-16 lg:pb-24" />
       </div>
     </section>
   );
