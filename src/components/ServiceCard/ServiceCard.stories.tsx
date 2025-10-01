@@ -7,9 +7,6 @@ const meta = {
   title: 'Components/ServiceCard',
   component: ServiceCard,
   tags: ['autodocs'],
-  parameters: {
-    layout: 'centered',
-  },
 } satisfies Meta<typeof ServiceCard>;
 
 export default meta;
