@@ -1,4 +1,4 @@
-export type ServiceId = 'complaint' | 'precedent' | 'faq';
+export type ServiceId = 'complaint' | 'find' | 'faq';
 
 export interface Service {
   id: ServiceId;
