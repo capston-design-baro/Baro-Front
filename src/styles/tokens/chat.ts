@@ -23,5 +23,5 @@ export const bubbleMaxW = {
 } as const;
 
 /** 조합된 폭 클래스 상수 */
-export const bubbleWidthClassses =
+export const bubbleWidthClasses =
   `${bubbleMaxW.base} ${bubbleMaxW.sm} ${bubbleMaxW.md} ${bubbleMaxW.lg}` as const;
