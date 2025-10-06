@@ -4,7 +4,7 @@ import { Cookies } from 'react-cookie';
 
 // 토큰 쿠키 만료시간
 const ACCESS_MAX_AGE = 60 * 60; // 1시간
-const REFRESH_MAX_AGE = 60 * 60 * 24; // 1일
+// const REFRESH_MAX_AGE = 60 * 60 * 24; // 1일
 
 const cookies = new Cookies();
 const API = '/api';

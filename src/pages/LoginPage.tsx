@@ -1,4 +1,4 @@
-import { getMe, login } from '@/apis/auth';
+// import { getMe, login } from '@/apis/auth';
 import Footer from '@/components/Footer/Footer';
 import Header from '@/components/Header/Header';
 import LoginCard from '@/components/auth/LoginCard';
