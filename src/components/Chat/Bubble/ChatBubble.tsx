@@ -1,7 +1,6 @@
 import { useMultilineDetect } from '@/hooks/useMultilineDetect';
+import { bubbleWidthClasses, buildSurface, buildTime, textBase } from '@/styles/chat';
 import type { Side } from '@/types/side';
-
-import { bubbleWidthClasses, buildSurface, buildTime, textBase } from './styles';
 
 // 말풍선 컴포넌트 Props
 type BubbleProps = {
