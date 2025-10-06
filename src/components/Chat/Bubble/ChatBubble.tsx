@@ -23,13 +23,18 @@ export function ChatBubble({ side, text, time, srLabel }: BubbleProps) {
 
   return (
     <div
-      className={`flex w-full ${isLeft ? 'justify-start' : 'justify-end'} py-1`}
+      className={`flex w-full ${isLeft ? 'justify-start' : 'justify-end'} py-3`}
       role="listitem"
       aria-label={srLabel}
     >
+      {/* 말풍선 최대 폭 제한 컨테이너 */}
       <div className={`${widthClasses}`}>
+        {/* 말풍선 본체 */}
         <div className={buildSurface(side)}>
+          {/* 스크린리더 전용 텍스트 */}
           <span className="sr-only">{srLabel}</span>
+
+          {/* 실제 메시지 텍스트 */}
           <p
             ref={pRef}
             className={`${textBase()} ${alignClass}`}
@@ -37,6 +42,8 @@ export function ChatBubble({ side, text, time, srLabel }: BubbleProps) {
             {text}
           </p>
         </div>
+
+        {/* 타임스탬프 */}
         <div className={buildTime(side)}>{time}</div>
       </div>
     </div>
