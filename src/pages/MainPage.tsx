@@ -9,7 +9,7 @@ export default function MainPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1">
+      <main className="my-6 flex-1">
         <ServiceSection onClickCard={(s) => s.to && navigate(s.to)} />
       </main>
       <Footer />
