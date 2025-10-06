@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const QUERY = '(min-width: 768px)'; // Tailwind md 브레이크포인트
+const QUERY = '(min-width: 1140px)'; // Tailwind md 브레이크포인트
 
 export default function useIsMdUp() {
   // SSR 안전: 초기값은 false
