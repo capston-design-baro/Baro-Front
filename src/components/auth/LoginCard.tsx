@@ -115,7 +115,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex h-12 w-full items-center justify-center rounded-2xl bg-blue-600 px-5 text-base font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mx-auto mt-6 block h-12 w-45 items-center justify-center rounded-2xl bg-blue-600 px-5 text-base font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? '로그인 중...' : '로그인'}
         </button>
