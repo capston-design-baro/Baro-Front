@@ -8,11 +8,12 @@ import WelcomeCard from './WelcomeCard';
 const meta = {
   title: 'Auth/WelcomeCard',
   component: WelcomeCard,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
     docs: {
       description: {
-        component: '왼쪽 프로모션(웰컴) 카드 컴포넌트',
+        component: '왼쪽 프로모션(웰컴) 카드 컴포넌트입니다.',
       },
     },
   },

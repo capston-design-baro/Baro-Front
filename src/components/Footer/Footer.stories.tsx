@@ -10,9 +10,7 @@ const meta: Meta<typeof Footer> = {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: `
-          **Footer**는 서비스명과 저작권 표기로 구성된 하단 바입니다.
-        `,
+        component: 'Footer는 서비스명과 저작권 표기로 구성된 하단 바입니다.',
       },
     },
   },
