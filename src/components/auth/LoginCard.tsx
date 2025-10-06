@@ -1,4 +1,4 @@
-import type { LoginCardProps } from '@/types/auth';
+import type { LoginCardProps } from '@/components/auth/LoginCard.types';
 import React, { useState } from 'react';
 
 const SIGNUP_HREF = './signup';
@@ -39,7 +39,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
         onSubmit={handleSubmit}
         className="mx-auto mt-auto flex w-full max-w-[420px] flex-col gap-6"
       >
-        {/* ✅ 에러 자리 항상 확보 (레이아웃 점프 방지) */}
+        {/* 에러 자리 항상 확보 (레이아웃 점프 방지) */}
         <div
           aria-live="polite"
           className="min-h-[44px]"
@@ -74,24 +74,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
             이메일
           </label>
           <div className="flex items-center gap-3">
-            <svg
-              width={24}
-              height={24}
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="shrink-0"
-              aria-hidden
-            >
-              <path
-                d="M4 6h16v12H4V6Zm8 5L4.5 7.5m15 0L12 11"
-                stroke="#0F172A"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-
+            <span className="material-symbols-outlined text-slate-900">mail</span>
             <input
               id="email"
               type="email"
@@ -114,24 +97,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
             비밀번호
           </label>
           <div className="flex items-center gap-3">
-            <svg
-              width={24}
-              height={24}
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="shrink-0"
-              aria-hidden
-            >
-              <path
-                d="M7 10V8a5 5 0 1 1 10 0v2m-9 0h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Z"
-                stroke="#0F172A"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-
+            <span className="material-symbols-outlined text-slate-900">lock</span>
             <input
               id="password"
               type="password"
