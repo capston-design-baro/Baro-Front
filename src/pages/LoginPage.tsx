@@ -18,13 +18,7 @@ const LoginPage: React.FC = () => {
             {/* md 이상에서만 WelcomeCard 렌더 */}
             {isMdUp && (
               <div>
-                <WelcomeCard
-                  // 필요한 prop들 전달
-                  className="h-full"
-                  title="Welcome to BaLaw"
-                  imageSrc={'./src/assets/BaLawCharacter-large.svg'} // public 경로 예시
-                  imageAlt="BaLaw 캐릭터"
-                />
+                <WelcomeCard />
               </div>
             )}
 
