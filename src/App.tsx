@@ -1,10 +1,18 @@
-import './App.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter } from 'react-router-dom';
+
+import Router from './routes/Router';
+
+// App 렌더링마다 새로 만들지 않도록 컴포넌트 밖에서 생성
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <>
-      <h1>Vite + React</h1>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

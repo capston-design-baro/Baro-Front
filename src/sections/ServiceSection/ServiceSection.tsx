@@ -4,8 +4,6 @@ import '@/styles/main.css';
 import type { Service } from '@/types/service';
 import React from 'react';
 
-// 이미 만든 단일 소스 사용
-
 type Props = { onClickCard?: (s: Service) => void };
 
 const ServiceSection: React.FC<Props> = ({ onClickCard }) => {
@@ -13,7 +11,6 @@ const ServiceSection: React.FC<Props> = ({ onClickCard }) => {
     <section className="w-full bg-white">
       {/* 1440px 중앙 정렬 컨테이너 */}
       <div className="mx-auto w-full max-w-[1440px] px-6">
-        {/* 상단 타이틀 영역: 기존 top-[125px] 느낌을 pt로 치환 */}
         <div className="mx-auto flex max-w-[411px] flex-col items-center gap-6 pt-32">
           <h2 className="relative mb-4 text-center font-bold">
             <span className="relative inline-block text-3xl whitespace-nowrap sm:text-4xl md:text-5xl">
@@ -25,7 +22,7 @@ const ServiceSection: React.FC<Props> = ({ onClickCard }) => {
           </p>
         </div>
 
-        <div className="mx-auto mt-10 grid max-w-[1120px] grid-cols-1 gap-6 sm:mt-14 sm:grid-cols-3 lg:mt-20 lg:grid-cols-3">
+        <div className="mx-auto mt-10 grid max-w-[1120px] grid-cols-1 justify-items-center gap-6 sm:mt-14 sm:grid-cols-3 lg:mt-20 lg:grid-cols-3">
           {SERVICES.map((svc) => (
             <ServiceCard
               key={svc.id}
