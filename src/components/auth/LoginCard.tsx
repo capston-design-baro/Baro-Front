@@ -46,21 +46,12 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
         >
           {error && (
             <div className="flex items-center gap-2 rounded-md bg-red-50 px-3 py-2">
-              <svg
-                width={20}
-                height={20}
-                viewBox="0 0 24 24"
-                fill="none"
+              <span
+                className="material-symbols-outlined text-[20px] leading-none text-red-600"
                 aria-hidden
               >
-                <path
-                  d="M12 9v4m0 4h.01M12 2a10 10 0 1 1 0 20a10 10 0 0 1 0-20Z"
-                  stroke="#EF4444"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+                cancel
+              </span>
               <p className="text-sm font-medium text-red-600">{error}</p>
             </div>
           )}
