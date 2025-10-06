@@ -26,15 +26,35 @@ const LoginPage: React.FC = () => {
     }
     */
 
-    // 가짜 로그인 처리 👉 토큰과 이메일을 로컬에 저장
-    localStorage.setItem('accessToken', 'fake-token');
-    localStorage.setItem('userEmail', email);
+    // 프로덕션이 아니면 가짜 응답 분기
+    if (import.meta.env.MODE !== 'production') {
+      await new Promise((r) => setTimeout(r, 500)); // 로딩 느낌
 
-    // getMe 대신 콘솔 로그
-    console.log('fake me', { email, name: '관리자(테스트)' });
+      // 1) 필수값 체크 (브라우저 required도 있지만 커스텀 메시지 원할 때)
+      if (!email || !password) {
+        throw new Error('VALIDATION_EMPTY'); // LoginCard에서 잡아 에러 표시
+      }
 
-    // 3) 라우팅
-    navigate('/');
+      // 2) 비밀번호 틀림 시나리오: 특정 이메일 패턴으로 트리거
+      if (email.endsWith('+401@test.com')) {
+        throw new Error('INVALID_CREDENTIALS'); // 401 느낌
+      }
+
+      // 3) 서버 에러 시나리오
+      if (email.endsWith('+500@test.com')) {
+        throw new Error('SERVER_ERROR'); // 500 느낌
+      }
+
+      // 가짜 로그인 처리 👉 토큰과 이메일을 로컬에 저장
+      localStorage.setItem('accessToken', 'fake-token');
+      localStorage.setItem('userEmail', email);
+
+      // getMe 대신 콘솔 로그
+      console.log('fake me', { email, name: '관리자(테스트)' });
+
+      // 3) 라우팅
+      navigate('/');
+    }
   };
 
   return (
