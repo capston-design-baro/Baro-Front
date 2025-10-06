@@ -31,7 +31,7 @@ export async function login(body: LoginRequest): Promise<TokenResponse> {
 
     // 호출한 쪽에서 쓸 수 있게 원본 응답 데이터 반환
     return data;
-  } catch (e) {
+  } catch {
     // 백엔드가 401을 준다면 여기서 일괄 메시지 매핑 가능
     throw new Error('INVALID_CREDENTIALS');
   }
