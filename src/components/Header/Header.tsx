@@ -1,4 +1,4 @@
-import logoUrl from '@/assets/BaLawCharacter-mini.svg';
+import logoUrl from '@/assets/BaLawLogo.svg';
 import React from 'react';
 
 const Header: React.FC = () => {
@@ -7,7 +7,7 @@ const Header: React.FC = () => {
       <img
         src={logoUrl}
         alt="Logo"
-        className="h-[60px] w-[60px] object-none"
+        className="h-[clamp(24px,8vw,60px)] w-auto"
       />
 
       <button className="flex h-9 items-center justify-center gap-2.5 rounded-md bg-slate-900 px-4 py-2">
