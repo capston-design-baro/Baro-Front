@@ -1,3 +1,4 @@
+import AgreementsPage from '@/pages/AgreementPage';
 import LoginPage from '@/pages/LoginPage';
 import MainPage from '@/pages/MainPage';
 import { Route, Routes } from 'react-router-dom';
@@ -17,6 +18,11 @@ const Router = () => {
       <Route
         path="/login"
         element={<LoginPage />}
+      />
+
+      <Route
+        path="/terms"
+        element={<AgreementsPage />}
       />
 
       {/* "/signup" 경로 → SignupPage (현재는 주석 처리됨) */}
