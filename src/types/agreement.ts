@@ -4,4 +4,5 @@ export interface Agreement {
   isExpanded: boolean; // 펼침 여부
   title: string; // 약관 제목
   content: string; // 약관 본문
+  required: boolean; // 필수 여부
 }

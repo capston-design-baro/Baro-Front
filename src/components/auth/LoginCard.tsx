@@ -1,7 +1,7 @@
 import type { LoginCardProps } from '@/components/auth/LoginCard.types';
 import React, { useState } from 'react';
 
-const SIGNUP_HREF = './signup';
+const SIGNUP_HREF = './terms';
 
 const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
   const [email, setEmail] = useState('');
