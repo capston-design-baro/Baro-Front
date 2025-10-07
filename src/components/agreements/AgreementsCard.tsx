@@ -10,7 +10,7 @@ type Props = {
 
 const SIGNUP_PATH = '/signup';
 
-const AgreementsForm: React.FC<Props> = ({ initial }) => {
+const AgreementsCard: React.FC<Props> = ({ initial }) => {
   const [items, setItems] = useState<Agreement[]>(initial);
   const [touched, setTouched] = useState(false);
   const navigate = useNavigate();
@@ -104,4 +104,4 @@ const AgreementsForm: React.FC<Props> = ({ initial }) => {
   );
 };
 
-export default AgreementsForm;
+export default AgreementsCard;
