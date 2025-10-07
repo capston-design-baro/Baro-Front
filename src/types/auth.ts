@@ -18,8 +18,8 @@ export type RegisterRequest = {
   password: string;
   address: {
     city: string;
-    district: string;
-    town: string;
+    district?: string;
+    town?: string;
   };
 };
 
