@@ -17,12 +17,12 @@
 button {
   cursor: pointer;
 }
-
+/*
 button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
 }
-
+*/
 html {
   scroll-behavior: smooth;
 }
