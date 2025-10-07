@@ -1,4 +1,6 @@
+import { bootstrapAuth } from '@/apis/bootstrapAuth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import Router from './routes/Router';
@@ -7,6 +9,11 @@ import Router from './routes/Router';
 const queryClient = new QueryClient();
 
 function App() {
+  React.useEffect(() => {
+    // 앱 로드 시 1회 동기화
+    bootstrapAuth();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -15,5 +22,4 @@ function App() {
     </QueryClientProvider>
   );
 }
-
 export default App;
