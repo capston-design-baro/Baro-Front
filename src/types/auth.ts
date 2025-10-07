@@ -7,6 +7,7 @@ export type LoginRequest = {
 // 로그인 성공 시 반환되는 토큰
 export type TokenResponse = {
   access_token: string;
+  refresh_token: string;
   token_type: 'bearer';
 };
 
