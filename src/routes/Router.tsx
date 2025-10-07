@@ -1,6 +1,7 @@
 import AgreementsPage from '@/pages/AgreementPage';
 import LoginPage from '@/pages/LoginPage';
 import MainPage from '@/pages/MainPage';
+import SignupPage from '@/pages/SignupPage';
 import { Route, Routes } from 'react-router-dom';
 
 // import SignupPage from '@/pages/SignupPage';
@@ -25,8 +26,13 @@ const Router = () => {
         element={<AgreementsPage />}
       />
 
-      {/* "/signup" 경로 → SignupPage (현재는 주석 처리됨) */}
-      {/* <Route path="/signup" element={<SignupPage />} /> */}
+      {/* "/signup" 경로 */}
+      {
+        <Route
+          path="/signup"
+          element={<SignupPage />}
+        />
+      }
     </Routes>
   );
 };
