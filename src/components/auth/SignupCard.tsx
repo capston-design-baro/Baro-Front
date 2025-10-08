@@ -52,7 +52,7 @@ const SignupCard: React.FC = () => {
 
       // 회원가입 성공 → 로그인 페이지로 이동
       navigate('/login');
-    } catch (err: any) {
+    } catch {
       // 에러 처리
       setError('회원가입 중 문제가 발생했습니다. 다시 시도해주세요.');
     } finally {

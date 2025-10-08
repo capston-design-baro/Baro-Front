@@ -5,7 +5,7 @@ import {
   REFRESH_COOKIE,
   REFRESH_MAX_AGE,
 } from '@/constants/auth';
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosHeaders } from 'axios';
 import type { InternalAxiosRequestConfig } from 'axios';
 import { Cookies } from 'react-cookie';
 
@@ -17,12 +17,32 @@ const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
 
+// cfg.headers를 항상 AxiosHeaders 인스턴스로 보장
+function ensureHeaders(cfg: InternalAxiosRequestConfig): AxiosHeaders {
+  if (cfg.headers instanceof AxiosHeaders) return cfg.headers;
+
+  const headers = AxiosHeaders.from(cfg.headers ?? {});
+  cfg.headers = headers; // AxiosRequestHeaders로 안전하게 대입
+  return headers;
+}
+
+// 단일 요청 config에 Authorization 헤더 세팅
+function setRequestAuthHeader(cfg: InternalAxiosRequestConfig, token: string, type = 'Bearer') {
+  const h = ensureHeaders(cfg);
+  h.set('Authorization', `${type} ${token}`);
+}
+
+// 단일 요청 config에서 Authorization 헤더 제거
+function removeRequestAuthHeader(cfg: InternalAxiosRequestConfig) {
+  const h = ensureHeaders(cfg);
+  h.delete('Authorization');
+}
+
 // 요청 인터셉터: API 호출 시마다 자동으로 accessToken을 Authorization 헤더에 붙여줌
 axiosInstance.interceptors.request.use((config) => {
   const access = cookies.get(ACCESS_COOKIE);
   if (access) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${access}`;
+    setRequestAuthHeader(config as InternalAxiosRequestConfig, access);
   }
   return config;
 });
@@ -68,10 +88,16 @@ async function doRefresh() {
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
+    const status = error.response?.status;
+
     const original = error.config as
       | (InternalAxiosRequestConfig & { _retry?: boolean })
       | undefined;
-    const status = error.response?.status;
+    const url = original?.url ?? '';
+    const isRefreshCall = url.includes('/auth/refresh');
+
+    // 리프레시 호출 자체는 건드리지 않음
+    if (isRefreshCall) return Promise.reject(error);
 
     // accessToken 만료 → refresh 로직 실행
     if (status === 401 && original && !original._retry) {
@@ -83,8 +109,8 @@ axiosInstance.interceptors.response.use(
         // 대기 끝나면 새 accessToken으로 Authorization 붙여서 재요청
         const access = cookies.get(ACCESS_COOKIE);
         if (access) {
-          original.headers = original.headers ?? {};
-          (original.headers as any).Authorization = `Bearer ${access}`;
+          removeRequestAuthHeader(original);
+          setRequestAuthHeader(original, access);
         }
         return axiosInstance(original);
       }
@@ -103,8 +129,8 @@ axiosInstance.interceptors.response.use(
         // 새 accessToken으로 헤더 갱신 후 원래 요청 다시 실행
         const access = cookies.get(ACCESS_COOKIE);
         if (access) {
-          original.headers = original.headers ?? {};
-          (original.headers as any).Authorization = `Bearer ${access}`;
+          removeRequestAuthHeader(original);
+          setRequestAuthHeader(original, access);
         }
         return axiosInstance(original);
       } catch (e) {
