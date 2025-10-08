@@ -1,6 +1,6 @@
 import Footer from '@/components/Footer/Footer';
 import Header from '@/components/Header/Header';
-import AgreementsForm from '@/components/agreements/AgreementsCard';
+import AgreementsCard from '@/components/agreements/AgreementsCard';
 import WelcomeCard from '@/components/auth/WelcomeCard';
 import { DEFAULT_AGREEMENTS } from '@/constants/agreement';
 import useIsMdUp from '@/hooks/useIsMdUp';
@@ -25,7 +25,7 @@ const AgreementsPage: React.FC = () => {
 
             {/* 약관 카드는 항상 표시 */}
             <div className="h-full w-full md:w-[460px]">
-              <AgreementsForm initial={DEFAULT_AGREEMENTS} />
+              <AgreementsCard initial={DEFAULT_AGREEMENTS} />
             </div>
           </div>
         </div>
