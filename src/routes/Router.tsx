@@ -1,4 +1,5 @@
 import AgreementsPage from '@/pages/AgreementPage';
+import ComplaintWizardPage from '@/pages/ComplaintWizardPage';
 import LoginPage from '@/pages/LoginPage';
 import MainPage from '@/pages/MainPage';
 import SignupPage from '@/pages/SignupPage';
@@ -31,6 +32,13 @@ const Router = () => {
         <Route
           path="/signup"
           element={<SignupPage />}
+        />
+      }
+
+      {
+        <Route
+          path="/complaint"
+          element={<ComplaintWizardPage />}
         />
       }
     </Routes>
