@@ -1,19 +1,25 @@
-// src/components/Wizard/WizardProgress.tsx
 import { useComplaintWizard } from '@/stores/useComplaintWizard';
 import React from 'react';
 
 type Props = {
+  // 나가기 콜백 함수
   onExit?: () => void;
+
+  // 외부에서 전달할 추가 tailwind 클래스
   className?: string;
+
+  // 중앙의 응원 배지 노출 여부 (기본: true)
   showEncourageBadge?: boolean;
 };
 
 const WizardProgress: React.FC<Props> = ({ onExit, className = '', showEncourageBadge = true }) => {
+  // 진행률 (0 ~ 100) -> 스토어의 현재 step / total에 따라 계산됨
   const percent = useComplaintWizard((s) => s.percentage());
 
   return (
+    // 상단 진행 영역 전체 래퍼
     <section className={`flex w-full flex-col gap-4 ${className}`}>
-      {/* 상단: 진행바 + 배지 중앙 */}
+      {/* 진행바 컨테이너: 배지 포지셔닝을 위해 relative */}
       <div className="relative w-full">
         {/* 회색 진행바 */}
         <div
@@ -23,6 +29,7 @@ const WizardProgress: React.FC<Props> = ({ onExit, className = '', showEncourage
           aria-valuemin={0}
           aria-valuemax={100}
         >
+          {/* 실제 채워지는(파란색) 진행 바: width %로 제어, 애니메이션 부드럽게 */}
           <div
             className="h-full rounded-md bg-blue-600 transition-[width] duration-300 ease-out"
             style={{ width: `${percent}%` }}
@@ -37,7 +44,7 @@ const WizardProgress: React.FC<Props> = ({ onExit, className = '', showEncourage
         )}
       </div>
 
-      {/* 나가기 버튼: 우측 정렬 */}
+      {/* 나가기 버튼 -> 우측 정렬 */}
       <div className="flex justify-end">
         <button
           type="button"
