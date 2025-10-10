@@ -29,7 +29,7 @@ const ComplaintWizardPage: React.FC = () => {
         </div>
 
         {/* 이전/다음 버튼: 자연 흐름 하단 배치 */}
-        <div className="mx-auto mt-2 mb-14 flex w-full max-w-[720px] items-center justify-center">
+        <div className="mx-auto mb-14 flex w-full max-w-[720px] items-center justify-center">
           <div className="flex w-full max-w-[500px] items-center justify-between">
             <button
               type="button"
