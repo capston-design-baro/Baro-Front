@@ -19,7 +19,7 @@ const ComplaintWizardPage: React.FC = () => {
       <Header />
 
       {/* 메인 컨테이너: 가운데 정렬 + 최대폭 1440 */}
-      <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-6 px-6 py-4">
+      <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2 px-6 py-4">
         {/* 상단 진행바 */}
         <WizardProgress onExit={handleExit} />
 
