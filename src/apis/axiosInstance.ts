@@ -5,17 +5,24 @@ import {
   REFRESH_COOKIE,
   REFRESH_MAX_AGE,
 } from '@/constants/auth';
-import axios, { AxiosError, AxiosHeaders } from 'axios';
-import type { InternalAxiosRequestConfig } from 'axios';
-import { Cookies } from 'react-cookie';
+import { AxiosError, AxiosHeaders } from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { Cookies } from 'react-cookie';
+import type { InternalAxiosRequestConfig } from 'axios';
+import axios from 'axios';
+
+// ← 이건 이제 제거해도 됨 (아래 설명 참고)
+
+
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const cookies = new Cookies();
 
 // Axios 인스턴스 생성
-const axiosInstance = axios.create({
-  baseURL: BASE_URL,
-});
+const axiosInstance = (await (async () => {
+  const inst = axios.create({ baseURL: BASE_URL });
+  return inst;
+})()) as ReturnType<typeof axios.create>;
 
 // cfg.headers를 항상 AxiosHeaders 인스턴스로 보장
 function ensureHeaders(cfg: InternalAxiosRequestConfig): AxiosHeaders {
@@ -56,7 +63,7 @@ async function doRefresh() {
   if (!refresh) throw new Error('NO_REFRESH_TOKEN');
 
   // 순환 의존 방지: 여기서는 axios 기본 인스턴스 사용
-  const { data } = await axios.post(`${BASE_URL}/api/auth/refresh`, {
+  const { data } = await axios.post(`${BASE_URL}/auth/refresh`, {
     refresh_token: refresh,
   });
 
