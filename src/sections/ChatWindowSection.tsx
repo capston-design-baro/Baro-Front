@@ -1,6 +1,5 @@
-// src/sections/ChatWindowSection.tsx
 import { sendChat, startAiSession } from '@/apis/complaints';
-import { ChatBubble } from '@/components/Chat/bubble/ChatBubble';
+import { ChatBubble } from '@/components/bubble/ChatBubble';
 import type { Side } from '@/types/side';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
