@@ -1,4 +1,5 @@
 import type { BinaryAnswer, PrecheckQuestion, WizardState } from '@/types/complaint';
+import type { OffenseType } from '@/types/complaint';
 import { create } from 'zustand';
 
 // 사전 확인 질문 목록
@@ -32,7 +33,10 @@ const initialPrechecks: PrecheckQuestion[] = [
 
 export type ComplaintWizardStore = {
   // 마법사 전역 상태 -> 현재 단계, 총 단계 수, 사전확인 질문들 등
-  state: WizardState;
+  state: WizardState & {
+    offense: OffenseType | null; // 선택된 죄목
+  };
+  setOffense: (offense: OffenseType) => void;
 
   // 사용자가 다음을 눌렸는지 여부
   triedNext: boolean;
@@ -65,6 +69,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
     step: 0,
     stepsTotal: 10,
     prechecks: initialPrechecks,
+    offense: null,
   },
   triedNext: false,
 
@@ -135,4 +140,9 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
     if (stepsTotal <= 1) return 0;
     return Math.round(((step + 1) / stepsTotal) * 100);
   },
+
+  setOffense: (offense: OffenseType) =>
+    set(({ state }) => ({
+      state: { ...state, offense },
+    })),
 }));

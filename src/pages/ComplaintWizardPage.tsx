@@ -4,6 +4,7 @@ import Header from '@/components/Header/Header';
 import WizardProgress from '@/components/Wizard/WizardProgress';
 import AccusedInfoSection from '@/sections/AccusedInfoSection';
 import type { AccusedInfoSectionHandle } from '@/sections/AccusedInfoSection';
+import ChatInfoSection from '@/sections/ChanInfoSection';
 import ComplainantInfoSection from '@/sections/ComplaintInfoSection';
 import type { ComplainantInfoSectionHandle } from '@/sections/ComplaintInfoSection';
 import ComplaintIntroSection from '@/sections/ComplaintIntroSection';
@@ -24,6 +25,12 @@ const ComplaintWizardPage: React.FC = () => {
   const [complaintId, setComplaintId] = useState<number | null>(null);
 
   const handleExit = () => navigate(-1);
+
+  const handleGoChat = () => {
+    if (complaintId && Number.isFinite(complaintId)) {
+      navigate(`/complaints/${complaintId}/chat`);
+    }
+  };
 
   const handleNext = async () => {
     // step 0 (인트로)
@@ -61,17 +68,24 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
+    if (step === 3) {
+      handleGoChat();
+      return;
+    }
+
     next();
   };
 
   const badgeText =
     step === 0
-      ? '사전확인 중이에요!'
+      ? '잘 하고 있어요!'
       : step === 1
         ? '바로가 도와줄게요!'
         : step === 2
           ? '느낌이 좋아요!'
-          : '잘 하고 있어요!';
+          : step === 3
+            ? '채팅으로 이어갈게요!'
+            : '잘 하고 있어요!';
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
@@ -97,6 +111,7 @@ const ComplaintWizardPage: React.FC = () => {
                 }}
               />
             )}
+          {step === 3 && <ChatInfoSection />}
         </div>
         <div className="mx-auto mb-14 flex w-full max-w-[720px] items-center justify-center">
           <div className="flex w-full max-w-[500px] items-center justify-between">
