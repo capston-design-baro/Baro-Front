@@ -15,6 +15,11 @@ const SignupCard: React.FC = () => {
   const [district, setDistrict] = useState(''); // 주소 - 구/군 (선택)
   const [town, setTown] = useState(''); // 주소 - 동/면/읍 (선택)
 
+  // 전화번호 3분할
+  const [p1, setP1] = useState(''); // 010
+  const [p2, setP2] = useState(''); // 1234
+  const [p3, setP3] = useState(''); // 5678
+
   // UI 상태 관리
   const [error, setError] = useState<string | null>(null); // 에러 메시지
   const [loading, setLoading] = useState(false); // 로딩 상태
@@ -39,12 +44,26 @@ const SignupCard: React.FC = () => {
     setLoading(true);
 
     try {
+      const cityTrim = city.trim();
+      const districtTrim = district.trim();
+      const townTrim = town.trim();
+
+      const addressObj: RegisterRequest['address'] = {
+        city: cityTrim,
+        // 빈 문자열은 undefined로 보내서 서버에서 불필요한 공백 방지
+        district: districtTrim || undefined,
+        town: townTrim || undefined,
+      };
+
+      // 전화번호 합치기
+      const phone_number = `${p1}-${p2}-${p3}`;
       // API 요청에 필요한 payload 생성
       const payload: RegisterRequest = {
         name,
         email,
         password: pw,
-        address: { city, district, town },
+        address: addressObj,
+        phone_number,
       };
 
       // API 호출
@@ -195,6 +214,36 @@ const SignupCard: React.FC = () => {
               className="h-9 w-full rounded-lg border border-gray-300 px-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
               value={town}
               onChange={(e) => setTown(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* 전화번호: 3분할 */}
+        <div className="mx-4 flex flex-col gap-2">
+          <label className="text-sm font-medium text-slate-900">전화번호 (필수)</label>
+          <div className="flex items-center gap-2">
+            <input
+              value={p1}
+              onChange={(e) => setP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
+              className="h-9 w-[86px] rounded-lg border border-gray-300 px-3 text-center outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              placeholder="010"
+              inputMode="numeric"
+            />
+            <span className="text-gray-500">-</span>
+            <input
+              value={p2}
+              onChange={(e) => setP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
+              className="h-9 w-[100px] rounded-lg border border-gray-300 px-3 text-center outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              placeholder="1234"
+              inputMode="numeric"
+            />
+            <span className="text-gray-500">-</span>
+            <input
+              value={p3}
+              onChange={(e) => setP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
+              className="h-9 w-[100px] rounded-lg border border-gray-300 px-3 text-center outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              placeholder="5678"
+              inputMode="numeric"
             />
           </div>
         </div>

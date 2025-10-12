@@ -2,11 +2,12 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 // 사용자 정보 타입 정의
-interface User {
+export interface User {
   id: number;
   email: string;
   name: string;
   address: string;
+  phone_number: string;
 }
 
 // Zustand에서 관리할 상태 타입 정의

@@ -21,6 +21,7 @@ export type RegisterRequest = {
     district?: string;
     town?: string;
   };
+  phone_number: string;
 };
 
 // 사용자 정보 응답
@@ -29,4 +30,5 @@ export type UserResponse = {
   email: string;
   name: string;
   address: string;
+  phone_number: string;
 };

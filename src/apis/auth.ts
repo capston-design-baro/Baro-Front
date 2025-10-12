@@ -28,6 +28,8 @@ function setAuthHeader(accessToken?: string, tokenType: 'bearer' | string = 'bea
 }
 
 // 로그인
+// -> 응답으로 acces token이랑 refresh token을 발급받음
+// -> 토큰을 쿠키에 저장하고, zustand user 상태 업데이트
 export async function login(body: LoginRequest): Promise<TokenResponse> {
   const { data } = await axiosInstance.post<TokenResponse>(`${API}/auth/login`, body);
 
@@ -72,6 +74,8 @@ export async function register(payload: RegisterRequest): Promise<UserResponse> 
   // payload의 주소 객체(city, district, town)를 문자열로 합쳐서 서버에 전송
   const fullAddress =
     `${payload.address?.city ?? ''} ${payload.address?.district ?? ''} ${payload.address?.town ?? ''}`.trim();
+
+  // string으로 변환한 address를 서버에 전송
   const body = { ...payload, address: fullAddress };
 
   const { data } = await axiosInstance.post<UserResponse>(`${API}/auth/register`, body);
