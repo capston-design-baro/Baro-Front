@@ -1,11 +1,9 @@
-import { Route, Routes } from 'react-router-dom';
-
 import AgreementsPage from '@/pages/AgreementPage';
-import ComplaintAccusedPage from '@/pages/ComplaintAccusedPage';
 import ComplaintWizardPage from '@/pages/ComplaintWizardPage';
 import LoginPage from '@/pages/LoginPage';
 import MainPage from '@/pages/MainPage';
 import SignupPage from '@/pages/SignupPage';
+import { Route, Routes } from 'react-router-dom';
 
 // import SignupPage from '@/pages/SignupPage';
 
@@ -41,13 +39,6 @@ const Router = () => {
         <Route
           path="/complaint"
           element={<ComplaintWizardPage />}
-        />
-      }
-
-      {
-        <Route
-          path="/complaints/:id/accused"
-          element={<ComplaintAccusedPage />}
         />
       }
     </Routes>
