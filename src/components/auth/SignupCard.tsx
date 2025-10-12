@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-
-import type { RegisterRequest } from '@/types/auth';
 import { register } from '@/apis/auth';
+import type { RegisterRequest } from '@/types/auth';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SignupCard: React.FC = () => {
@@ -45,8 +44,16 @@ const SignupCard: React.FC = () => {
     setLoading(true);
 
     try {
-      // 주소 합치기
-      const address = `${city} ${district} ${town}`.trim().replace(/\s+/g, ' ');
+      const cityTrim = city.trim();
+      const districtTrim = district.trim();
+      const townTrim = town.trim();
+
+      const addressObj: RegisterRequest['address'] = {
+        city: cityTrim,
+        // 빈 문자열은 undefined로 보내서 서버에서 불필요한 공백 방지
+        district: districtTrim || undefined,
+        town: townTrim || undefined,
+      };
 
       // 전화번호 합치기
       const phone_number = `${p1}-${p2}-${p3}`;
@@ -55,7 +62,7 @@ const SignupCard: React.FC = () => {
         name,
         email,
         password: pw,
-        address,
+        address: addressObj,
         phone_number,
       };
 
