@@ -1,9 +1,11 @@
-import axios from 'axios';
 import axiosInstance from '@/apis/axiosInstance';
 
 // 공용 인스턴스 (Authorization 자동 세팅됨)
 
 const api = axiosInstance;
+
+// API 기본 prefix
+const API = '/api';
 
 /** 고소인 정보 등록 -> Complaint 생성 */
 export type ComplainantInfoCreate = {
@@ -13,7 +15,7 @@ export type ComplainantInfoCreate = {
 };
 
 export async function createComplaint(data: ComplainantInfoCreate) {
-  const res = await api.post('/complaints/info/complainant', data);
+  const res = await api.post(`${API}/complaints/info/complainant`, data);
 
   // 서버가 Complaint 객체 전체를 돌려줌 (id 포함)
   return res.data as {
@@ -34,13 +36,13 @@ export type AccusedInfoCreate = {
 };
 
 export async function registerAccused(complaintId: number, data: AccusedInfoCreate) {
-  const res = await api.post(`/complaints/info/accused/${complaintId}`, data);
+  const res = await api.post(`${API}/complaints/info/accused/${complaintId}`, data);
   return res.data;
 }
 
 /** AI 세션 시작 */
 export async function startAiSession(complaintId: number, offense: string) {
-  const res = await api.post(`/complaints/${complaintId}/start`, { offense });
+  const res = await api.post(`${API}/complaints/${complaintId}/start`, { offense });
   return res.data as {
     id: number;
     user_id: number;
@@ -54,13 +56,13 @@ export async function startAiSession(complaintId: number, offense: string) {
 
 /** 채팅 전송 */
 export async function sendChat(complaintId: number, aiSessionId: string, message: string) {
-  const res = await api.post(`/complaints/${complaintId}/chat/${aiSessionId}`, { message });
+  const res = await api.post(`${API}/complaints/${complaintId}/chat/${aiSessionId}`, { message });
   return res.data as { reply: string };
 }
 
 /** 최종 고소장 생성 */
 export async function generateFinal(complaintId: number) {
-  const res = await api.post(`/complaints/${complaintId}/generate`);
+  const res = await api.post(`${API}/complaints/${complaintId}/generate`);
   return res.data as {
     complaint_id: number;
     generated_complaint: string;
@@ -70,7 +72,7 @@ export async function generateFinal(complaintId: number) {
 
 /** 내 고소장 목록 */
 export async function getMyComplaints() {
-  const res = await api.get('/complaints');
+  const res = await api.get('${API}/complaints');
   return res.data as Array<{
     id: number;
     status: string;
