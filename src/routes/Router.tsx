@@ -1,4 +1,5 @@
 import AgreementsPage from '@/pages/AgreementPage';
+import ComplaintChatPage from '@/pages/ComplaintChatPage';
 import ComplaintWizardPage from '@/pages/ComplaintWizardPage';
 import LoginPage from '@/pages/LoginPage';
 import MainPage from '@/pages/MainPage';
@@ -35,10 +36,19 @@ const Router = () => {
         />
       }
 
+      {/* "/complaint" 경로 */}
       {
         <Route
           path="/complaint"
           element={<ComplaintWizardPage />}
+        />
+      }
+
+      {/* "/complaints/:id/chat" 경로 */}
+      {
+        <Route
+          path="/complaints/:id/chat"
+          element={<ComplaintChatPage />}
         />
       }
     </Routes>
