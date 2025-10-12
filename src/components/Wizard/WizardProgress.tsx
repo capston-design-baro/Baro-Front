@@ -1,5 +1,5 @@
-import React from 'react';
 import { useComplaintWizard } from '@/stores/useComplaintWizard';
+import React from 'react';
 
 type Props = {
   // 나가기 콜백 함수

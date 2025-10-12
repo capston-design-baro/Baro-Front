@@ -6,14 +6,11 @@ import {
   REFRESH_MAX_AGE,
 } from '@/constants/auth';
 import { AxiosError, AxiosHeaders } from 'axios';
-
-import { Cookies } from 'react-cookie';
 import type { InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
+import { Cookies } from 'react-cookie';
 
 // ← 이건 이제 제거해도 됨 (아래 설명 참고)
-
-
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const cookies = new Cookies();
