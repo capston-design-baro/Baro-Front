@@ -70,7 +70,7 @@ const ComplaintWizardPage: React.FC = () => {
       : step === 1
         ? '바로가 도와줄게요!'
         : step === 2
-          ? '상대방 정보를 아는 만큼만 입력해도 괜찮아요!'
+          ? '느낌이 좋아요!'
           : '잘 하고 있어요!';
 
   return (
