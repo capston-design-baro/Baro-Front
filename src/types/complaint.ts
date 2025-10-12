@@ -33,3 +33,5 @@ export type WizardState = {
   stepsTotal: number; // 전체 단계 수
   prechecks: PrecheckQuestion[]; // 사전 확인 질문 목록
 };
+
+export type OffenseType = '사기죄' | '모욕죄';
