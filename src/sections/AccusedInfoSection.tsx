@@ -30,7 +30,6 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
     const [unknownPhone, setUnknownPhone] = useState(false);
 
     // UI
-    const [loading, setLoading] = useState(false);
     const [err, setErr] = useState<string | null>(null);
     const [ok, setOk] = useState<string | null>(null);
 
@@ -75,7 +74,6 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
         accused_phone: unknownPhone ? '모름' : phone,
       };
 
-      setLoading(true);
       try {
         await registerAccused(complaintId, payload);
         setOk('저장되었습니다.');
@@ -86,8 +84,6 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
         if (status === 422) setErr('입력값 형식을 확인해주세요.');
         else if (status === 401) setErr('로그인이 필요합니다.');
         else setErr('저장 중 문제가 발생했습니다.');
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -132,7 +128,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
         <form
           ref={formRef}
           onSubmit={handleSave}
-          className="mt-2 flex w-[420px] flex-col gap-6"
+          className="mt-2 flex w-[476px] flex-col gap-6"
         >
           {/* 알림 */}
           <div
@@ -243,7 +239,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
                   disabled={unknownPhone}
                   value={p1}
                   onChange={(e) => setP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                  className="h-12 w-[86px] rounded-lg border border-gray-300 px-3 text-center disabled:bg-gray-100 disabled:text-gray-400"
+                  className="h-12 min-w-0 flex-[3_3_0%] rounded-lg border border-gray-300 px-3 text-center"
                   placeholder={unknownPhone ? '모름' : '010'}
                   inputMode="numeric"
                 />
@@ -252,7 +248,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
                   disabled={unknownPhone}
                   value={p2}
                   onChange={(e) => setP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className="h-12 w-[100px] rounded-lg border border-gray-300 px-3 text-center disabled:bg-gray-100 disabled:text-gray-400"
+                  className="h-12 min-w-0 flex-[4_4_0%] rounded-lg border border-gray-300 px-3 text-center"
                   placeholder={unknownPhone ? '모름' : '1234'}
                   inputMode="numeric"
                 />
@@ -261,7 +257,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
                   disabled={unknownPhone}
                   value={p3}
                   onChange={(e) => setP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className="h-12 w-[100px] rounded-lg border border-gray-300 px-3 text-center disabled:bg-gray-100 disabled:text-gray-400"
+                  className="h-12 min-w-0 flex-[4_4_0%] rounded-lg border border-gray-300 px-3 text-center"
                   placeholder={unknownPhone ? '모름' : '5678'}
                   inputMode="numeric"
                 />
@@ -278,18 +274,6 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
                 모름
               </label>
             </div>
-          </div>
-
-          {/* 저장 버튼 */}
-          <div className="flex justify-end px-3">
-            <button
-              type="submit"
-              disabled={loading || !!invalidReason}
-              className="h-10 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white transition-opacity hover:bg-blue-700 disabled:opacity-60"
-              title={invalidReason ?? undefined}
-            >
-              {loading ? '저장 중...' : '저장'}
-            </button>
           </div>
         </form>
       </section>
