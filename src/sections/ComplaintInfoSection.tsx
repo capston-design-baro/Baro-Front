@@ -3,11 +3,13 @@ import { createComplaint } from '@/apis/complaints';
 import IntroHeader from '@/components/Common/IntroHeader';
 import type { AxiosError } from 'axios';
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 // 부모 컴포넌트에서 save()를 직접 호출할 수 있도록 인터페이스 정의
 type Props = { onLoaded?: () => void };
-export type ComplainantInfoSectionHandle = { save: () => Promise<void> };
+
+export type ComplainantInfoSectionHandle = {
+  save: () => Promise<number>;
+};
 
 // 한국 주소를 3등분: 시/도, 시/군/구, 읍/면/동
 function splitAddressTo3FromString(addr: string | null | undefined) {
@@ -75,7 +77,6 @@ function splitPhoneKR(phoneRaw: unknown) {
 // forwardRef 사용 -> 부모 컴포넌트에서 save()를 호출할 수 있게 함
 const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
   ({ onLoaded }, ref) => {
-    const navigate = useNavigate();
     const formRef = useRef<HTMLFormElement>(null); // 폼 참조
 
     // 입력값 상태 관리
@@ -127,11 +128,10 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
     };
 
     // 저장 로직 (AxiosError 사용)
-    const doSave = async () => {
+    const doSave = async (): Promise<number> => {
       setErr(null);
       setOk(null);
 
-      // 필수 입력값 검증
       if (!name.trim()) throw new Error('이름을 입력해주세요.');
       const address = [addr1, addr2, addr3].filter(Boolean).join(' ').trim();
       if (!address) throw new Error('주소를 입력해주세요.');
@@ -140,7 +140,6 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
       setLoading(true);
       try {
-        // API 호출 -> 고소장 생성
         const res = await createComplaint({
           complainant_name: name.trim(),
           complainant_address: address,
@@ -148,7 +147,11 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
         });
 
         onLoaded?.();
-        navigate(`/complaints/${res.id}/accused`);
+        const id = Number(res?.id); // ✅ 숫자로 보강
+        if (!Number.isFinite(id) || id <= 0) {
+          throw new Error('유효하지 않은 complaint id');
+        }
+        return id;
       } catch (e: unknown) {
         const ax = e as AxiosError | undefined;
         const status = ax?.response?.status;
@@ -167,12 +170,12 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
     useImperativeHandle(ref, () => ({
       save: async () => {
         try {
-          await doSave();
+          const id = await doSave();
+          return id; // ⬅️ complaint.id 반환
         } catch (e: unknown) {
-          // 에러 메시지를 state에 반영
           const msg = (e as { message?: string })?.message ?? '에러가 발생했습니다.';
           setErr(msg);
-          throw e; // 부모도 실패를 인지할 수 있게 전달
+          throw e;
         }
       },
     }));
