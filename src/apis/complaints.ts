@@ -14,18 +14,18 @@ export type ComplainantInfoCreate = {
   complainant_phone: string;
 };
 
-export async function createComplaint(data: ComplainantInfoCreate) {
-  const res = await api.post(`${API}/complaints/info/complainant`, data);
+export type Complaint = {
+  id: number;
+  user_id: number;
+  status: 'in_progress' | 'completed';
+  created_at: string;
+  ai_session_id?: string | null;
+  crime_type?: string | null;
+};
 
-  // 서버가 Complaint 객체 전체를 돌려줌 (id 포함)
-  return res.data as {
-    id: number;
-    user_id: number;
-    status: 'in_progress' | 'completed';
-    created_at: string;
-    ai_session_id?: string | null;
-    crime_type?: string | null;
-  };
+export async function createComplaint(data: ComplainantInfoCreate): Promise<Complaint> {
+  const res = await api.post(`${API}/complaints/info/complainant`, data);
+  return res.data as Complaint;
 }
 
 /** 피고소인 정보 등록 */
@@ -72,7 +72,7 @@ export async function generateFinal(complaintId: number) {
 
 /** 내 고소장 목록 */
 export async function getMyComplaints() {
-  const res = await api.get('${API}/complaints');
+  const res = await api.get(`${API}/complaints`);
   return res.data as Array<{
     id: number;
     status: string;
@@ -83,5 +83,5 @@ export async function getMyComplaints() {
 
 /** 삭제 */
 export async function deleteComplaint(complaintId: number) {
-  await api.delete(`/complaints/${complaintId}`);
+  await api.delete(`${API}/complaints/${complaintId}`);
 }
