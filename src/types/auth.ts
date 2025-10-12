@@ -16,7 +16,11 @@ export type RegisterRequest = {
   email: string;
   name: string;
   password: string;
-  address: string;
+  address: {
+    city: string;
+    district?: string;
+    town?: string;
+  };
   phone_number: string;
 };
 
