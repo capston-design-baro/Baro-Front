@@ -1,6 +1,6 @@
 // src/pages/SignupPage.tsx
-import Footer from '@/components/Footer/Footer';
-import Header from '@/components/Header/Header';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import SignupCard from '@/components/auth/SignupCard';
 import WelcomeCard from '@/components/auth/WelcomeCard';
 import useIsMdUp from '@/hooks/useIsMdUp';

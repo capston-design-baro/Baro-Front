@@ -191,7 +191,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
       {/* 채팅 로그 */}
       <div
         ref={listRef}
-        className="flex h-[500px] w-[720px] flex-col overflow-y-auto rounded-lg border border-gray-300 bg-white px-2 py-3"
+        className="flex h-[500px] w-[720px] flex-col overflow-y-auto rounded-lg border border-gray-300 bg-white px-6 py-3"
         style={{ boxShadow: '0px 4px 8px 0 rgba(0,0,0,0.1)' }}
         role="list"
         aria-label="채팅 메시지"

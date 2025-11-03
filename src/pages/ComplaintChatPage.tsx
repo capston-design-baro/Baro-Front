@@ -1,5 +1,5 @@
-import Footer from '@/components/Footer/Footer';
-import Header from '@/components/Header/Header';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import ChatWindowSection from '@/sections/ChatWindowSection';
 import { useComplaintWizard } from '@/stores/useComplaintWizard';
 import React from 'react';

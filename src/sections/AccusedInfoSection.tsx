@@ -109,7 +109,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
     };
 
     return (
-      <section className="mx-auto flex h-[680px] w-[720px] flex-col items-center justify-between overflow-hidden px-[110px] py-[60px]">
+      <section className="mx-auto flex h-[680px] w-[720px] flex-col items-center gap-14 overflow-hidden px-[110px] py-[60px]">
         <IntroHeader
           title="고소장 작성하기"
           lines={[

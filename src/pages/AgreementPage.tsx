@@ -1,5 +1,5 @@
-import Footer from '@/components/Footer/Footer';
-import Header from '@/components/Header/Header';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import AgreementsCard from '@/components/agreements/AgreementsCard';
 import WelcomeCard from '@/components/auth/WelcomeCard';
 import { DEFAULT_AGREEMENTS } from '@/constants/agreement';

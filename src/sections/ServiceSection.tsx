@@ -1,4 +1,4 @@
-import ServiceCard from '@/components/ServiceCard/ServiceCard';
+import ServiceCard from '@/components/ServiceCard';
 import { SERVICES } from '@/constants/service';
 import '@/styles/main.css';
 import type { Service } from '@/types/service';
