@@ -1,7 +1,7 @@
 // ComplaintWizardPage.tsx
-import Footer from '@/components/Footer/Footer';
-import Header from '@/components/Header/Header';
-import WizardProgress from '@/components/Wizard/WizardProgress';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import WizardProgress from '@/components/WizardProgress';
 import AccusedInfoSection from '@/sections/AccusedInfoSection';
 import type { AccusedInfoSectionHandle } from '@/sections/AccusedInfoSection';
 import ChatInfoSection from '@/sections/ChanInfoSection';

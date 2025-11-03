@@ -1,6 +1,6 @@
-import Footer from '@/components/Footer/Footer';
-import Header from '@/components/Header/Header';
-import ServiceSection from '@/sections/ServiceSection/ServiceSection';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import ServiceSection from '@/sections/ServiceSection';
 import { useNavigate } from 'react-router-dom';
 
 export default function MainPage() {
