@@ -1,28 +1,23 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
-* {
-  font-family:
-    'Pretendard Variable',
-    Pretendard,
-    -apple-system,
-    BlinkMacSystemFont,
-    system-ui,
-    Roboto,
-    'Helvetica Neue',
-    'Segoe UI',
-    sans-serif;
-}
+@layer base {
+  * {
+    @apply font-sans;
+  }
 
-button {
-  cursor: pointer;
-}
-/*
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-*/
-html {
-  scroll-behavior: smooth;
+  html {
+    scroll-behavior: smooth;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  /* 필요하면 이 부분 나중에 해제해서 다시 쓰면 됨
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  */
 }
