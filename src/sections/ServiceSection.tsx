@@ -9,20 +9,22 @@ type Props = { onClickCard?: (s: Service) => void };
 const ServiceSection: React.FC<Props> = ({ onClickCard }) => {
   return (
     <section className="w-full bg-white">
-      {/* 1440px 중앙 정렬 컨테이너 */}
-      <div className="mx-auto w-full max-w-[1440px] px-6">
-        <div className="mx-auto flex max-w-[411px] flex-col items-center gap-6 pt-32">
-          <h2 className="relative mb-4 text-center font-bold">
-            <span className="relative inline-block text-3xl whitespace-nowrap sm:text-4xl md:text-5xl">
-              <span className="animate-wave-fill">무엇을 도와드릴까요?</span>
-            </span>
-          </h2>
-          <p className="text-center text-[3.5vw] font-medium whitespace-nowrap text-gray-500 sm:text-lg md:text-xl">
-            필요한 서비스를 선택하고 시작해보세요.
-          </p>
+      {/* 중앙 정렬 컨테이너 */}
+      <div className="mx-auto w-full max-w-[1280px] px-6">
+        <div className="mx-auto flex max-w-[400px] flex-col items-center gap-4 pt-32">
+          <header className="text-center whitespace-nowrap">
+            <h2 className="relative mb-4 font-bold">
+              <span className="sm:text-main-1 text-main-4 animate-wave-fill inline-block">
+                무엇을 도와드릴까요?
+              </span>
+            </h2>
+            <p className="sm:text-body-1-regular text-body-2-regular text-neutral-500">
+              필요한 서비스를 선택하고 시작해보세요.
+            </p>
+          </header>
         </div>
 
-        <div className="mx-auto mt-10 grid max-w-[1120px] grid-cols-1 justify-items-center gap-6 sm:mt-14 sm:grid-cols-3 lg:mt-20 lg:grid-cols-3">
+        <div className="mx-auto mt-10 grid max-w-[1000px] grid-cols-1 justify-items-center gap-5 sm:mt-14 sm:grid-cols-3 sm:gap-6">
           {SERVICES.map((svc) => (
             <ServiceCard
               key={svc.id}

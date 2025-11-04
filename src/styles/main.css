@@ -1,34 +1,58 @@
-@keyframes wave-fill {
-  0% {
-    background-size: 0% 100%;
-    background-position: 0% 50%;
-  }
-  100% {
-    background-size: 100% 100%;
-    background-position: 0% 50%;
-  }
-}
+/*
+🎨 BaLaw Animation Utilities
+커스텀 애니메이션, 그라데이션, 트랜지션 유틸리티 등을 정의한 파일
+-> Tailwind와 함께 작동하도록 @layer utilities 내부에 정의
+-> 테마 색상은 tailwind.config.ts의 tokens 참조
+*/
 
-.animate-wave-fill {
-  background-image: linear-gradient(
-    90deg,
-    #2563eb 0%,
-    #2563eb 20%,
-    #3b82f6 40%,
-    #60a5fa 60%,
-    #3b82f6 80%,
-    #2563eb 100%
-  );
-  background-size: 0% 100%;
-  animation: wave-fill 2.5s ease-out forwards;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+@import 'tailwindcss';
 
-@media (prefers-reduced-motion: reduce) {
+/* 커스텀 유틸리티 레이어 시작 */
+@layer utilities {
+  /* 🌊 wave-fill 애니메이션 정의*/
+  @keyframes wave-fill {
+    0% {
+      background-size: 0% 100%;
+      background-position: 0% 50%;
+    }
+    100% {
+      background-size: 100% 100%;
+      background-position: 0% 50%;
+    }
+  }
+
+  /* 🌈 animate-wave-fill 클래스*/
   .animate-wave-fill {
-    animation: none;
-    background-size: 100% 100%;
+    background-image: linear-gradient(
+      90deg,
+      #2563eb 0%,
+      #2563eb 20%,
+      #307af1 40%,
+      #7bacf7 60%,
+      #307af1 80%,
+      #2563eb 100%
+    );
+
+    /* 배경의 초기 크기 설정 (0% -> 점점 채워지게 애니메이션 적용) */
+    background-size: 0% 100%;
+
+    /* 2.5초 동안 천천히 멈추는 느낌으로 실행하고, 애니메이션 종료 후 마지막 상태 유지 */
+    animation: wave-fill 2.5s ease-out forwards;
+
+    /* 글자 형태로 배경 자르고, 글자 내부를 투명하게 */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /*
+  🧘 접근성: 모션 감소 환경 대응
+  -> 모션 줄이기 옵션을 켰다면, 애니메이션 비활성화
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-wave-fill {
+      animation: none;
+      background-size: 100% 100%;
+    }
   }
 }

@@ -1,28 +1,126 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
-* {
-  font-family:
-    'Pretendard Variable',
-    Pretendard,
-    -apple-system,
-    BlinkMacSystemFont,
-    system-ui,
-    Roboto,
-    'Helvetica Neue',
-    'Segoe UI',
-    sans-serif;
+@theme {
+  /* 폰트 */
+  --font-sans: Pretendard, ui-sans-serif, system-ui;
+
+  /* 폰트 사이즈 토큰들 */
+  --text-heading-0: 32px;
+  --leading-heading-0: 40px;
+  --font-weight-heading-0: 500;
+
+  --text-heading-1: 28px;
+  --leading-heading-1: 36px;
+  --font-weight-heading-1: 500;
+
+  --text-heading-2: 24px;
+  --leading-heading-2: 32px;
+  --font-weight-heading-2: 500;
+
+  --text-heading-3: 22px;
+  --leading-heading-3: 30px;
+  --font-weight-heading-3: 500;
+
+  --text-heading-4: 20px;
+  --leading-heading-4: 28px;
+  --font-weight-heading-4: 500;
+
+  /* Main 화면 폰트 */
+  --text-main-1: 44px;
+  --leading-main-1: 52px;
+  --font-weight-main-1: 500;
+
+  --text-main-2: 40px;
+  --leading-main-2: 48px;
+  --font-weight-main-2: 500;
+
+  --text-main-3: 36px;
+  --leading-main-3: 44px;
+  --font-weight-main-3: 700;
+
+  --text-main-4: 32px;
+  --leading-main-4: 40px;
+  --font-weight-main-4: 700;
+
+  /* Body */
+  --text-body-1-bold: 16px;
+  --leading-body-1-bold: 24px;
+  --font-weight-body-1-bold: 700;
+
+  --text-body-1-regular: 16px;
+  --leading-body-1-regular: 24px;
+  --font-weight-body-1-regular: 400;
+
+  --text-body-2-bold: 14px;
+  --leading-body-2-bold: 22px;
+  --font-weight-body-2-bold: 700;
+
+  --text-body-2-regular: 14px;
+  --leading-body-2-regular: 22px;
+  --font-weight-body-2-regular: 400;
+
+  /* Detail */
+  --text-detail-bold: 12px;
+  --leading-detail-bold: 18px;
+  --font-weight-detail-bold: 700;
+
+  --text-detail-regular: 12px;
+  --leading-detail-regular: 18px;
+  --font-weight-detail-regular: 400;
+
+  /* 색 팔레트 (원래 config에 있던 primary, neutral 등) */
+  --color-primary-0: #e8f0fe;
+  --color-primary-50: #d3e3fd;
+  --color-primary-100: #a7c7fa;
+  --color-primary-150: #7bacf7;
+  --color-primary-200: #4f91f4;
+  --color-primary-300: #307af1;
+  --color-primary-400: #2563eb;
+  --color-primary-500: #1e4fc2;
+  --color-primary-600: #193f9a;
+  --color-primary-700: #122e70;
+  --color-primary-800: #0d214e;
+  --color-primary-900: #08152f;
+  --color-primary-1000: #000000;
+
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f9fafb;
+  --color-neutral-100: #f3f4f6;
+  --color-neutral-200: #e5e7eb;
+  --color-neutral-300: #d1d5db;
+  --color-neutral-350: #bfc4ca;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #4b5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1f2937;
+  --color-neutral-900: #111827;
+
+  /* radius 토큰 → rounded-100, rounded-200 ... 으로 쓸 수 있음 */
+  --radius-100: 4px;
+  --radius-200: 8px;
+  --radius-300: 12px;
+  --radius-400: 16px;
 }
 
-button {
-  cursor: pointer;
-}
-/*
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-*/
-html {
-  scroll-behavior: smooth;
+@layer base {
+  * {
+    @apply font-sans;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  /* 필요하면 이 부분 나중에 해제해서 다시 쓰면 됨
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  */
 }
