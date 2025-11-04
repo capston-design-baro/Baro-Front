@@ -17,27 +17,34 @@ const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
     className={[
       // layout
       'group inline-flex items-center justify-center',
-      'h-30 w-full max-w-90 sm:h-50 md:h-55',
-      'rounded-400 bg-neutral-0',
+      'h-30 w-full max-w-70 sm:h-40 md:h-50',
+      'rounded-400',
 
-      // shadow & transition
-      'shadow-[0_4px_12px_rgba(0,0,0,0.1)]',
-      'transition-all duration-300',
+      // ghost base
+      'from-primary-100/30 via-primary-50/10 to-primary-0/10 bg-radial',
+      'shadow-[inset_0_1px_2px_rgba(255,255,255,0.1)]',
+      'border border-white/50',
+      'backdrop-blur-md',
+      'text-primary-700',
+
+      // transition
+      'transition-all duration-300 ease-out',
 
       // hover
-      'hover:bg-primary-0/[0.2]',
-      'hover:shadow-[0_4px_12px_rgba(37,99,235,0.1)]',
+      'hover:ring-primary-100/30 hover:ring-2 hover:ring-offset-0',
+      'hover:border-white/40',
 
       // focus
-      'focus-visible:ring-primary-200/40 focus-visible:ring-2 focus-visible:outline-none',
+      'focus-visible:ring-primary-100/30 focus-visible:ring-2 focus-visible:outline-none',
     ].join(' ')}
   >
-    <div className="flex flex-col items-center gap-3 text-center">
+    <div className="flex flex-col items-center gap-2 text-center sm:gap-3">
       {/* 아이콘 */}
       <span
         className={[
           'material-symbols-outlined',
-          '!text-[56px] sm:text-[80px] md:text-[100px] lg:text-[120px]',
+          '!text-[56px] sm:text-[56px] md:text-[100px] lg:text-[120px]',
+          'text-primary-800',
           'group-hover:text-primary-400 transition-colors',
         ].join(' ')}
         aria-hidden
@@ -49,7 +56,7 @@ const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
       <h3
         className={[
           // 텍스트 32px, medium, 중앙, 기본색
-          'md:text-heading-2 sm:text-heading-3',
+          'text-body-2-regular xl:text-heading-3 md:text-heading-4 sm:text-body-2-regular',
           'text-primary-800',
           // hover 시 텍스트 색
           'group-hover:text-primary-400 transition-colors duration-300',
