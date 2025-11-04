@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
      * pb-4: 아래쪽에 여백 추가
      */
     <footer className="bg-primary-900 w-full">
-      <div className="mx-auto flex items-end justify-center px-4 pb-4 sm:h-15 md:h-20">
+      <div className="mx-auto flex h-15 items-end justify-center px-4 pb-4 sm:h-15 md:h-20">
         <p className="text-detail-regular text-center text-neutral-400">
           © {year} BaLaw. All rights reserved.
         </p>
