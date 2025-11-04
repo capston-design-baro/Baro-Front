@@ -9,10 +9,10 @@ const config: Config = {
       },
       fontSize: {
         // Headings
-        'heading-1': ['32px', { lineHeight: '32px', fontWeight: 500 }],
-        'heading-2': ['24px', { lineHeight: '30px', fontWeight: 500 }],
-        'heading-3': ['22px', { lineHeight: '28px', fontWeight: 500 }],
-        'heading-4': ['20px', { lineHeight: '26px', fontWeight: 500 }],
+        'heading-1': ['32px', { lineHeight: '40px', fontWeight: 500 }],
+        'heading-2': ['24px', { lineHeight: '32px', fontWeight: 500 }],
+        'heading-3': ['22px', { lineHeight: '30px', fontWeight: 500 }],
+        'heading-4': ['20px', { lineHeight: '28px', fontWeight: 500 }],
 
         // Body
         'body-1-bold': ['16px', { lineHeight: '24px', fontWeight: 700 }],
@@ -69,10 +69,10 @@ const config: Config = {
         },
       },
       borderRadius: {
-        100: '3px',
-        200: '5px',
-        300: '7px',
-        400: '12px',
+        100: '4px',
+        200: '8px',
+        300: '12px',
+        400: '16px',
       },
     },
   },
