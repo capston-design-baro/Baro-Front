@@ -6,8 +6,12 @@
   --font-sans: Pretendard, ui-sans-serif, system-ui;
 
   /* 폰트 사이즈 토큰들 */
-  --text-heading-1: 32px;
-  --leading-heading-1: 40px;
+  --text-heading-0: 32px;
+  --leading-heading-0: 40px;
+  --font-weight-heading-0: 500;
+
+  --text-heading-1: 28px;
+  --leading-heading-1: 36px;
   --font-weight-heading-1: 500;
 
   --text-heading-2: 24px;
@@ -21,6 +25,23 @@
   --text-heading-4: 20px;
   --leading-heading-4: 28px;
   --font-weight-heading-4: 500;
+
+  /* Main 화면 폰트 */
+  --text-main-1: 44px;
+  --leading-main-1: 52px;
+  --font-weight-main-1: 500;
+
+  --text-main-2: 40px;
+  --leading-main-2: 48px;
+  --font-weight-main-2: 500;
+
+  --text-main-3: 36px;
+  --leading-main-3: 44px;
+  --font-weight-main-3: 700;
+
+  --text-main-4: 32px;
+  --leading-main-4: 40px;
+  --font-weight-main-4: 700;
 
   /* Body */
   --text-body-1-bold: 16px;
