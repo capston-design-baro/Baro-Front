@@ -1,15 +1,24 @@
-import React, { memo } from 'react';
+import React from 'react';
 
-const Footer: React.FC = memo(() => {
+const Footer: React.FC = () => {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="flex h-[80px] w-full flex-shrink-0 flex-grow-0 items-end justify-center bg-slate-900 text-white sm:h-[100px] md:h-[120px]">
-      {/* 저작권만 표시 */}
-      <div className="mb-5 text-center text-sm text-gray-400">
-        © {new Date().getFullYear()} BaLaw. All rights reserved.
+    /**
+     * Footer Layout
+     * -----------------
+     * items-end: 내부 요소들을 아래쪽으로 정렬
+     * pb-4: 아래쪽에 여백 추가
+     */
+    <footer className="bg-primary-900 w-full">
+      <div className="mx-auto flex items-end justify-center px-4 pb-4 sm:h-15 md:h-20">
+        <p className="text-detail-regular text-center text-neutral-400">
+          © {year} BaLaw. All rights reserved.
+        </p>
       </div>
     </footer>
   );
-});
+};
 
 Footer.displayName = 'Footer';
 
