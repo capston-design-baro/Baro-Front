@@ -1,3 +1,10 @@
+/**
+ * Header 컴포넌트
+ * ------------------
+ * - 로고 클릭 시 홈('/')으로 이동
+ * - 로그인 상태에 따라 로그인 or 로그아웃 버튼 노출
+ * - 로그아웃 버튼 클릭 시 -> 토큰 및 상태 초기화 후 홈으로 리디렉트
+ */
 import { logout } from '@/apis/auth';
 import logoUrl from '@/assets/BaLawLogo.svg';
 import { useUserStore } from '@/stores/useUserStore';
@@ -26,32 +33,36 @@ const Header: React.FC = () => {
     navigate('/'); // 로그아웃 후 홈('/')으로 이동
   };
 
+  const isLogin = Boolean(user);
+  const buttonText = isLogin ? '로그아웃' : '로그인';
+  const buttonAction = isLogin ? handleLogoutClick : handleLoginClick;
+
+  const buttonClass =
+    'flex h-12 w-24 items-center justify-center gap-2.5 rounded-300 bg-primary-900 px-4 py-2 transition hover:bg-primary-800';
+
   return (
-    <header className="mx-auto flex h-20 w-full max-w-[1440px] items-center justify-between bg-white px-10 py-6">
-      {/* 로고 클릭 시 홈으로 이동 */}
+    /**
+     * Header Layout
+     * -----------------
+     * - 최대 폭 1280px, 가운데 정렬
+     * - 좌측: 로고
+     * - 우측: 로그인 / 로그아웃 버튼
+     */
+    <header className="bg-neutral-0 mx-auto flex h-20 w-full max-w-[1280px] items-center justify-between px-8 py-6">
       <img
         src={logoUrl}
-        alt="Logo"
+        alt="BaLaw 로고"
         className="h-[clamp(24px,8vw,60px)] w-auto cursor-pointer"
         onClick={handleLogoClick}
       />
 
       {/* 로그인 여부(user 존재 여부)에 따라 버튼 분기 */}
-      {user ? (
-        <button
-          onClick={handleLogoutClick}
-          className="flex h-12 w-22 items-center justify-center gap-2.5 rounded-xl bg-slate-900 px-4 py-2"
-        >
-          <span className="text-sm font-medium text-white">로그아웃</span>
-        </button>
-      ) : (
-        <button
-          onClick={handleLoginClick}
-          className="flex h-12 w-20 items-center justify-center gap-2.5 rounded-xl bg-slate-900 px-4 py-2"
-        >
-          <span className="text-sm font-medium text-white">로그인</span>
-        </button>
-      )}
+      <button
+        onClick={buttonAction}
+        className={buttonClass}
+      >
+        <span className="text-body-2-regular text-neutral-0 font-medium">{buttonText}</span>{' '}
+      </button>
     </header>
   );
 };
