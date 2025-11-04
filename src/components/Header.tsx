@@ -38,7 +38,7 @@ const Header: React.FC = () => {
   const buttonAction = isLogin ? handleLogoutClick : handleLoginClick;
 
   const buttonClass =
-    'flex h-12 w-24 items-center justify-center gap-2.5 rounded-300 bg-primary-900 px-4 py-2 transition hover:bg-primary-800';
+    'flex h-11 w-20 items-center justify-center gap-2.5 rounded-300 bg-primary-900 px-2 py-2 transition hover:bg-primary-800';
 
   return (
     /**
