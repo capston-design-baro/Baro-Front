@@ -111,7 +111,7 @@ BaLaw(이하 "회사")는 다음의 목적을 위하여 개인정보를 처리�
 export const DEFAULT_AGREEMENTS: Agreement[] = [
   {
     id: 1,
-    title: '서비스 이용약관 (필수)',
+    title: '서비스 이용약관',
     content: TOS,
     isChecked: false,
     isExpanded: true,
@@ -119,7 +119,7 @@ export const DEFAULT_AGREEMENTS: Agreement[] = [
   },
   {
     id: 2,
-    title: '개인정보 처리방침 (필수)',
+    title: '개인정보 처리방침',
     content: PRIVACY,
     isChecked: false,
     isExpanded: true,
