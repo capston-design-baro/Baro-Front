@@ -10,21 +10,41 @@
   --text-heading-0--line-height: 40px;
   --text-heading-0--font-weight: 400;
 
+  --text-heading-0-bold: 32px;
+  --text-heading-0-bold--line-height: 40px;
+  --text-heading-0-bold--font-weight: 700;
+
   --text-heading-1: 28px;
   --text-heading-1--line-height: 36px;
   --text-heading-1--font-weight: 400;
+
+  --text-heading-1-bold: 28px;
+  --text-heading-1-bold--line-height: 36px;
+  --text-heading-1-bold--font-weight: 700;
 
   --text-heading-2: 24px;
   --text-heading-2--line-height: 32px;
   --text-heading-2--font-weight: 400;
 
+  --text-heading-2-bold: 24px;
+  --text-heading-2-bold--line-height: 32px;
+  --text-heading-2-bold--font-weight: 700;
+
   --text-heading-3: 22px;
   --text-heading-3--line-height: 30px;
   --text-heading-3--font-weight: 400;
 
+  --text-heading-3-bold: 22px;
+  --text-heading-3-bold--line-height: 30px;
+  --text-heading-3-bold--font-weight: 700;
+
   --text-heading-4: 20px;
   --text-heading-4--line-height: 28px;
   --text-heading-4--font-weight: 400;
+
+  --text-heading-4-bold: 20px;
+  --text-heading-4-bold--line-height: 28px;
+  --text-heading-4-bold--font-weight: 700;
 
   /* Main 화면 폰트 */
   --text-main-1: 44px;
