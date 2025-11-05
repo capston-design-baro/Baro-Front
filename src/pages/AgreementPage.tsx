@@ -10,21 +10,21 @@ const AgreementsPage: React.FC = () => {
   const isMdUp = useIsMdUp();
 
   return (
-    <div className="bg-neutral-0 flex min-h-screen flex-col">
+    <div className="bg-neutral-0 flex min-h-screen flex-col gap-4">
       <Header />
 
       <main className="flex flex-1 items-center">
         <div className="mx-auto w-full max-w-[1000px] md:py-20">
-          <div className="flex flex-col items-center justify-center gap-8 md:flex-row md:items-stretch">
+          <div className="flex flex-col items-center justify-center gap-8 md:flex-row">
             {/* md 이상에서만 WelcomeCard 렌더 */}
             {isMdUp && (
-              <div className="h-[60vh] w-full max-w-[460px] flex-1">
+              <div className="h-[600px] w-full max-w-[460px] flex-1">
                 <WelcomeCard />
               </div>
             )}
 
             {/* 약관 카드는 항상 표시 */}
-            <div className="h-[60vh] w-full max-w-[460px] flex-1">
+            <div className="h-[600px] w-full max-w-[460px] flex-1">
               <AgreementsCard initial={DEFAULT_AGREEMENTS} />
             </div>
           </div>
