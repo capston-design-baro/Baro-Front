@@ -37,6 +37,7 @@ const AgreementDetailModal: React.FC<Props> = ({
           'flex flex-col',
           'max-h-[60vh] w-full max-w-md',
           'bg-neutral-0 rounded-200 shadow-lg',
+          'overflow-hidden',
         ].join(' ')}
       >
         {/* 헤더 */}
@@ -44,6 +45,7 @@ const AgreementDetailModal: React.FC<Props> = ({
           className={[
             'flex items-center justify-between',
             'border-b border-neutral-200',
+            'bg-primary-0/50',
             'px-5 py-3',
           ].join(' ')}
         >
@@ -60,7 +62,7 @@ const AgreementDetailModal: React.FC<Props> = ({
               'rounded-400 border border-neutral-300',
               'px-3 py-1.5',
               'text-detail-regular text-neutral-800',
-              'hover:bg-neutral-50',
+              'bg-neutral-0 hover:bg-warning-0',
             ].join(' ')}
           >
             닫기
@@ -80,6 +82,7 @@ const AgreementDetailModal: React.FC<Props> = ({
           className={[
             'flex items-center justify-end gap-4',
             'border-t border-neutral-200',
+            'bg-primary-0/50',
             'px-5 py-3',
           ].join(' ')}
         >
