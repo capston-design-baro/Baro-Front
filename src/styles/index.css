@@ -7,67 +7,95 @@
 
   /* 폰트 사이즈 토큰들 */
   --text-heading-0: 32px;
-  --leading-heading-0: 40px;
-  --font-weight-heading-0: 500;
+  --text-heading-0--line-height: 40px;
+  --text-heading-0--font-weight: 400;
+
+  --text-heading-0-bold: 32px;
+  --text-heading-0-bold--line-height: 40px;
+  --text-heading-0-bold--font-weight: 700;
 
   --text-heading-1: 28px;
-  --leading-heading-1: 36px;
-  --font-weight-heading-1: 500;
+  --text-heading-1--line-height: 36px;
+  --text-heading-1--font-weight: 400;
+
+  --text-heading-1-bold: 28px;
+  --text-heading-1-bold--line-height: 36px;
+  --text-heading-1-bold--font-weight: 700;
 
   --text-heading-2: 24px;
-  --leading-heading-2: 32px;
-  --font-weight-heading-2: 500;
+  --text-heading-2--line-height: 32px;
+  --text-heading-2--font-weight: 400;
+
+  --text-heading-2-bold: 24px;
+  --text-heading-2-bold--line-height: 32px;
+  --text-heading-2-bold--font-weight: 700;
 
   --text-heading-3: 22px;
-  --leading-heading-3: 30px;
-  --font-weight-heading-3: 500;
+  --text-heading-3--line-height: 30px;
+  --text-heading-3--font-weight: 400;
+
+  --text-heading-3-bold: 22px;
+  --text-heading-3-bold--line-height: 30px;
+  --text-heading-3-bold--font-weight: 700;
 
   --text-heading-4: 20px;
-  --leading-heading-4: 28px;
-  --font-weight-heading-4: 500;
+  --text-heading-4--line-height: 28px;
+  --text-heading-4--font-weight: 400;
+
+  --text-heading-4-bold: 20px;
+  --text-heading-4-bold--line-height: 28px;
+  --text-heading-4-bold--font-weight: 700;
 
   /* Main 화면 폰트 */
   --text-main-1: 44px;
-  --leading-main-1: 52px;
-  --font-weight-main-1: 500;
+  --text-main-1--line-height: 52px;
+  --text-main-1--font-weight: 700;
 
   --text-main-2: 40px;
-  --leading-main-2: 48px;
-  --font-weight-main-2: 500;
+  --text-main-2--line-height: 48px;
+  --text-main-2--font-weight: 700;
 
   --text-main-3: 36px;
-  --leading-main-3: 44px;
-  --font-weight-main-3: 700;
+  --text-main-3--line-height: 44px;
+  --text-main-3--font-weight: 700;
 
   --text-main-4: 32px;
-  --leading-main-4: 40px;
-  --font-weight-main-4: 700;
+  --text-main-4--line-height: 40px;
+  --text-main-4--font-weight: 700;
 
   /* Body */
-  --text-body-1-bold: 16px;
-  --leading-body-1-bold: 24px;
-  --font-weight-body-1-bold: 700;
+  --text-body-1-bold: 18px;
+  --text-body-1-bold--line-height: 26px;
+  --text-body-1-bold--font-weight: 700;
 
-  --text-body-1-regular: 16px;
-  --leading-body-1-regular: 24px;
-  --font-weight-body-1-regular: 400;
+  --text-body-1-regular: 18px;
+  --text-body-1-regular--line-height: 26px;
+  --text-body-1-regular--font-weight: 400;
 
-  --text-body-2-bold: 14px;
-  --leading-body-2-bold: 22px;
-  --font-weight-body-2-bold: 700;
+  --text-body-2-bold: 16px;
+  --text-body-2-bold--line-height: 24px;
+  --text-body-2-bold--font-weight: 700;
 
-  --text-body-2-regular: 14px;
-  --leading-body-2-regular: 22px;
-  --font-weight-body-2-regular: 400;
+  --text-body-2-regular: 16px;
+  --text-body-2-regular--line-height: 24px;
+  --text-body-2-regular--font-weight: 400;
+
+  --text-body-3-bold: 14px;
+  --text-body-3-bold--line-height: 22px;
+  --text-body-3-bold--font-weight: 700;
+
+  --text-body-3-regular: 14px;
+  --text-body-3-regular--line-height: 22px;
+  --text-body-3-regular--font-weight: 400;
 
   /* Detail */
   --text-detail-bold: 12px;
-  --leading-detail-bold: 18px;
-  --font-weight-detail-bold: 700;
+  --text-detail-bold--line-height: 18px;
+  --text-detail-bold--font-weight: 700;
 
   --text-detail-regular: 12px;
-  --leading-detail-regular: 18px;
-  --font-weight-detail-regular: 400;
+  --text-detail-regular--line-height: 18px;
+  --text-detail-regular--font-weight: 400;
 
   /* 색 팔레트 (원래 config에 있던 primary, neutral 등) */
   --color-primary-0: #e8f0fe;
@@ -96,6 +124,16 @@
   --color-neutral-700: #374151;
   --color-neutral-800: #1f2937;
   --color-neutral-900: #111827;
+
+  --color-warning-0: #fef2f2;
+  --color-warning-100: #fee2e2;
+  --color-warning-200: #ef4444;
+  --color-warning-300: #b91c1c;
+
+  --color-positive-0: #eff6ff;
+  --color-positive-100: #bfdbfe;
+  --color-positive-200: #2563eb;
+  --color-positive-300: #1e40af;
 
   /* radius 토큰 → rounded-100, rounded-200 ... 으로 쓸 수 있음 */
   --radius-100: 4px;

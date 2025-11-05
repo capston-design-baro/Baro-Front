@@ -61,7 +61,7 @@ const Header: React.FC = () => {
         onClick={buttonAction}
         className={buttonClass}
       >
-        <span className="text-body-2-regular text-neutral-0 font-medium">{buttonText}</span>{' '}
+        <span className="text-body-3-regular text-neutral-0 font-medium">{buttonText}</span>{' '}
       </button>
     </header>
   );

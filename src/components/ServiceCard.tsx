@@ -56,7 +56,7 @@ const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
       <h3
         className={[
           // 텍스트 32px, medium, 중앙, 기본색
-          'text-body-2-regular xl:text-heading-3 md:text-heading-4 sm:text-body-2-regular',
+          'text-body-3-regular xl:text-heading-3 md:text-heading-4 sm:text-body-3-regular',
           'text-primary-800',
           // hover 시 텍스트 색
           'group-hover:text-primary-400 transition-colors duration-300',
