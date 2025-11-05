@@ -13,9 +13,9 @@ const AgreementsPage: React.FC = () => {
     <div className="bg-neutral-0 flex min-h-screen flex-col">
       <Header />
 
-      <main className="flex-1">
-        <div className="mx-auto w-full max-w-[1000px] px-6 py-16 md:py-20">
-          <div className="flex flex-col items-center justify-center gap-8 md:flex-row md:items-stretch">
+      <main className="flex flex-1 items-center">
+        <div className="mx-auto w-full max-w-[1000px] md:py-20">
+          <div className="flex flex-col items-center gap-8 md:flex-row md:items-stretch">
             {/* md 이상에서만 WelcomeCard 렌더 */}
             {isMdUp && (
               <div className="h-[60vh] flex-1">
