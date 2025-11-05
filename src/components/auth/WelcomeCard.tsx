@@ -20,7 +20,7 @@ const WelcomeCard: React.FC = () => {
         <img
           src={CharacterImg}
           alt="BaLaw 캐릭터"
-          className="w-auto object-contain md:h-[80%]"
+          className="w-auto"
         />
       </div>
     </section>
