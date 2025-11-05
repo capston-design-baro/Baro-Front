@@ -46,7 +46,7 @@ const AgreementsCard: React.FC<Props> = ({ initial }) => {
       className={[
         'rounded-300 border-primary-400 border',
         'px-8 py-10',
-        'min-h-[60vh]',
+        'h-full',
         'flex flex-col',
       ].join(' ')}
     >

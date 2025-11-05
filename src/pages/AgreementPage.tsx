@@ -14,17 +14,17 @@ const AgreementsPage: React.FC = () => {
       <Header />
 
       <main className="flex-1">
-        <div className="mx-auto w-full max-w-[1280px] px-6 py-16 md:py-20">
+        <div className="mx-auto w-full max-w-[1000px] px-6 py-16 md:py-20">
           <div className="flex flex-col items-center justify-center gap-8 md:flex-row md:items-stretch">
             {/* md 이상에서만 WelcomeCard 렌더 */}
             {isMdUp && (
-              <div>
+              <div className="h-[60vh] flex-1">
                 <WelcomeCard />
               </div>
             )}
 
             {/* 약관 카드는 항상 표시 */}
-            <div className="w-full md:w-[460px]">
+            <div className="h-[60vh] flex-1">
               <AgreementsCard initial={DEFAULT_AGREEMENTS} />
             </div>
           </div>
