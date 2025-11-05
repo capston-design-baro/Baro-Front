@@ -44,21 +44,29 @@
   --font-weight-main-4: 700;
 
   /* Body */
-  --text-body-1-bold: 16px;
-  --leading-body-1-bold: 24px;
+  --text-body-1-bold: 18px;
+  --leading-body-1-bold: 26px;
   --font-weight-body-1-bold: 700;
 
-  --text-body-1-regular: 16px;
-  --leading-body-1-regular: 24px;
+  --text-body-1-regular: 18px;
+  --leading-body-1-regular: 26px;
   --font-weight-body-1-regular: 400;
 
-  --text-body-2-bold: 14px;
-  --leading-body-2-bold: 22px;
+  --text-body-2-bold: 16px;
+  --leading-body-2-bold: 24px;
   --font-weight-body-2-bold: 700;
 
-  --text-body-2-regular: 14px;
-  --leading-body-2-regular: 22px;
+  --text-body-2-regular: 16px;
+  --leading-body-2-regular: 24px;
   --font-weight-body-2-regular: 400;
+
+  --text-body-3-bold: 14px;
+  --leading-body-3-bold: 22px;
+  --font-weight-body-3-bold: 700;
+
+  --text-body-3-regular: 14px;
+  --leading-body-3-regular: 22px;
+  --font-weight-body-3-regular: 400;
 
   /* Detail */
   --text-detail-bold: 12px;
