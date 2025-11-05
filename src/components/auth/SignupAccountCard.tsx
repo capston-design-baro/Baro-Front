@@ -84,7 +84,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
               id="email"
               type="email"
               className={[
-                'rounded-200 h-10 flex-1 px-3',
+                'rounded-200 w- h-10 flex-1 px-3',
                 'border border-neutral-300',
                 'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
               ].join(' ')}
@@ -98,7 +98,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
         {/* 비밀번호 */}
         <div className="flex flex-col gap-2">
           {renderLabel('비밀번호', true)}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <span
               className="material-symbols-outlined text-primary-600/50"
               style={{ fontSize: '24px' }}
@@ -121,9 +121,9 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
         </div>
 
         {/* 비밀번호 확인 */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           {renderLabel('비밀번호 확인', true)}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <span
               className="material-symbols-outlined text-primary-600/50"
               style={{ fontSize: '24px' }}
