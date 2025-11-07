@@ -14,10 +14,6 @@ const ChatInfoSection: React.FC = () => {
         ]}
         center
         showArrow
-        arrowSize={24}
-        arrowOpacity={0.5}
-        arrowFrom="#333333"
-        arrowTo="#2563EB"
       />
 
       <div className="flex h-[325px] flex-col items-center justify-center gap-8 self-stretch">
