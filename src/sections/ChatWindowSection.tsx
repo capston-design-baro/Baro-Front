@@ -187,11 +187,21 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
   const inputDisabled = phase === 'starting';
 
   return (
-    <section className="flex h-[620px] w-[720px] flex-col items-center justify-between overflow-hidden px-[110px] py-[60px]">
+    <section
+      className={[
+        'flex flex-col items-center justify-between',
+        'h-[620px] w-full max-w-[1000px]',
+        'bg-neutral-0 pb-6',
+      ].join(' ')}
+    >
+      {' '}
       {/* 채팅 로그 */}
       <div
         ref={listRef}
-        className="flex h-[500px] w-[720px] flex-col overflow-y-auto rounded-lg border border-gray-300 bg-white px-6 py-3"
+        className={[
+          'flex min-h-0 flex-1 flex-col',
+          'w-[720px] overflow-y-auto rounded-lg border border-gray-300 bg-white px-6 py-3',
+        ].join(' ')}
         style={{ boxShadow: '0px 4px 8px 0 rgba(0,0,0,0.1)' }}
         role="list"
         aria-label="채팅 메시지"
@@ -214,10 +224,9 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
           />
         )}
       </div>
-
       {/* 하단 입력 바 */}
       <div
-        className="flex h-12 w-[720px] items-center justify-between rounded-lg border border-blue-600 bg-white px-[22px] py-2.5"
+        className="mt-4 flex h-12 w-[720px] items-center justify-between rounded-lg border border-blue-600 bg-white px-[22px] py-2.5"
         aria-label="채팅 입력 영역"
       >
         <textarea

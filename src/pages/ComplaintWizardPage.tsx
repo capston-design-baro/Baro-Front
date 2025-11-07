@@ -76,7 +76,7 @@ const ComplaintWizardPage: React.FC = () => {
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
       <Header />
-      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col gap-2 px-6 py-4">
+      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4">
         <WizardProgress onExit={handleExit} />
 
         {/* 위자드 본문: 0~3단계 (420px 카드) */}
@@ -110,12 +110,12 @@ const ComplaintWizardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 4단계: 실제 채팅창 (720px, 가운데 정렬) */}
+        {/* 4단계: 실제 채팅창 */}
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 4 && (
-            <div className="mt-4 flex w-full justify-center">
+            <div className="mx-auto flex w-full justify-center">
               <ChatWindowSection
                 complaintId={complaintId}
                 offense={offense ?? undefined}
@@ -123,7 +123,7 @@ const ComplaintWizardPage: React.FC = () => {
             </div>
           )}
 
-        <div className="mx-auto mb-14 flex w-full max-w-[420px] items-center justify-center">
+        <div className="mx-auto flex w-full max-w-[420px] items-center justify-center">
           <div className={['flex w-full', 'items-center justify-between gap-3'].join(' ')}>
             <button
               type="button"
