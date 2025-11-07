@@ -78,7 +78,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
     const doSave = async (): Promise<number> => {
       setErr(null);
 
-      if (!name.trim()) throw new Error('이름을 입력해주세요.');
+      if (!name.trim()) throw new Error('필수 항목을 입력해주세요.');
       const address = [addr1, addr2, addr3].filter(Boolean).join(' ').trim();
       const phone = [p1, p2, p3].join('-').replace(/--+/g, '-').trim();
 
