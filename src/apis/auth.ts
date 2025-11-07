@@ -87,7 +87,7 @@ export async function refreshAccessToken(refreshTokenArg?: string) {
     refresh_token: refreshToken,
   });
 
-  const { access_token, refresh_token, token_type } = data;
+  const { access_token, refresh_token } = data;
 
   // accessToken 갱신
   cookies.set(ACCESS_COOKIE, access_token, {
