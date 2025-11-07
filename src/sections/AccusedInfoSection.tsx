@@ -1,4 +1,5 @@
 import { registerAccused } from '@/apis/complaints';
+import FormErrorMessage from '@/components/FormErrorMessage';
 import IntroHeader from '@/components/IntroHeader';
 import type { AxiosError } from 'axios';
 import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
@@ -7,6 +8,7 @@ import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } fro
 export type AccusedInfoSectionHandle = {
   save: () => Promise<void>;
 };
+
 type Props = {
   complaintId: number;
   onSaved?: () => void; // 저장 후 다음 단계로 이동 등
@@ -30,9 +32,28 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
 
     // UI
     const [err, setErr] = useState<string | null>(null);
-    const [ok, setOk] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const formRef = useRef<HTMLFormElement>(null);
+
+    // 공통 라벨 렌더러 (고소인 섹션과 동일 스타일)
+    const renderLabel = (text: string, required: boolean) => {
+      const labelText = required ? '(필수)' : '(선택)';
+      return (
+        <label className="text-body-3-regular text-neutral-900">
+          <span
+            className={
+              required
+                ? 'text-detail-bold text-positive-200 mr-4'
+                : 'text-detail-bold mr-2 text-neutral-500'
+            }
+          >
+            {labelText}
+          </span>
+          {text}
+        </label>
+      );
+    };
 
     // 주소 문자열
     const address = useMemo(() => {
@@ -56,11 +77,20 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
       return null;
     }, [complaintId, unknownName, unknownAddr, unknownPhone, name, address, p1, p2, p3]);
 
+    // 모름 체크 핸들러
+    const handleCheckboxChange = (
+      checked: boolean,
+      setFlag: React.Dispatch<React.SetStateAction<boolean>>,
+      ...setters: React.Dispatch<React.SetStateAction<string>>[]
+    ) => {
+      setFlag(checked);
+      if (checked) setters.forEach((setter) => setter(''));
+    };
+
     // 저장 처리
     const handleSave = async (e?: React.FormEvent) => {
       if (e) e.preventDefault();
       setErr(null);
-      setOk(null);
 
       if (invalidReason) {
         setErr(invalidReason);
@@ -73,16 +103,18 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
         accused_phone: unknownPhone ? '모름' : phone,
       };
 
+      setLoading(true);
       try {
         await registerAccused(complaintId, payload);
-        setOk('저장되었습니다.');
         onSaved?.();
       } catch (e: unknown) {
-        const err = e as AxiosError;
-        const status = err.response?.status;
+        const ax = e as AxiosError | undefined;
+        const status = ax?.response?.status;
         if (status === 422) setErr('입력값 형식을 확인해주세요.');
         else if (status === 401) setErr('로그인이 필요합니다.');
         else setErr('저장 중 문제가 발생했습니다.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -97,18 +129,16 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
       },
     }));
 
-    // 모름 체크 핸들러
-    const handleCheckboxChange = (
-      checked: boolean,
-      setFlag: React.Dispatch<React.SetStateAction<boolean>>,
-      ...setters: React.Dispatch<React.SetStateAction<string>>[]
-    ) => {
-      setFlag(checked);
-      if (checked) setters.forEach((setter) => setter(''));
-    };
-
     return (
-      <section className="mx-auto flex h-[680px] w-[720px] flex-col items-center gap-14 overflow-hidden px-[110px] py-[60px]">
+      <section
+        aria-busy={loading}
+        className={[
+          'flex flex-col items-center justify-between',
+          'h-[620px] w-full max-w-[1000px]',
+          'pb-6',
+          'bg-neutral-0',
+        ].join(' ')}
+      >
         <IntroHeader
           title="고소장 작성하기"
           lines={[
@@ -118,162 +148,212 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(
           ]}
           center
           showArrow
-          arrowSize={24}
-          arrowOpacity={0.5}
-          arrowFrom="#333333"
-          arrowTo="#2563EB"
         />
 
         <form
           ref={formRef}
           onSubmit={handleSave}
-          className="mt-2 flex w-[476px] flex-col gap-6"
+          className="mt-6 flex w-[420px] flex-col gap-6"
         >
-          {/* 알림 */}
-          <div
-            aria-live="polite"
-            className="min-h-[24px] w-full text-center"
-          >
-            {err && (
-              <p className="inline-flex items-center gap-1 text-sm font-medium text-red-600">
-                <span
-                  className="material-symbols-outlined text-[18px]"
-                  aria-hidden
-                >
-                  cancel
-                </span>
-                {err}
-              </p>
-            )}
-            {!err && ok && (
-              <p className="inline-flex items-center gap-1 text-sm font-medium text-green-600">
-                <span
-                  className="material-symbols-outlined text-[18px]"
-                  aria-hidden
-                >
-                  check_circle
-                </span>
-                {ok}
-              </p>
-            )}
-          </div>
-
-          {/* 입력 필드 */}
-          <div className="flex flex-col gap-5 px-3">
+          {/* 입력 필드들 */}
+          <div className="flex flex-1 flex-col justify-center gap-6 px-5">
             {/* 이름 */}
-            <div className="flex items-center justify-between gap-3">
-              <span className="w-[50px] text-center text-sm font-medium text-gray-700">이름</span>
-              <input
-                disabled={unknownName}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="h-12 w-80 rounded-lg border border-gray-300 px-3 disabled:bg-gray-100 disabled:text-gray-400"
-                placeholder={unknownName ? '모름' : '이름 입력'}
-                type="text"
-              />
-              <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-700">
+            <div className="flex flex-col gap-2">
+              {renderLabel('이름', true)}
+              <div className="flex items-center gap-3">
+                <span
+                  className="material-symbols-outlined text-primary-600/50"
+                  style={{ fontSize: '24px' }}
+                >
+                  person
+                </span>
+
                 <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownName}
-                  onChange={(e) => handleCheckboxChange(e.target.checked, setUnknownName, setName)}
+                  disabled={unknownName}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={[
+                    'rounded-200 h-10 flex-1 px-3',
+                    'border border-neutral-300',
+                    'disabled:bg-neutral-100 disabled:text-neutral-400',
+                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                  ].join(' ')}
+                  placeholder={unknownName ? '모름' : '이름 입력'}
+                  type="text"
                 />
-                모름
-              </label>
+
+                <label
+                  className={[
+                    'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
+                    'shrink-0 whitespace-nowrap',
+                  ].join(' ')}
+                >
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownName}
+                    onChange={(e) =>
+                      handleCheckboxChange(e.target.checked, setUnknownName, setName)
+                    }
+                  />
+                  모름
+                </label>
+              </div>
             </div>
 
             {/* 주소 */}
-            <div className="flex items-center justify-between gap-3">
-              <span className="w-[50px] text-center text-sm font-medium text-gray-700">주소</span>
-              <div className="flex w-80 items-center justify-between gap-2">
-                <input
-                  disabled={unknownAddr}
-                  value={addr1}
-                  onChange={(e) => setAddr1(e.target.value)}
-                  className="h-12 w-[100px] rounded-lg border border-gray-300 px-3 text-center disabled:bg-gray-100 disabled:text-gray-400"
-                  placeholder={unknownAddr ? '모름' : '도/시'}
-                  type="text"
-                />
-                <input
-                  disabled={unknownAddr}
-                  value={addr2}
-                  onChange={(e) => setAddr2(e.target.value)}
-                  className="h-12 w-[100px] rounded-lg border border-gray-300 px-3 text-center disabled:bg-gray-100 disabled:text-gray-400"
-                  placeholder={unknownAddr ? '모름' : '시/군/구'}
-                  type="text"
-                />
-                <input
-                  disabled={unknownAddr}
-                  value={addr3}
-                  onChange={(e) => setAddr3(e.target.value)}
-                  className="h-12 w-[100px] rounded-lg border border-gray-300 px-3 text-center disabled:bg-gray-100 disabled:text-gray-400"
-                  placeholder={unknownAddr ? '모름' : '읍/면/동'}
-                  type="text"
-                />
+            <div className="flex flex-col gap-2">
+              {renderLabel('주소', true)}
+              <div className="flex items-center gap-3">
+                <span
+                  className="material-symbols-outlined text-primary-600/50"
+                  style={{ fontSize: '24px' }}
+                >
+                  location_on
+                </span>
+
+                <div className="grid w-full grid-cols-3 gap-2">
+                  <input
+                    disabled={unknownAddr}
+                    value={addr1}
+                    onChange={(e) => setAddr1(e.target.value)}
+                    className={[
+                      'rounded-200 h-10 flex-1 px-3 text-center',
+                      'border border-neutral-300',
+                      'disabled:bg-neutral-100 disabled:text-neutral-400',
+                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                    ].join(' ')}
+                    placeholder={unknownAddr ? '모름' : '시/도'}
+                    type="text"
+                  />
+                  <input
+                    disabled={unknownAddr}
+                    value={addr2}
+                    onChange={(e) => setAddr2(e.target.value)}
+                    className={[
+                      'rounded-200 h-10 flex-1 px-3 text-center',
+                      'border border-neutral-300',
+                      'disabled:bg-neutral-100 disabled:text-neutral-400',
+                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                    ].join(' ')}
+                    placeholder={unknownAddr ? '모름' : '시/군/구'}
+                    type="text"
+                  />
+                  <input
+                    disabled={unknownAddr}
+                    value={addr3}
+                    onChange={(e) => setAddr3(e.target.value)}
+                    className={[
+                      'rounded-200 h-10 flex-1 px-3 text-center',
+                      'border border-neutral-300',
+                      'disabled:bg-neutral-100 disabled:text-neutral-400',
+                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                    ].join(' ')}
+                    placeholder={unknownAddr ? '모름' : '읍/면/동'}
+                    type="text"
+                  />
+                </div>
+
+                <label
+                  className={[
+                    'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
+                    'shrink-0 whitespace-nowrap',
+                  ].join(' ')}
+                >
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownAddr}
+                    onChange={(e) =>
+                      handleCheckboxChange(
+                        e.target.checked,
+                        setUnknownAddr,
+                        setAddr1,
+                        setAddr2,
+                        setAddr3,
+                      )
+                    }
+                  />
+                  모름
+                </label>
               </div>
-              <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-700">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownAddr}
-                  onChange={(e) =>
-                    handleCheckboxChange(
-                      e.target.checked,
-                      setUnknownAddr,
-                      setAddr1,
-                      setAddr2,
-                      setAddr3,
-                    )
-                  }
-                />
-                모름
-              </label>
             </div>
 
             {/* 연락처 */}
-            <div className="flex items-center justify-between gap-3">
-              <span className="w-[50px] text-center text-sm font-medium text-gray-700">연락처</span>
-              <div className="flex w-80 items-center justify-between gap-2">
-                <input
-                  disabled={unknownPhone}
-                  value={p1}
-                  onChange={(e) => setP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                  className="h-12 min-w-0 flex-[3_3_0%] rounded-lg border border-gray-300 px-3 text-center"
-                  placeholder={unknownPhone ? '모름' : '010'}
-                  inputMode="numeric"
-                />
-                <span className="text-gray-500">-</span>
-                <input
-                  disabled={unknownPhone}
-                  value={p2}
-                  onChange={(e) => setP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className="h-12 min-w-0 flex-[4_4_0%] rounded-lg border border-gray-300 px-3 text-center"
-                  placeholder={unknownPhone ? '모름' : '1234'}
-                  inputMode="numeric"
-                />
-                <span className="text-gray-500">-</span>
-                <input
-                  disabled={unknownPhone}
-                  value={p3}
-                  onChange={(e) => setP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className="h-12 min-w-0 flex-[4_4_0%] rounded-lg border border-gray-300 px-3 text-center"
-                  placeholder={unknownPhone ? '모름' : '5678'}
-                  inputMode="numeric"
-                />
+            <div className="flex flex-col gap-2">
+              {renderLabel('전화번호', true)}
+              <div className="flex items-center gap-3">
+                <span
+                  className="material-symbols-outlined text-primary-600/50"
+                  style={{ fontSize: '24px' }}
+                >
+                  phone_in_talk
+                </span>
+
+                <div className="grid w-full grid-cols-3 gap-2">
+                  <input
+                    disabled={unknownPhone}
+                    value={p1}
+                    onChange={(e) => setP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
+                    className={[
+                      'rounded-200 h-10 flex-1 px-3 text-center',
+                      'border border-neutral-300',
+                      'disabled:bg-neutral-100 disabled:text-neutral-400',
+                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                    ].join(' ')}
+                    placeholder={unknownPhone ? '모름' : '010'}
+                    inputMode="numeric"
+                  />
+                  <input
+                    disabled={unknownPhone}
+                    value={p2}
+                    onChange={(e) => setP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    className={[
+                      'rounded-200 h-10 flex-1 px-3 text-center',
+                      'border border-neutral-300',
+                      'disabled:bg-neutral-100 disabled:text-neutral-400',
+                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                    ].join(' ')}
+                    placeholder={unknownPhone ? '모름' : '1234'}
+                    inputMode="numeric"
+                  />
+                  <input
+                    disabled={unknownPhone}
+                    value={p3}
+                    onChange={(e) => setP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    className={[
+                      'rounded-200 h-10 flex-1 px-3 text-center',
+                      'border border-neutral-300',
+                      'disabled:bg-neutral-100 disabled:text-neutral-400',
+                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                    ].join(' ')}
+                    placeholder={unknownPhone ? '모름' : '5678'}
+                    inputMode="numeric"
+                  />
+                </div>
+
+                <label
+                  className={[
+                    'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
+                    'shrink-0 whitespace-nowrap',
+                  ].join(' ')}
+                >
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownPhone}
+                    onChange={(e) =>
+                      handleCheckboxChange(e.target.checked, setUnknownPhone, setP1, setP2, setP3)
+                    }
+                  />
+                  모름
+                </label>
               </div>
-              <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-700">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownPhone}
-                  onChange={(e) =>
-                    handleCheckboxChange(e.target.checked, setUnknownPhone, setP1, setP2, setP3)
-                  }
-                />
-                모름
-              </label>
             </div>
           </div>
+
+          {/* 에러 메시지 */}
+          <FormErrorMessage error={err} />
         </form>
       </section>
     );
