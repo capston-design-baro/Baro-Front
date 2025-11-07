@@ -1,4 +1,4 @@
-import type { LoginCardProps } from '@/components/auth/LoginCard.types';
+import type { LoginCardProps } from '@/types/auth';
 import React, { useState } from 'react';
 
 const SIGNUP_HREF = './terms';
