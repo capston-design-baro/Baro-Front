@@ -43,60 +43,62 @@ const AgreementsCard: React.FC<Props> = ({ initial }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-[460px] rounded-3xl border border-blue-600 px-6 py-8 pt-8 pb-6 md:min-h-[680px] md:w-[460px] md:px-8"
+      className={[
+        'rounded-300 border-primary-400 border',
+        'px-8 py-10',
+        'h-full',
+        'flex flex-col',
+      ].join(' ')}
     >
       {/* 제목 */}
-      <h2 className="mb-8 text-center text-[28px] font-bold text-blue-600 md:text-[32px]">
-        BaLaw 이용 약관
-      </h2>
+      <h2 className="text-heading-1-bold text-primary-400 text-center">BaLaw 이용 약관</h2>
 
       {/* 약관 목록 */}
-      <div className="space-y-4">
-        {items.map((ag) => (
-          <AgreementItem
-            key={ag.id}
-            data={ag}
-            onToggleCheck={toggleCheck}
-          />
-        ))}
-      </div>
+      <div className="mt-15 flex flex-1 flex-col justify-center">
+        <div className="space-y-6">
+          {items.map((ag) => (
+            <AgreementItem
+              key={ag.id}
+              data={ag}
+              onToggleCheck={toggleCheck}
+            />
+          ))}
+        </div>
 
-      {/* 전체 동의 (약관이 2개 이상 있을 때에만 보이도록) */}
-      {items.length > 1 && (
-        <label className="mt-6 flex items-center justify-end gap-2 text-sm">
+        <label className="text-body-3-regular mt-6 flex cursor-pointer items-center justify-end gap-2">
           <input
             type="checkbox"
             checked={allChecked}
             onChange={(e) => toggleAll(e.target.checked)}
-            className="h-4 w-4 accent-blue-600"
+            className="accent-primary-400 h-4 w-4 cursor-pointer"
           />
-          <span className="text-slate-900">전체 동의</span>
+          <span className="text-neutral-900">전체 동의</span>
         </label>
-      )}
+      </div>
 
       {/* 경고 문구 */}
       <div
         aria-live="polite"
-        className="mt-3 flex min-h-[24px] justify-center"
+        className="mb-4 flex min-h-[24px] justify-center"
       >
         {!requiredAllChecked && touched && (
-          <p className="flex items-center gap-2 text-sm font-medium text-red-500">
-            <span
-              className="material-symbols-outlined text-[20px]"
-              aria-hidden
-            >
-              cancel
-            </span>
+          <p className="text-body-3-regular text-warning-200">
             모든 필수 항목에 동의해야 서비스를 이용할 수 있어요.
           </p>
         )}
       </div>
 
-      {/* 진행 버튼 */}
+      {/* 버튼 */}
       <button
         type="submit"
         aria-disabled={!requiredAllChecked}
-        className={`mt-4 inline-flex h-12 w-full items-center justify-center rounded-2xl px-5 text-base font-medium text-white transition-colors ${requiredAllChecked ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-blue-600 opacity-60'}`}
+        className={[
+          'h-12 w-full items-center justify-center px-5',
+          'rounded-200 text-body-3-bold text-neutral-0 transition-colors',
+          requiredAllChecked
+            ? 'bg-primary-400 hover:bg-primary-600'
+            : 'bg-primary-400 cursor-not-allowed opacity-60',
+        ].join(' ')}
       >
         회원가입 진행하기
       </button>

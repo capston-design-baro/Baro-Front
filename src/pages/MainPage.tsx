@@ -1,6 +1,6 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import LoginPrompt from '@/components/LoginPrompt';
+import LoginPrompt from '@/components/RequireLoginModal';
 import ServiceSection from '@/sections/ServiceSection';
 import { useUserStore } from '@/stores/useUserStore';
 import type { Service } from '@/types/service';

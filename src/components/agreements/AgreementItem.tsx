@@ -1,8 +1,6 @@
+import AgreementDetailModal from '@/components/agreements/AgreementDetailModal';
 import type { Agreement } from '@/types/agreement';
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import rehypeSanitize from 'rehype-sanitize';
-import remarkGfm from 'remark-gfm';
 
 type Props = {
   data: Agreement;
@@ -11,37 +9,66 @@ type Props = {
 
 const AgreementItem: React.FC<Props> = ({ data, onToggleCheck }) => {
   const { id, title, content, isChecked, required } = data;
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const labelText = required ? '(필수)' : '(선택)';
 
   return (
-    <div className="space-y-3">
-      <p className="text-sm font-medium text-slate-900">{title}</p>
-
-      {/* 본문: 스크롤 박스 */}
-      <div className="h-[120px] w-full overflow-y-auto rounded-lg border border-gray-300 bg-white p-3">
-        <div className="prose prose-slate prose-sm max-w-none">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeSanitize]}
+    <>
+      {/* 왼쪽 텍스트, 오른쪽 체크박스 */}
+      <div
+        className={[
+          'flex items-center justify-between gap-4',
+          'rounded-100 bg-neutral-0 border border-neutral-200',
+          'px-4 py-3',
+        ].join(' ')}
+      >
+        <div className="flex items-center gap-2">
+          {/* 필수 or 선택 뱃지 */}
+          <span
+            className={
+              required ? 'text-body-3-bold text-positive-200' : 'text-body-3-bold text-neutral-500'
+            }
           >
-            {content}
-          </ReactMarkdown>
-        </div>
-      </div>
+            {labelText}
+          </span>
 
-      {/* 체크박스 */}
-      <label className="flex cursor-pointer items-center justify-end gap-2 select-none">
-        <span className="text-sm text-slate-900">
-          BaLaw <b>{title.replace(/\s*\(.*\)$/, '')}</b>에 동의합니다.
-        </span>
+          {/* 제목 및 > 아이콘 */}
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <span className="text-body-1-regular text-neutral-900">{title}</span>
+            <span
+              className="material-symbols-outlined text-neutral-400"
+              style={{ fontSize: '12px' }}
+            >
+              arrow_forward_ios
+            </span>
+          </button>
+        </div>
+
+        {/* 오른쪽 체크박스 */}
         <input
           type="checkbox"
           checked={isChecked}
           onChange={() => onToggleCheck(id)}
-          className="h-4 w-4 accent-blue-600"
+          className="accent-positive-200 h-5 w-5 cursor-pointer"
           aria-required={required}
         />
-      </label>
-    </div>
+      </div>
+
+      {/* 약관 자세히 보기 모달 */}
+      <AgreementDetailModal
+        open={isOpen}
+        title={title}
+        content={content}
+        checked={isChecked}
+        onToggleCheck={() => onToggleCheck(id)}
+        onClose={() => setIsOpen(false)}
+      />
+    </>
   );
 };
 
