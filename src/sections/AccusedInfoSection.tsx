@@ -1,6 +1,5 @@
-// src/sections/AccusedInfoSection.tsx
 import { registerAccused } from '@/apis/complaints';
-import IntroHeader from '@/components/Common/IntroHeader';
+import IntroHeader from '@/components/IntroHeader';
 import type { AxiosError } from 'axios';
 import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 

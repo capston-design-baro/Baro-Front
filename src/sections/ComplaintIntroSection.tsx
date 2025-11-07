@@ -1,5 +1,5 @@
-import IntroHeader from '@/components/Common/IntroHeader';
 import FormErrorMessage from '@/components/FormErrorMessage';
+import IntroHeader from '@/components/IntroHeader';
 import Question from '@/components/Question';
 import { useComplaintWizard } from '@/stores/useComplaintWizard';
 import React from 'react';
