@@ -7,12 +7,6 @@ type Props = {
 
   // 외부에서 전달할 추가 tailwind 클래스
   className?: string;
-
-  // 중앙의 응원 배지 노출 여부 (기본: true)
-  showEncourageBadge?: boolean;
-
-  // 뱃지 문구
-  badgeText?: string;
 };
 
 const WizardProgress: React.FC<Props> = ({ onExit, className = '' }) => {
@@ -26,15 +20,15 @@ const WizardProgress: React.FC<Props> = ({ onExit, className = '' }) => {
       <div className="relative w-full">
         {/* 회색 진행바 */}
         <div
-          className="h-3 w-full overflow-hidden rounded-md bg-gray-200"
+          className="rounded-400 h-3 w-full overflow-hidden bg-neutral-200/50"
           role="progressbar"
           aria-valuenow={percent}
           aria-valuemin={0}
           aria-valuemax={100}
         >
-          {/* 실제 채워지는(파란색) 진행 바: width %로 제어, 애니메이션 부드럽게 */}
+          {/* 실제 채워지는(파란색) 진행 바: width %로 제어 */}
           <div
-            className="h-full rounded-md bg-blue-600 transition-[width] duration-300 ease-out"
+            className="bg-primary-400 rounded-400 h-full transition-[width] duration-300 ease-out"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -45,16 +39,22 @@ const WizardProgress: React.FC<Props> = ({ onExit, className = '' }) => {
         <button
           type="button"
           onClick={onExit}
-          className="inline-flex h-[30px] items-center gap-1.5 rounded-2xl border border-red-500 bg-white/30 px-3 py-[3px] text-sm font-medium text-red-500/80 hover:bg-white/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
-          aria-label="나가기"
+          className={[
+            'inline-flex items-center justify-center gap-2',
+            'rounded-300 bg-neutral-0 h-9 border border-neutral-300 px-4 py-1.5',
+            'text-detail-bold text-neutral-600 shadow-sm transition-all',
+            'hover:bg-neutral-100/50 hover:text-neutral-800',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400',
+          ].join(' ')}
         >
           <span
-            className="material-symbols-outlined text-[20px] leading-none text-red-600"
+            className="material-symbols-outlined leading-none text-neutral-600"
+            style={{ fontSize: '16px' }}
             aria-hidden
           >
-            delete_forever
+            logout
           </span>
-          나가기
+          작성 종료
         </button>
       </div>
     </section>
