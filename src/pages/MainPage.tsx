@@ -1,6 +1,6 @@
+import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import LoginPrompt from '@/components/RequireLoginModal';
 import ServiceSection from '@/sections/ServiceSection';
 import { useUserStore } from '@/stores/useUserStore';
 import type { Service } from '@/types/service';
@@ -34,9 +34,10 @@ export default function MainPage() {
       {/* 로그인 유도 모달 (로그인 안 된 상태에서 고소장 작성 클릭 시) */}
       {showLoginPrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
-          <LoginPrompt
+          <CharacterModal
+            variant="login"
             onCancel={() => setShowLoginPrompt(false)}
-            onLogin={() => {
+            onConfirm={() => {
               setShowLoginPrompt(false);
               navigate('/login');
             }}

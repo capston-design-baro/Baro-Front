@@ -1,4 +1,5 @@
 // ComplaintWizardPage.tsx
+import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import WizardProgress from '@/components/WizardProgress';
@@ -24,7 +25,13 @@ const ComplaintWizardPage: React.FC = () => {
   // 고소인 저장 후 받은 complaintId를 보관해서 피고소인 섹션에 넘김
   const [complaintId, setComplaintId] = useState<number | null>(null);
 
-  const handleExit = () => navigate(-1);
+  // 작성 종료 모달 노출 여부
+  const [showExitModal, setShowExitModal] = useState(false);
+
+  // 상단 "작성 종료" 버튼 클릭 시 바로 나가지 않고 모달 오픈
+  const handleExit = () => {
+    setShowExitModal(true);
+  };
 
   const handleGoChat = () => {
     if (complaintId && Number.isFinite(complaintId)) {
@@ -43,9 +50,8 @@ const ComplaintWizardPage: React.FC = () => {
     if (step === 1) {
       try {
         const rawId = await infoRef.current?.save();
-        const id = Number(rawId); // ✅ 문자열이어도 숫자로 변환
+        const id = Number(rawId);
         if (Number.isFinite(id) && id > 0) {
-          // ✅ 안전 검증
           setComplaintId(id);
           next();
         } else {
@@ -76,25 +82,11 @@ const ComplaintWizardPage: React.FC = () => {
     next();
   };
 
-  const badgeText =
-    step === 0
-      ? '잘 하고 있어요!'
-      : step === 1
-        ? '바로가 도와줄게요!'
-        : step === 2
-          ? '느낌이 좋아요!'
-          : step === 3
-            ? '채팅으로 이어갈게요!'
-            : '잘 하고 있어요!';
-
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
       <Header />
-      <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2 px-6 py-4">
-        <WizardProgress
-          onExit={handleExit}
-          badgeText={badgeText}
-        />
+      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col gap-2 px-6 py-4">
+        <WizardProgress onExit={handleExit} />
 
         <div className="mx-auto w-full max-w-[720px]">
           {step === 0 && <ComplaintIntroSection />}
@@ -133,6 +125,20 @@ const ComplaintWizardPage: React.FC = () => {
         </div>
       </main>
       <Footer />
+
+      {/* 작성 종료 확인 모달 */}
+      {showExitModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
+          <CharacterModal
+            variant="exit" // ✅ "지금 나가면 복구 불가" 텍스트 나오는 모드
+            onCancel={() => setShowExitModal(false)} // 계속 작성하기
+            onConfirm={() => {
+              setShowExitModal(false);
+              navigate(-1); // 진짜 나가기 (이전 페이지로)
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
