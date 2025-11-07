@@ -14,6 +14,9 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
   const [pw, setPw] = useState(defaultValues?.password ?? '');
   const [pwCheck, setPw2] = useState(defaultValues?.password ?? '');
 
+  const [showPw, setShowPw] = useState(false);
+  const [showPwCheck, setShowPwCheck] = useState(false);
+
   // UI 상태 관리
   const [error, setError] = useState<string | null>(null); // 에러 메시지
 
@@ -80,18 +83,37 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
             >
               mail
             </span>
-            <input
-              id="email"
-              type="email"
-              className={[
-                'rounded-200 w- h-10 flex-1 px-3',
-                'border border-neutral-300',
-                'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-              ].join(' ')}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-            />
+            <div className="flex w-full items-center gap-2">
+              <input
+                id="email"
+                type="email"
+                className={[
+                  'rounded-200 h-10 flex-1 px-3',
+                  'border border-neutral-300',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                ].join(' ')}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+
+              {/* 중복 확인 버튼 */}
+              <button
+                type="button"
+                onClick={() => {
+                  // 여기에 이메일 중복 확인 로직 추가 예정임
+                }}
+                disabled={!email} // 이메일 입력 안 했으면 비활성화
+                className={[
+                  'rounded-200 text-detail-regular h-10 border px-3 transition-colors',
+                  !email
+                    ? 'cursor-not-allowed border-neutral-300 bg-neutral-100 text-neutral-400'
+                    : 'border-primary-400 text-primary-400 hover:bg-primary-0/50',
+                ].join(' ')}
+              >
+                중복 확인
+              </button>
+            </div>
           </div>
         </div>
 
@@ -105,18 +127,35 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
             >
               lock
             </span>
-            <input
-              id="password"
-              type="password"
-              className={[
-                'rounded-200 h-10 flex-1 px-3',
-                'border border-neutral-300',
-                'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-              ].join(' ')}
-              value={pw}
-              onChange={(e) => setPw(e.target.value)}
-              autoComplete="new-password"
-            />
+            <div className="relative flex-1">
+              <input
+                id="password"
+                type={showPw ? 'text' : 'password'}
+                className={[
+                  'rounded-200 h-10 w-full px-3 pr-10',
+                  'border border-neutral-300',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                ].join(' ')}
+                value={pw}
+                onChange={(e) => setPw(e.target.value)}
+                autoComplete="new-password"
+              />
+
+              {/* 눈 아이콘 버튼 */}
+              <button
+                type="button"
+                onClick={() => setShowPw((prev) => !prev)}
+                className="absolute inset-y-0 right-3 flex items-center text-neutral-400 hover:text-neutral-600"
+                aria-label={showPw ? '비밀번호 숨기기' : '비밀번호 보기'}
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: '20px' }}
+                >
+                  {showPw ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -130,18 +169,34 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
             >
               lock_reset
             </span>
-            <input
-              id="password2"
-              type="password"
-              className={[
-                'rounded-200 h-10 flex-1 px-3',
-                'border border-neutral-300',
-                'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-              ].join(' ')}
-              value={pwCheck}
-              onChange={(e) => setPw2(e.target.value)}
-              autoComplete="new-password"
-            />
+            <div className="relative flex-1">
+              <input
+                id="password2"
+                type={showPwCheck ? 'text' : 'password'}
+                className={[
+                  'rounded-200 h-10 w-full px-3 pr-10',
+                  'border border-neutral-300',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                ].join(' ')}
+                value={pwCheck}
+                onChange={(e) => setPw2(e.target.value)}
+                autoComplete="new-password"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPwCheck((prev) => !prev)}
+                className="absolute inset-y-0 right-3 flex items-center text-neutral-400 hover:text-neutral-600"
+                aria-label={showPwCheck ? '비밀번호 숨기기' : '비밀번호 보기'}
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: '20px' }}
+                >
+                  {showPwCheck ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
