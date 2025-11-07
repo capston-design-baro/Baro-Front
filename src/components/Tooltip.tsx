@@ -59,7 +59,7 @@ const Tooltip: React.FC<TooltipProps> = ({ open, onClose, text, position = 'righ
     <div
       ref={ref}
       className={[
-        'rounded-200 border-primary-200 bg-neutral-0 absolute z-50 border px-3 py-2 shadow-md',
+        'rounded-200 border-primary-200 bg-neutral-0 absolute z-50 border px-3 py-2',
         'text-body-3-regular animate-fade-in text-neutral-800',
         'break-keep whitespace-normal',
         'w-max max-w-[240px]',
