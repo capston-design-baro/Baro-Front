@@ -20,8 +20,9 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
   const [city, setCity] = useState(defaultValues.city);
   const [district, setDistrict] = useState(defaultValues.district);
   const [town, setTown] = useState(defaultValues.town);
-  const [phone, setPhone] = useState(defaultValues.phone);
-
+  const [phone1, setPhone1] = useState('');
+  const [phone2, setPhone2] = useState('');
+  const [phone3, setPhone3] = useState('');
   // UI 상태 관리
   const [error, setError] = useState<string | null>(null); // 에러 메시지
 
@@ -31,12 +32,14 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
     setError(null);
 
     // 필수값 검증
-    if (!name || !city) {
+    if (!name) {
       setError('필수 항목들을 모두 입력해주세요.');
       return;
     }
 
-    onNext({ name, city, district, town, phone });
+    const fullPhone = [phone1, phone2, phone3].join('').trim();
+
+    onNext({ name, city, district, town, phone: fullPhone });
   };
 
   const renderLabel = (text: string, required: boolean) => {
@@ -97,52 +100,147 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
-          <input
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="시/도"
-            className="h-10 rounded-lg border px-3"
-          />
-          <input
-            value={district}
-            onChange={(e) => setDistrict(e.target.value)}
-            placeholder="구/군"
-            className="h-10 rounded-lg border px-3"
-          />
-          <input
-            value={town}
-            onChange={(e) => setTown(e.target.value)}
-            placeholder="동/면/읍"
-            className="h-10 rounded-lg border px-3"
-          />
+        {/* 주소 */}
+        <div className="flex flex-col gap-2">
+          {/* 주소 라벨 */}
+          {renderLabel('주소', false)}
+
+          {/* 아이콘 + 주소 입력칸 3개 한 줄 */}
+          <div className="flex items-center gap-4">
+            {/* 아이콘 */}
+            <span
+              className="material-symbols-outlined text-primary-600/50"
+              style={{ fontSize: '24px' }}
+            >
+              location_on
+            </span>
+
+            {/* 입력칸 3개 */}
+            <div className="grid w-full grid-cols-3 gap-2">
+              <input
+                id="city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className={[
+                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'border border-neutral-300',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                ].join(' ')}
+              />
+
+              <input
+                id="district"
+                value={district}
+                onChange={(e) => setDistrict(e.target.value)}
+                className={[
+                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'border border-neutral-300',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                ].join(' ')}
+              />
+
+              <input
+                id="town"
+                value={town}
+                onChange={(e) => setTown(e.target.value)}
+                className={[
+                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'border border-neutral-300',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                ].join(' ')}
+              />
+            </div>
+          </div>
         </div>
-        <input
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="전화번호"
-          className="h-10 w-full rounded-lg border px-3"
-        />
+
+        {/* 전화번호 */}
+        <div className="flex flex-col gap-2">
+          {/* 전화번호 라벨 */}
+          {renderLabel('전화번호', false)}
+
+          {/* 아이콘 + 주소 입력칸 3개 한 줄 */}
+          <div className="flex items-center gap-4">
+            {/* 아이콘 */}
+            <span
+              className="material-symbols-outlined text-primary-600/50"
+              style={{ fontSize: '24px' }}
+            >
+              phone_in_talk
+            </span>
+
+            {/* 입력칸 3개 */}
+            <div className="grid w-full grid-cols-3 gap-2">
+              <input
+                id="phone1"
+                maxLength={3}
+                value={phone1}
+                onChange={(e) => setPhone1(e.target.value)}
+                className={[
+                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'border border-neutral-300',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                ].join(' ')}
+              />
+
+              <input
+                id="phone2"
+                maxLength={4}
+                value={phone2}
+                onChange={(e) => setPhone2(e.target.value)}
+                className={[
+                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'border border-neutral-300',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                ].join(' ')}
+              />
+
+              <input
+                id="phone3"
+                maxLength={4}
+                value={phone3}
+                onChange={(e) => setPhone3(e.target.value)}
+                className={[
+                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'border border-neutral-300',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                ].join(' ')}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="flex gap-3">
-        {/* 경고 문구 */}
-        <div
-          aria-live="polite"
-          className="mb-4 flex min-h-[24px] justify-center"
-        >
-          {error && <p className="text-body-3-regular text-warning-200">{error}</p>}
-        </div>
+      {/* 경고 문구 */}
+      <div
+        aria-live="polite"
+        className="mb-4 flex min-h-[24px] justify-center"
+      >
+        {error && <p className="text-body-3-regular text-warning-200">{error}</p>}
+      </div>
+
+      <div className="flex gap-4">
         <button
           type="button"
-          onClick={() => onBack({ name, city, district, town, phone })}
-          className="h-12 flex-1 rounded-xl border border-blue-600 font-semibold text-blue-600"
+          onClick={() =>
+            onBack({ name, city, district, town, phone: [phone1, phone2, phone3].join('').trim() })
+          }
+          className={[
+            'h-12 flex-1 items-center justify-center',
+            'rounded-200 border-primary-400 border',
+            'text-body-3-bold text-primary-400 transition-colors',
+          ].join(' ')}
         >
           이전
         </button>
         <button
           type="submit"
-          className="h-12 flex-1 rounded-xl bg-blue-600 font-semibold text-white hover:bg-blue-700"
+          className={[
+            'h-12 flex-1 items-center justify-center',
+            'rounded-200 text-body-3-bold text-neutral-0 transition-colors',
+            !name
+              ? 'bg-primary-400 cursor-not-allowed opacity-60'
+              : 'bg-primary-400 hover:bg-primary-600',
+          ].join(' ')}
         >
           회원가입
         </button>
