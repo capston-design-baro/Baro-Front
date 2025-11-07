@@ -1,4 +1,4 @@
-import type { LoginCardProps } from '@/components/auth/LoginCard.types';
+import type { LoginCardProps } from '@/types/auth';
 import React, { useState } from 'react';
 
 const SIGNUP_HREF = './terms';
@@ -9,8 +9,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const runLogin = async () => {
     setError(null);
     setLoading(true);
 
@@ -26,6 +25,12 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // form submit용 핸들러 (Enter용)
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    await runLogin();
   };
 
   return (
@@ -107,8 +112,9 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
 
       {/* 로그인 버튼 */}
       <button
-        type="submit"
+        type="button"
         disabled={loading}
+        onClick={() => handleSubmit()}
         className={[
           'h-12 w-full items-center justify-center px-5',
           'rounded-200 text-body-3-bold text-neutral-0 transition-colors',

@@ -1,3 +1,9 @@
+// UI Props
+export type LoginCardProps = {
+  className?: string;
+  onLogin?: (email: string, password: string) => Promise<void> | void;
+};
+
 // 로그인 요청 시 필요한 데이터
 export type LoginRequest = {
   email: string;

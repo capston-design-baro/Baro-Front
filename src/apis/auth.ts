@@ -13,27 +13,23 @@ import { Cookies } from 'react-cookie';
 // 쿠키 관리 객체 생성
 const cookies = new Cookies();
 
-// API 기본 prefix
-const API = '/api';
-
 // 공통: Authorization 기본 헤더 갱신
 // -> 로그인 시 받은 accessToken을 axios 전역 Authorization 헤더에 설정
 // -> 로그아웃하거나 토큰이 없으면 헤더 삭제
-function setAuthHeader(accessToken?: string, tokenType: 'bearer' | string = 'bearer') {
+function setAuthHeader(accessToken?: string) {
   if (accessToken) {
-    axiosInstance.defaults.headers.common.Authorization = `${tokenType} ${accessToken}`;
+    axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {
     delete axiosInstance.defaults.headers.common.Authorization;
   }
 }
-
 // 로그인
 // -> 응답으로 acces token이랑 refresh token을 발급받음
 // -> 토큰을 쿠키에 저장하고, zustand user 상태 업데이트
 export async function login(body: LoginRequest): Promise<TokenResponse> {
-  const { data } = await axiosInstance.post<TokenResponse>(`${API}/auth/login`, body);
+  const { data } = await axiosInstance.post<TokenResponse>(`/auth/login`, body);
 
-  const { access_token, refresh_token, token_type } = data;
+  const { access_token, refresh_token } = data;
 
   // accessToken → 단기 쿠키 저장
   cookies.set(ACCESS_COOKIE, access_token, {
@@ -48,7 +44,7 @@ export async function login(body: LoginRequest): Promise<TokenResponse> {
   });
 
   // axios 전역 Authorization 헤더 설정
-  setAuthHeader(access_token, token_type);
+  setAuthHeader(access_token);
 
   // 로그인 직후 사용자 정보 조회 → zustand 저장
   const me = await getMe();
@@ -62,10 +58,10 @@ export async function getMe(): Promise<UserResponse> {
   // accessToken이 없으면 쿠키에서 복원 후 Authorization 헤더 설정
   if (!axiosInstance.defaults.headers.common.Authorization) {
     const token: string | undefined = cookies.get(ACCESS_COOKIE);
-    if (token) setAuthHeader(token, 'bearer');
+    if (token) setAuthHeader(token);
   }
 
-  const { data } = await axiosInstance.get<UserResponse>(`${API}/auth/me`);
+  const { data } = await axiosInstance.get<UserResponse>(`/auth/me`);
   return data;
 }
 
@@ -78,7 +74,7 @@ export async function register(payload: RegisterRequest): Promise<UserResponse> 
   // string으로 변환한 address를 서버에 전송
   const body = { ...payload, address: fullAddress };
 
-  const { data } = await axiosInstance.post<UserResponse>(`${API}/auth/register`, body);
+  const { data } = await axiosInstance.post<UserResponse>(`/auth/register`, body);
   return data;
 }
 
@@ -87,11 +83,11 @@ export async function refreshAccessToken(refreshTokenArg?: string) {
   const refreshToken = refreshTokenArg ?? cookies.get(REFRESH_COOKIE);
   if (!refreshToken) throw new Error('NO_REFRESH_TOKEN');
 
-  const { data } = await axiosInstance.post<TokenResponse>(`${API}/auth/refresh`, {
+  const { data } = await axiosInstance.post<TokenResponse>(`/auth/refresh`, {
     refresh_token: refreshToken,
   });
 
-  const { access_token, refresh_token, token_type } = data;
+  const { access_token, refresh_token } = data;
 
   // accessToken 갱신
   cookies.set(ACCESS_COOKIE, access_token, {
@@ -108,7 +104,7 @@ export async function refreshAccessToken(refreshTokenArg?: string) {
   }
 
   // axios Authorization 헤더 업데이트
-  setAuthHeader(access_token, token_type);
+  setAuthHeader(access_token);
 
   return data;
 }
