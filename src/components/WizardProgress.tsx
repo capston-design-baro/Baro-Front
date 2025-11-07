@@ -15,12 +15,7 @@ type Props = {
   badgeText?: string;
 };
 
-const WizardProgress: React.FC<Props> = ({
-  onExit,
-  className = '',
-  showEncourageBadge = true,
-  badgeText = '잘 하고 있어요!',
-}) => {
+const WizardProgress: React.FC<Props> = ({ onExit, className = '' }) => {
   // 진행률 (0 ~ 100) -> 스토어의 현재 step / total에 따라 계산됨
   const percent = useComplaintWizard((s) => s.percentage());
 
@@ -43,13 +38,6 @@ const WizardProgress: React.FC<Props> = ({
             style={{ width: `${percent}%` }}
           />
         </div>
-
-        {/* 중앙 배지 */}
-        {showEncourageBadge && (
-          <div className="absolute -top-10 left-1/2 flex h-[30px] w-[200px] -translate-x-1/2 items-center justify-center rounded-2xl bg-blue-50 px-4 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
-            <p className="text-base font-medium text-slate-900">{badgeText}</p>
-          </div>
-        )}
       </div>
 
       {/* 나가기 버튼 -> 우측 정렬 */}
