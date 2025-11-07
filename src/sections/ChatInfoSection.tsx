@@ -4,7 +4,15 @@ import React from 'react';
 
 const ChatInfoSection: React.FC = () => {
   return (
-    <section className="flex h-[620px] w-[720px] flex-col items-center justify-between overflow-hidden px-[110px] pt-[60px] pb-6">
+    <section
+      className={[
+        'flex flex-col items-center justify-between',
+        'h-[620px] w-full max-w-[1000px]',
+        'pb-6',
+        'bg-neutral-0',
+      ].join(' ')}
+    >
+      {' '}
       <IntroHeader
         title="고소장 작성하기"
         lines={[
@@ -15,12 +23,11 @@ const ChatInfoSection: React.FC = () => {
         center
         showArrow
       />
-
-      <div className="flex h-[325px] flex-col items-center justify-center gap-8 self-stretch">
+      <div className="flex flex-1 flex-col items-center justify-center">
         <img
           src={BaroCharacter}
           alt="바로 캐릭터"
-          className="h-64 w-64 object-cover"
+          className="h-64 w-64 object-contain"
         />
       </div>
     </section>
