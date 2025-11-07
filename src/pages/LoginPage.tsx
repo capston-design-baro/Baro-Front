@@ -28,7 +28,7 @@ const LoginPage: React.FC = () => {
             {/* md 이상에서만 WelcomeCard 렌더 */}
             {isMdUp && (
               <div className="h-[600px] w-full max-w-[460px] flex-1">
-                <WelcomeCard />
+                <WelcomeCard variant="login" />
               </div>
             )}
 

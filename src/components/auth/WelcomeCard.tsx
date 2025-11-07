@@ -1,7 +1,13 @@
 import CharacterImg from '@/assets/BaLawCharacter-large.svg';
 import React from 'react';
 
-const WelcomeCard: React.FC = () => {
+type WelcomeCardProps = {
+  variant?: 'login' | 'signup';
+};
+
+const WelcomeCard: React.FC<WelcomeCardProps> = ({ variant = 'login' }) => {
+  const title = variant === 'signup' ? 'Sign up for BaLaw' : 'Welcome to BaLaw';
+
   return (
     <section
       className={[
@@ -13,7 +19,7 @@ const WelcomeCard: React.FC = () => {
       ].join(' ')}
     >
       {/* 제목 */}
-      <h2 className="text-heading-1-bold text-neutral-900">Welcome to BaLaw</h2>
+      <h2 className="text-heading-1-bold text-neutral-900">{title}</h2>
 
       {/* 캐릭터 이미지 */}
       <div className="flex flex-1 items-center justify-center">
