@@ -18,7 +18,7 @@ const ComplaintIntroSection: React.FC = () => {
       className={[
         'flex flex-col items-center justify-between',
         'h-[620px] w-full max-w-[1000px]',
-        'px-20 pt-15 pb-6',
+        'pb-6',
         'bg-neutral-0 rounded-400',
       ].join(' ')}
     >
