@@ -1,5 +1,4 @@
-import type { BinaryAnswer, PrecheckQuestion, WizardState } from '@/types/complaint';
-import type { OffenseType } from '@/types/complaint';
+import type { BinaryAnswer, ComplaintWizardState, PrecheckQuestion } from '@/types/complaint';
 import { create } from 'zustand';
 
 // 사전 확인 질문 목록
@@ -10,6 +9,7 @@ const initialPrechecks: PrecheckQuestion[] = [
     hintIcon: 'info',
     kind: 'binary',
     answer: null,
+    description: '이미 동일한 사건으로 고소나 진정을 한 경우, 중복 접수로 처리될 수 있습니다.',
   },
   {
     id: 'withdrawnBefore',
@@ -17,6 +17,8 @@ const initialPrechecks: PrecheckQuestion[] = [
     hintIcon: 'info',
     kind: 'binary',
     answer: null,
+    description:
+      '이전에 같은 사건을 취하한 이력이 있는 경우, 다시 고소하는 데 제한이 있을 수 있습니다.',
   },
   {
     id: 'knowFalseAccusation',
@@ -28,15 +30,15 @@ const initialPrechecks: PrecheckQuestion[] = [
       label: '관련 안내를 확인했습니다.',
       checked: false,
     },
+    description: '사실이 아닌 내용을 고의로 신고할 경우 무고죄로 처벌될 수 있습니다.',
   },
 ];
 
 export type ComplaintWizardStore = {
   // 마법사 전역 상태 -> 현재 단계, 총 단계 수, 사전확인 질문들 등
-  state: WizardState & {
-    offense: OffenseType | null; // 선택된 죄목
-  };
-  setOffense: (offense: OffenseType) => void;
+  state: ComplaintWizardState;
+
+  setOffense: (offense: ComplaintWizardState['offense']) => void;
 
   // 사용자가 다음을 눌렸는지 여부
   triedNext: boolean;
@@ -77,7 +79,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
   allChecked: () => {
     const { prechecks } = get().state;
     return prechecks.every((q) =>
-      q.kind === 'confirm' ? !!q.confirmChip?.checked : q.answer !== null,
+      q.kind === 'confirm' ? !!q.confirmChip?.checked : q.answer != null,
     );
   },
 
@@ -141,7 +143,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
     return Math.round(((step + 1) / stepsTotal) * 100);
   },
 
-  setOffense: (offense: OffenseType) =>
+  setOffense: (offense) =>
     set(({ state }) => ({
       state: { ...state, offense },
     })),
