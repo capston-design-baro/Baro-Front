@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import WizardProgress from '@/components/WizardProgress';
 import AccusedInfoSection from '@/sections/AccusedInfoSection';
 import type { AccusedInfoSectionHandle } from '@/sections/AccusedInfoSection';
-import ChatInfoSection from '@/sections/ChanInfoSection';
+import ChatInfoSection from '@/sections/ChatInfoSection';
 import ComplainantInfoSection from '@/sections/ComplaintInfoSection';
 import type { ComplainantInfoSectionHandle } from '@/sections/ComplaintInfoSection';
 import ComplaintIntroSection from '@/sections/ComplaintIntroSection';
