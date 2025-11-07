@@ -16,10 +16,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const cookies = new Cookies();
 
 // Axios 인스턴스 생성
-const axiosInstance = (await (async () => {
-  const inst = axios.create({ baseURL: BASE_URL });
-  return inst;
-})()) as ReturnType<typeof axios.create>;
+const axiosInstance = axios.create({ baseURL: BASE_URL });
 
 // cfg.headers를 항상 AxiosHeaders 인스턴스로 보장
 function ensureHeaders(cfg: InternalAxiosRequestConfig): AxiosHeaders {
@@ -64,10 +61,10 @@ async function doRefresh() {
     refresh_token: refresh,
   });
 
-  const { access_token, refresh_token, token_type } = data as {
+  const { access_token, refresh_token } = data as {
     access_token: string;
     refresh_token: string;
-    token_type: 'bearer' | string;
+    token_type: string;
   };
 
   // 새로운 accessToken 쿠키 저장
@@ -85,7 +82,7 @@ async function doRefresh() {
   }
 
   // 기본 헤더 업데이트(다음 요청 대비)
-  axiosInstance.defaults.headers.common.Authorization = `${token_type} ${access_token}`;
+  axiosInstance.defaults.headers.common.Authorization = `Bearer ${access_token}`;
 }
 
 // 응답 인터셉터 -> 응답에서 401 Unauthorized가 나오면 refreshToken으로 토큰 재발급 시도
