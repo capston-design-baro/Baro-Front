@@ -1,3 +1,4 @@
+import FormErrorMessage from '@/components/FormErrorMessage';
 import type { LoginCardProps } from '@/types/auth';
 import React, { useState } from 'react';
 
@@ -103,12 +104,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
       </form>
 
       {/* 경고 문구 */}
-      <div
-        aria-live="polite"
-        className="mb-4 flex min-h-[24px] justify-center"
-      >
-        {error && <p className="text-body-3-regular text-warning-200">{error}</p>}
-      </div>
+      <FormErrorMessage error={error} />
 
       {/* 로그인 버튼 */}
       <button

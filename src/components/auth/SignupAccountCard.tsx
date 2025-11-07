@@ -1,3 +1,4 @@
+import FormErrorMessage from '@/components/FormErrorMessage';
 import React, { useState } from 'react';
 
 type Props = {
@@ -202,12 +203,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
       </div>
 
       {/* 경고 문구 */}
-      <div
-        aria-live="polite"
-        className="mb-4 flex min-h-[24px] justify-center"
-      >
-        {error && <p className="text-body-3-regular text-warning-200">{error}</p>}
-      </div>
+      <FormErrorMessage error={error} />
 
       {/* 다음 단계 버튼 */}
       <button
