@@ -5,6 +5,7 @@ import WizardProgress from '@/components/WizardProgress';
 import AccusedInfoSection from '@/sections/AccusedInfoSection';
 import type { AccusedInfoSectionHandle } from '@/sections/AccusedInfoSection';
 import ChatInfoSection from '@/sections/ChatInfoSection';
+import ChatWindowSection from '@/sections/ChatWindowSection';
 import ComplainantInfoSection from '@/sections/ComplaintInfoSection';
 import type { ComplainantInfoSectionHandle } from '@/sections/ComplaintInfoSection';
 import ComplaintIntroSection from '@/sections/ComplaintIntroSection';
@@ -21,6 +22,8 @@ const ComplaintWizardPage: React.FC = () => {
   const infoRef = useRef<ComplainantInfoSectionHandle>(null);
   const accusedRef = useRef<AccusedInfoSectionHandle>(null);
 
+  const offense = useComplaintWizard((s) => s.state.offense);
+
   // 고소인 저장 후 받은 complaintId를 보관해서 피고소인 섹션에 넘김
   const [complaintId, setComplaintId] = useState<number | null>(null);
 
@@ -30,12 +33,6 @@ const ComplaintWizardPage: React.FC = () => {
   // 상단 "작성 종료" 버튼 클릭 시 바로 나가지 않고 모달 오픈
   const handleExit = () => {
     setShowExitModal(true);
-  };
-
-  const handleGoChat = () => {
-    if (complaintId && Number.isFinite(complaintId)) {
-      navigate(`/complaints/${complaintId}/chat`);
-    }
   };
 
   const handleNext = async () => {
@@ -73,11 +70,6 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    if (step === 3) {
-      handleGoChat();
-      return;
-    }
-
     next();
   };
 
@@ -87,6 +79,7 @@ const ComplaintWizardPage: React.FC = () => {
       <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col gap-2 px-6 py-4">
         <WizardProgress onExit={handleExit} />
 
+        {/* 위자드 본문: 0~3단계 (420px 카드) */}
         <div className="mx-auto w-full max-w-[420px]">
           {/* 0단계: 사전 안내 */}
           <div className={step === 0 ? 'block' : 'hidden'}>
@@ -98,14 +91,14 @@ const ComplaintWizardPage: React.FC = () => {
             <ComplainantInfoSection ref={infoRef} />
           </div>
 
-          {/* 2단계: 피고소인 정보 (complaintId가 한 번 만들어진 이후에는 계속 유지) */}
+          {/* 2단계: 피고소인 정보 */}
           {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
             <div className={step === 2 ? 'block' : 'hidden'}>
               <AccusedInfoSection
                 ref={accusedRef}
                 complaintId={complaintId}
                 onSaved={() => {
-                  next(); // 피고소인 저장 성공 시 다음 단계로
+                  next();
                 }}
               />
             </div>
@@ -116,6 +109,19 @@ const ComplaintWizardPage: React.FC = () => {
             <ChatInfoSection />
           </div>
         </div>
+
+        {/* 4단계: 실제 채팅창 (720px, 가운데 정렬) */}
+        {typeof complaintId === 'number' &&
+          Number.isFinite(complaintId) &&
+          complaintId > 0 &&
+          step === 4 && (
+            <div className="mt-4 flex w-full justify-center">
+              <ChatWindowSection
+                complaintId={complaintId}
+                offense={offense ?? undefined}
+              />
+            </div>
+          )}
 
         <div className="mx-auto mb-14 flex w-full max-w-[420px] items-center justify-center">
           <div className={['flex w-full', 'items-center justify-between gap-3'].join(' ')}>

@@ -187,7 +187,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
   const inputDisabled = phase === 'starting';
 
   return (
-    <section className="flex h-[680px] w-[720px] flex-col items-center justify-between overflow-hidden px-[110px] py-[60px]">
+    <section className="flex h-[620px] w-[720px] flex-col items-center justify-between overflow-hidden px-[110px] py-[60px]">
       {/* 채팅 로그 */}
       <div
         ref={listRef}
