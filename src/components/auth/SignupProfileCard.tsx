@@ -84,7 +84,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
               className="material-symbols-outlined text-primary-600/50"
               style={{ fontSize: '24px' }}
             >
-              people
+              person
             </span>
             <input
               id="name"
