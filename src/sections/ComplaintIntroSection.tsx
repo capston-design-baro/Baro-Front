@@ -11,6 +11,7 @@ const ComplaintIntroSection: React.FC = () => {
   const setBinaryAnswer = useComplaintWizard((s) => s.setBinaryAnswer);
   const allChecked = useComplaintWizard((s) => s.allChecked());
   const triedNext = useComplaintWizard((s) => s.triedNext);
+  const blockedPrecheckId = useComplaintWizard((s) => s.blockedPrecheckId);
 
   return (
     <section
@@ -43,6 +44,7 @@ const ComplaintIntroSection: React.FC = () => {
             q={q}
             onToggleConfirm={toggleConfirm}
             onSetBinary={setBinaryAnswer}
+            forceOpenInfo={q.id === blockedPrecheckId}
           />
         ))}
       </div>

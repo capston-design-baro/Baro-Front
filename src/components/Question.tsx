@@ -1,6 +1,6 @@
 import Tooltip from '@/components/Tooltip';
 import type { BinaryAnswer, PrecheckQuestion } from '@/types/complaint';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Chip from './Chip';
 
@@ -8,15 +8,26 @@ export interface QuestionProps {
   q: PrecheckQuestion;
   onToggleConfirm: (id: PrecheckQuestion['id']) => void;
   onSetBinary: (id: PrecheckQuestion['id'], answer: BinaryAnswer) => void;
+  forceOpenInfo?: boolean;
 }
 
-const Question: React.FC<QuestionProps> = ({ q, onToggleConfirm, onSetBinary }) => {
+const Question: React.FC<QuestionProps> = ({ q, onToggleConfirm, onSetBinary, forceOpenInfo }) => {
   const [showInfo, setShowInfo] = useState(false);
 
   const toggleInfo = () => setShowInfo((prev) => !prev);
   const closeInfo = () => setShowInfo(false);
 
-  const iconColor = showInfo ? 'text-primary-400' : 'text-neutral-400 hover:text-primary-400';
+  useEffect(() => {
+    if (forceOpenInfo && q.description) {
+      setShowInfo(true);
+    }
+  }, [forceOpenInfo, q.description]);
+
+  const iconColor = showInfo
+    ? forceOpenInfo
+      ? 'text-warning-200 hover:text-warning-300'
+      : 'text-primary-400'
+    : 'text-neutral-400 hover:text-primary-400';
 
   return (
     <div className="flex w-[420px] flex-col gap-1 px-3">
@@ -42,6 +53,7 @@ const Question: React.FC<QuestionProps> = ({ q, onToggleConfirm, onSetBinary }) 
               onClose={closeInfo}
               text={q.description}
               position="right"
+              forced={forceOpenInfo}
             />
           )}
         </div>

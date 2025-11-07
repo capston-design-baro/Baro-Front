@@ -43,6 +43,9 @@ export type ComplaintWizardStore = {
   // 사용자가 다음을 눌렸는지 여부
   triedNext: boolean;
 
+  // 어떤 사전 질문 때문에 진행이 막혔는지 (툴팁 열어줄 대상)
+  blockedPrecheckId: string | null;
+
   // 모든 질문이 충족되었는지 여부
   allChecked: () => boolean;
 
@@ -74,6 +77,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
     offense: null,
   },
   triedNext: false,
+  blockedPrecheckId: null,
 
   // 모든 질문 충족 여부 계산
   allChecked: () => {
@@ -87,6 +91,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
   toggleConfirm: (questionId: string) => {
     set(({ state }) => ({
       triedNext: false,
+      blockedPrecheckId: null,
       state: {
         ...state,
         prechecks: state.prechecks.map((q) =>
@@ -102,6 +107,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
   setBinaryAnswer: (questionId: string, answer: BinaryAnswer) => {
     set(({ state }) => ({
       triedNext: false,
+      blockedPrecheckId: null,
       state: {
         ...state,
         prechecks: state.prechecks.map((q) =>
@@ -125,6 +131,20 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
 
   // 다음 단계로 이동을 시도해봄
   attemptNext: () => {
+    const { prechecks } = get().state;
+
+    const q1 = prechecks.find((q) => q.id === 'alreadyFiled');
+    const q2 = prechecks.find((q) => q.id === 'withdrawnBefore');
+
+    // 1, 2번 질문 중 하나라도 "예"이면 다음 단계 막고 툴팁 타깃 지정
+    if (q1?.answer === 'yes' || q2?.answer === 'yes') {
+      set({
+        triedNext: true,
+        blockedPrecheckId: q1?.answer === 'yes' ? q1.id : (q2?.id ?? null),
+      });
+      return;
+    }
+
     // 모든 질문에 체크했으면 triedNext를 끄고 다음 단계로 넘어감
     if (get().allChecked()) {
       set({ triedNext: false });

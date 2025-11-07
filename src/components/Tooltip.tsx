@@ -5,9 +5,16 @@ type TooltipProps = {
   onClose: () => void;
   text: string;
   position?: 'right' | 'top' | 'bottom' | 'left';
+  forced?: boolean;
 };
 
-const Tooltip: React.FC<TooltipProps> = ({ open, onClose, text, position = 'right' }) => {
+const Tooltip: React.FC<TooltipProps> = ({
+  open,
+  onClose,
+  text,
+  position = 'right',
+  forced = false,
+}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   // 바깥 클릭 시 닫기
@@ -55,14 +62,17 @@ const Tooltip: React.FC<TooltipProps> = ({ open, onClose, text, position = 'righ
       posClass = '';
   }
 
+  const borderColor = forced ? 'border-warning-200' : 'border-primary-200';
+
   return (
     <div
       ref={ref}
       className={[
-        'rounded-200 border-primary-200 bg-neutral-0 absolute z-50 border px-3 py-2',
+        'rounded-200 bg-neutral-0 absolute z-50 border px-3 py-2',
         'text-body-3-regular animate-fade-in text-neutral-800',
         'break-keep whitespace-normal',
         'w-max max-w-[240px]',
+        borderColor,
         posClass,
       ].join(' ')}
     >
