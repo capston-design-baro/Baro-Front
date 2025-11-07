@@ -1,4 +1,3 @@
-// ComplaintWizardPage.tsx
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -88,13 +87,20 @@ const ComplaintWizardPage: React.FC = () => {
       <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col gap-2 px-6 py-4">
         <WizardProgress onExit={handleExit} />
 
-        <div className="mx-auto w-full max-w-[720px]">
-          {step === 0 && <ComplaintIntroSection />}
-          {step === 1 && <ComplainantInfoSection ref={infoRef} />}
-          {step === 2 &&
-            typeof complaintId === 'number' &&
-            Number.isFinite(complaintId) &&
-            complaintId > 0 && (
+        <div className="mx-auto w-full max-w-[420px]">
+          {/* 0단계: 사전 안내 */}
+          <div className={step === 0 ? 'block' : 'hidden'}>
+            <ComplaintIntroSection />
+          </div>
+
+          {/* 1단계: 고소인 정보 */}
+          <div className={step === 1 ? 'block' : 'hidden'}>
+            <ComplainantInfoSection ref={infoRef} />
+          </div>
+
+          {/* 2단계: 피고소인 정보 (complaintId가 한 번 만들어진 이후에는 계속 유지) */}
+          {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
+            <div className={step === 2 ? 'block' : 'hidden'}>
               <AccusedInfoSection
                 ref={accusedRef}
                 complaintId={complaintId}
@@ -102,22 +108,28 @@ const ComplaintWizardPage: React.FC = () => {
                   next(); // 피고소인 저장 성공 시 다음 단계로
                 }}
               />
-            )}
-          {step === 3 && <ChatInfoSection />}
+            </div>
+          )}
+
+          {/* 3단계: 채팅 안내 */}
+          <div className={step === 3 ? 'block' : 'hidden'}>
+            <ChatInfoSection />
+          </div>
         </div>
-        <div className="mx-auto mb-14 flex w-full max-w-[720px] items-center justify-center">
-          <div className="flex w-full max-w-[500px] items-center justify-between">
+
+        <div className="mx-auto mb-14 flex w-full max-w-[420px] items-center justify-center">
+          <div className={['flex w-full', 'items-center justify-between gap-3'].join(' ')}>
             <button
               type="button"
               onClick={prev}
-              className="flex h-12 w-[220px] items-center justify-center rounded-2xl bg-blue-600 px-6 py-[9px] text-2xl font-bold text-white"
+              className="rounded-200 bg-primary-400 text-body-3-bold text-neutral-0 flex h-12 w-[220px] items-center justify-center px-6 py-[9px]"
             >
               이전
             </button>
             <button
               type="button"
               onClick={handleNext}
-              className="flex h-12 w-[220px] items-center justify-center rounded-2xl bg-blue-600 px-6 py-[9px] text-2xl font-bold text-white"
+              className="rounded-200 bg-primary-400 text-body-3-bold text-neutral-0 flex h-12 w-[220px] items-center justify-center px-6 py-[9px]"
             >
               다음
             </button>
@@ -130,7 +142,7 @@ const ComplaintWizardPage: React.FC = () => {
       {showExitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
           <CharacterModal
-            variant="exit" // ✅ "지금 나가면 복구 불가" 텍스트 나오는 모드
+            variant="exit"
             onCancel={() => setShowExitModal(false)} // 계속 작성하기
             onConfirm={() => {
               setShowExitModal(false);
