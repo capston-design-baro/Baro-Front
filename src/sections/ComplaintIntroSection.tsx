@@ -31,10 +31,6 @@ const ComplaintIntroSection: React.FC = () => {
         ]}
         center
         showArrow
-        arrowSize={24}
-        arrowOpacity={0.5}
-        arrowFrom="var(--color-neutral-700)"
-        arrowTo="var(--color-primary-400)"
       />
 
       <div className="flex w-[420px] flex-col gap-6">

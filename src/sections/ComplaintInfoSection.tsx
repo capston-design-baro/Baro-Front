@@ -149,10 +149,6 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
           ]}
           center
           showArrow
-          arrowSize={24}
-          arrowOpacity={0.5}
-          arrowFrom="var(--color-neutral-700)"
-          arrowTo="var(--color-primary-400)"
         />
 
         <form
@@ -185,7 +181,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
                   className="material-symbols-outlined text-primary-600/50"
                   style={{ fontSize: '24px' }}
                 >
-                  people
+                  person
                 </span>
                 <input
                   id="name"
