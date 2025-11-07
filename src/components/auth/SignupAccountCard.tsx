@@ -12,7 +12,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
   // 사용자 입력값 상태 관리
   const [email, setEmail] = useState(defaultValues?.email ?? '');
   const [pw, setPw] = useState(defaultValues?.password ?? '');
-  const [pwCheck, setPw2] = useState(''); // 비밀번호 확인
+  const [pwCheck, setPw2] = useState(defaultValues?.password ?? '');
 
   // UI 상태 관리
   const [error, setError] = useState<string | null>(null); // 에러 메시지
