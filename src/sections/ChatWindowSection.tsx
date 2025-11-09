@@ -41,6 +41,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
+  const [isBotTyping, setIsBotTyping] = useState(false);
   const [phase, setPhase] = useState<Phase>(offense ? 'starting' : 'askOffense');
   const [chosen, setChosen] = useState<{
     key: 'fraud' | 'insult';
@@ -99,6 +100,10 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
         ]);
         // 다시 죄목부터 물어보도록 되돌리기
         setPhase('askOffense');
+      } finally {
+        if (mounted) {
+          setIsBotTyping(false);
+        }
       }
     })();
     return () => {
@@ -159,6 +164,8 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
     setInput('');
 
     try {
+      setIsBotTyping(true);
+
       const { reply } = await sendChat(complaintId, aiSessionId, text);
       const botMsg: Msg = { id: `r-${Date.now()}`, side: 'left', text: reply, time: fmtTime() };
       setMsgs((prev) => [...prev, botMsg]);
@@ -172,6 +179,8 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
           time: fmtTime(),
         },
       ]);
+    } finally {
+      setIsBotTyping(false);
     }
   }, [phase, aiSessionId, input, complaintId]);
 
@@ -194,7 +203,6 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
         'bg-neutral-0 pb-6',
       ].join(' ')}
     >
-      {' '}
       {/* 채팅 로그 */}
       <div
         ref={listRef}
@@ -216,12 +224,13 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
             srLabel={`${m.side === 'left' ? '바로' : '사용자'} 메시지`}
           />
         ))}
-        {phase === 'starting' && (
+        {isBotTyping && (
           <ChatBubble
             side="left"
-            text="잠시만 기다려주세요."
+            text="..." // 실제 텍스트는 isTyping일 때는 안 보이고, 점 애니메이션만 보임
             time={fmtTime()}
-            srLabel="바로 타이핑 중"
+            srLabel="바로가 입력 중입니다."
+            isTyping
           />
         )}
       </div>
