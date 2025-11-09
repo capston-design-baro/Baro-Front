@@ -129,7 +129,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
           {
             id: `reprompt-${Date.now()}`,
             side: 'left',
-            text: '죄목을 정확히 입력해주세요: 사기죄 또는 모욕죄 (예: 사기죄)',
+            text: '죄목을 정확히 입력해주세요. (예: 사기죄)',
             time: fmtTime(),
           },
         ]);
@@ -143,7 +143,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
         {
           id: `ack-${Date.now()}`,
           side: 'left',
-          text: `좋아요. ${parsed.label}로 진행할게요. 잠시만요…`,
+          text: `${parsed.label}로 고소장 작성을 진행할게요.`,
           time: fmtTime(),
         },
       ]);
@@ -199,10 +199,11 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
       <div
         ref={listRef}
         className={[
-          'flex min-h-0 flex-1 flex-col',
-          'w-[720px] overflow-y-auto rounded-lg border border-gray-300 bg-white px-6 py-3',
+          'flex min-h-0 w-full flex-1 flex-col',
+          'max-w-[720px]',
+          'rounded-200 bg-neutral-0 overflow-y-auto border border-gray-300',
+          'px-6 py-3',
         ].join(' ')}
-        style={{ boxShadow: '0px 4px 8px 0 rgba(0,0,0,0.1)' }}
         role="list"
         aria-label="채팅 메시지"
       >
@@ -218,7 +219,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
         {phase === 'starting' && (
           <ChatBubble
             side="left"
-            text="세션을 준비하고 있어요…"
+            text="잠시만 기다려주세요."
             time={fmtTime()}
             srLabel="바로 타이핑 중"
           />
@@ -226,7 +227,11 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
       </div>
       {/* 하단 입력 바 */}
       <div
-        className="mt-4 flex h-12 w-[720px] items-center justify-between rounded-lg border border-blue-600 bg-white px-[22px] py-2.5"
+        className={[
+          'mt-4 flex h-12 w-full max-w-[720px] items-center justify-between',
+          'rounded-200 bg-neutral-0 border border-blue-400',
+          'px-5 py-2.5',
+        ].join(' ')}
         aria-label="채팅 입력 영역"
       >
         <textarea
@@ -235,21 +240,31 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
           onKeyDown={onKeyDown}
           placeholder={
             phase === 'askOffense'
-              ? '사기죄 또는 모욕죄 중 하나를 입력하세요 (예: 사기죄)'
-              : '여기에 입력하고 Enter로 전송 (줄바꿈은 Shift+Enter)'
+              ? '범죄 유형을 입력하세요. (예: 사기죄)'
+              : '여기에 입력하고 Enter로 전송하세요. (줄바꿈은 Shift+Enter)'
           }
           rows={1}
           aria-label="메시지 입력"
           disabled={inputDisabled}
-          className="mr-2 flex-1 resize-none border-none p-0 text-left text-sm leading-9 font-medium text-gray-700 placeholder:text-gray-500 focus:outline-none disabled:opacity-50"
+          className={[
+            'flex-1 resize-none text-left',
+            'text-detail-regular leading-9',
+            'text-neutral-700 placeholder:text-neutral-500',
+            'focus:outline-none disabled:opacity-50',
+          ].join(' ')}
         />
         <button
           type="button"
           onClick={handleSend}
           disabled={inputDisabled || (phase === 'chatting' && !input.trim())}
-          className="flex h-9 w-[96px] items-center justify-center rounded-2xl border-2 border-blue-600 bg-blue-50 px-3 text-sm font-semibold text-blue-700 disabled:opacity-40"
+          className={[
+            'flex h-9 items-center justify-center',
+            'rounded-400 border-primary-400 bg-primary-50 border-2',
+            'text-body-3-bold text-primary-400',
+            'px-3 disabled:opacity-40',
+          ].join(' ')}
         >
-          보내기
+          전송
         </button>
       </div>
     </section>
