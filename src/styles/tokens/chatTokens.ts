@@ -6,8 +6,8 @@
  * as const를 통해 각 값을 리터럴 타입으로 고정했음
  */
 export const bubblePalette = {
-  bot: { bg: 'bg-blue-50', border: 'border-blue-600', text: 'text-black' },
-  me: { bg: 'bg-white', border: 'border-blue-600', text: 'text-black' },
+  bot: { bg: 'bg-primary-0/50', border: 'border-primary-400', text: 'text-neutral-1000' },
+  me: { bg: 'bg-neutral-0', border: 'border-primary-400', text: 'text-neutral-1000' },
 } as const;
 
 /**

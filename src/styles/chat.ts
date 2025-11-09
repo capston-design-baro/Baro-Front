@@ -11,7 +11,7 @@ export function buildSurface(side: Side) {
     palette.border,
     palette.text,
     'border',
-    'rounded-3xl',
+    'rounded-400',
     corner,
     'px-4',
     'py-2',
@@ -20,7 +20,7 @@ export function buildSurface(side: Side) {
 
 /** 채팅 텍스트 스타일 */
 export function textBase() {
-  return ['text-sm', 'md:text-base', 'break-words', 'whitespace-pre-wrap'].join(' ');
+  return ['text-body-3-regular', 'break-words', 'whitespace-pre-wrap'].join(' ');
 }
 
 /** 타임 스탬프 스타일
@@ -30,8 +30,8 @@ export function textBase() {
 export function buildTime(side: Side) {
   return [
     'mt-1',
-    'text-xs md:text-sm',
-    'text-slate-400',
+    'text-detail-regular',
+    'text-neutral-400',
     'tabular-nums',
     side === 'left' ? 'pl-2' : 'pr-2 text-right',
   ].join(' ');

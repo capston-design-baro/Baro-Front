@@ -1,10 +1,11 @@
-// ComplaintWizardPage.tsx
+import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import WizardProgress from '@/components/WizardProgress';
 import AccusedInfoSection from '@/sections/AccusedInfoSection';
 import type { AccusedInfoSectionHandle } from '@/sections/AccusedInfoSection';
-import ChatInfoSection from '@/sections/ChanInfoSection';
+import ChatInfoSection from '@/sections/ChatInfoSection';
+import ChatWindowSection from '@/sections/ChatWindowSection';
 import ComplainantInfoSection from '@/sections/ComplaintInfoSection';
 import type { ComplainantInfoSectionHandle } from '@/sections/ComplaintInfoSection';
 import ComplaintIntroSection from '@/sections/ComplaintIntroSection';
@@ -21,15 +22,17 @@ const ComplaintWizardPage: React.FC = () => {
   const infoRef = useRef<ComplainantInfoSectionHandle>(null);
   const accusedRef = useRef<AccusedInfoSectionHandle>(null);
 
+  const offense = useComplaintWizard((s) => s.state.offense);
+
   // 고소인 저장 후 받은 complaintId를 보관해서 피고소인 섹션에 넘김
   const [complaintId, setComplaintId] = useState<number | null>(null);
 
-  const handleExit = () => navigate(-1);
+  // 작성 종료 모달 노출 여부
+  const [showExitModal, setShowExitModal] = useState(false);
 
-  const handleGoChat = () => {
-    if (complaintId && Number.isFinite(complaintId)) {
-      navigate(`/complaints/${complaintId}/chat`);
-    }
+  // 상단 "작성 종료" 버튼 클릭 시 바로 나가지 않고 모달 오픈
+  const handleExit = () => {
+    setShowExitModal(true);
   };
 
   const handleNext = async () => {
@@ -43,9 +46,8 @@ const ComplaintWizardPage: React.FC = () => {
     if (step === 1) {
       try {
         const rawId = await infoRef.current?.save();
-        const id = Number(rawId); // ✅ 문자열이어도 숫자로 변환
+        const id = Number(rawId);
         if (Number.isFinite(id) && id > 0) {
-          // ✅ 안전 검증
           setComplaintId(id);
           next();
         } else {
@@ -68,64 +70,70 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    if (step === 3) {
-      handleGoChat();
-      return;
-    }
-
     next();
   };
-
-  const badgeText =
-    step === 0
-      ? '잘 하고 있어요!'
-      : step === 1
-        ? '바로가 도와줄게요!'
-        : step === 2
-          ? '느낌이 좋아요!'
-          : step === 3
-            ? '채팅으로 이어갈게요!'
-            : '잘 하고 있어요!';
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
       <Header />
-      <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2 px-6 py-4">
-        <WizardProgress
-          onExit={handleExit}
-          badgeText={badgeText}
-        />
+      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4">
+        <WizardProgress onExit={handleExit} />
 
-        <div className="mx-auto w-full max-w-[720px]">
-          {step === 0 && <ComplaintIntroSection />}
-          {step === 1 && <ComplainantInfoSection ref={infoRef} />}
-          {step === 2 &&
-            typeof complaintId === 'number' &&
-            Number.isFinite(complaintId) &&
-            complaintId > 0 && (
+        {/* 위자드 본문: 0~3단계 (420px 카드) */}
+        <div className="mx-auto w-full max-w-[420px]">
+          {/* 0단계: 사전 안내 */}
+          <div className={step === 0 ? 'block' : 'hidden'}>
+            <ComplaintIntroSection />
+          </div>
+
+          {/* 1단계: 고소인 정보 */}
+          <div className={step === 1 ? 'block' : 'hidden'}>
+            <ComplainantInfoSection ref={infoRef} />
+          </div>
+
+          {/* 2단계: 피고소인 정보 */}
+          {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
+            <div className={step === 2 ? 'block' : 'hidden'}>
               <AccusedInfoSection
                 ref={accusedRef}
                 complaintId={complaintId}
                 onSaved={() => {
-                  next(); // 피고소인 저장 성공 시 다음 단계로
+                  next();
                 }}
               />
-            )}
-          {step === 3 && <ChatInfoSection />}
+            </div>
+          )}
+
+          {/* 3단계: 채팅 안내 */}
+          <div className={step === 3 ? 'block' : 'hidden'}>
+            <ChatInfoSection />
+          </div>
         </div>
-        <div className="mx-auto mb-14 flex w-full max-w-[720px] items-center justify-center">
-          <div className="flex w-full max-w-[500px] items-center justify-between">
+
+        {/* 4단계: 실제 채팅창 */}
+        {typeof complaintId === 'number' &&
+          Number.isFinite(complaintId) &&
+          complaintId > 0 &&
+          step === 4 && (
+            <ChatWindowSection
+              complaintId={complaintId}
+              offense={offense ?? undefined}
+            />
+          )}
+
+        <div className="mx-auto flex w-full max-w-[420px] items-center justify-center">
+          <div className={['flex w-full', 'items-center justify-between gap-3'].join(' ')}>
             <button
               type="button"
               onClick={prev}
-              className="flex h-12 w-[220px] items-center justify-center rounded-2xl bg-blue-600 px-6 py-[9px] text-2xl font-bold text-white"
+              className="rounded-200 bg-primary-400 text-body-3-bold text-neutral-0 flex h-12 w-[220px] items-center justify-center px-6 py-[9px]"
             >
               이전
             </button>
             <button
               type="button"
               onClick={handleNext}
-              className="flex h-12 w-[220px] items-center justify-center rounded-2xl bg-blue-600 px-6 py-[9px] text-2xl font-bold text-white"
+              className="rounded-200 bg-primary-400 text-body-3-bold text-neutral-0 flex h-12 w-[220px] items-center justify-center px-6 py-[9px]"
             >
               다음
             </button>
@@ -133,6 +141,20 @@ const ComplaintWizardPage: React.FC = () => {
         </div>
       </main>
       <Footer />
+
+      {/* 작성 종료 확인 모달 */}
+      {showExitModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
+          <CharacterModal
+            variant="exit"
+            onCancel={() => setShowExitModal(false)} // 계속 작성하기
+            onConfirm={() => {
+              setShowExitModal(false);
+              navigate(-1); // 진짜 나가기 (이전 페이지로)
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { sendChat, startAiSession } from '@/apis/complaints';
-import { ChatBubble } from '@/components/bubble/ChatBubble';
+import { ChatBubble } from '@/components/ChatBubble';
 import type { Side } from '@/types/side';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -41,6 +41,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
+  const [isBotTyping, setIsBotTyping] = useState(false);
   const [phase, setPhase] = useState<Phase>(offense ? 'starting' : 'askOffense');
   const [chosen, setChosen] = useState<{
     key: 'fraud' | 'insult';
@@ -99,6 +100,10 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
         ]);
         // 다시 죄목부터 물어보도록 되돌리기
         setPhase('askOffense');
+      } finally {
+        if (mounted) {
+          setIsBotTyping(false);
+        }
       }
     })();
     return () => {
@@ -129,7 +134,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
           {
             id: `reprompt-${Date.now()}`,
             side: 'left',
-            text: '죄목을 정확히 입력해주세요: 사기죄 또는 모욕죄 (예: 사기죄)',
+            text: '죄목을 정확히 입력해주세요. (예: 사기죄)',
             time: fmtTime(),
           },
         ]);
@@ -143,7 +148,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
         {
           id: `ack-${Date.now()}`,
           side: 'left',
-          text: `좋아요. ${parsed.label}로 진행할게요. 잠시만요…`,
+          text: `${parsed.label}로 고소장 작성을 진행할게요.`,
           time: fmtTime(),
         },
       ]);
@@ -159,6 +164,8 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
     setInput('');
 
     try {
+      setIsBotTyping(true);
+
       const { reply } = await sendChat(complaintId, aiSessionId, text);
       const botMsg: Msg = { id: `r-${Date.now()}`, side: 'left', text: reply, time: fmtTime() };
       setMsgs((prev) => [...prev, botMsg]);
@@ -172,6 +179,8 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
           time: fmtTime(),
         },
       ]);
+    } finally {
+      setIsBotTyping(false);
     }
   }, [phase, aiSessionId, input, complaintId]);
 
@@ -187,12 +196,22 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
   const inputDisabled = phase === 'starting';
 
   return (
-    <section className="flex h-[680px] w-[720px] flex-col items-center justify-between overflow-hidden px-[110px] py-[60px]">
+    <section
+      className={[
+        'flex flex-col items-center justify-between',
+        'h-[620px] w-full max-w-[1000px]',
+        'bg-neutral-0 pt-6 pb-6',
+      ].join(' ')}
+    >
       {/* 채팅 로그 */}
       <div
         ref={listRef}
-        className="flex h-[500px] w-[720px] flex-col overflow-y-auto rounded-lg border border-gray-300 bg-white px-6 py-3"
-        style={{ boxShadow: '0px 4px 8px 0 rgba(0,0,0,0.1)' }}
+        className={[
+          'flex min-h-0 w-full flex-1 flex-col',
+          'max-w-[720px]',
+          'rounded-200 bg-neutral-0 overflow-y-auto border border-gray-300',
+          'px-6 py-3',
+        ].join(' ')}
         role="list"
         aria-label="채팅 메시지"
       >
@@ -205,19 +224,23 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
             srLabel={`${m.side === 'left' ? '바로' : '사용자'} 메시지`}
           />
         ))}
-        {phase === 'starting' && (
+        {isBotTyping && (
           <ChatBubble
             side="left"
-            text="세션을 준비하고 있어요…"
+            text="..." // 실제 텍스트는 isTyping일 때는 안 보이고, 점 애니메이션만 보임
             time={fmtTime()}
-            srLabel="바로 타이핑 중"
+            srLabel="바로가 입력 중입니다."
+            isTyping
           />
         )}
       </div>
-
       {/* 하단 입력 바 */}
       <div
-        className="flex h-12 w-[720px] items-center justify-between rounded-lg border border-blue-600 bg-white px-[22px] py-2.5"
+        className={[
+          'mt-4 flex h-12 w-full max-w-[720px] items-center justify-between',
+          'rounded-200 bg-neutral-0 border border-blue-400',
+          'px-5 py-2.5',
+        ].join(' ')}
         aria-label="채팅 입력 영역"
       >
         <textarea
@@ -226,21 +249,31 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
           onKeyDown={onKeyDown}
           placeholder={
             phase === 'askOffense'
-              ? '사기죄 또는 모욕죄 중 하나를 입력하세요 (예: 사기죄)'
-              : '여기에 입력하고 Enter로 전송 (줄바꿈은 Shift+Enter)'
+              ? '범죄 유형을 입력하세요. (예: 사기죄)'
+              : '여기에 입력하고 Enter로 전송하세요. (줄바꿈은 Shift+Enter)'
           }
           rows={1}
           aria-label="메시지 입력"
           disabled={inputDisabled}
-          className="mr-2 flex-1 resize-none border-none p-0 text-left text-sm leading-9 font-medium text-gray-700 placeholder:text-gray-500 focus:outline-none disabled:opacity-50"
+          className={[
+            'flex-1 resize-none text-left',
+            'text-detail-regular leading-9',
+            'text-neutral-700 placeholder:text-neutral-500',
+            'focus:outline-none disabled:opacity-50',
+          ].join(' ')}
         />
         <button
           type="button"
           onClick={handleSend}
           disabled={inputDisabled || (phase === 'chatting' && !input.trim())}
-          className="flex h-9 w-[96px] items-center justify-center rounded-2xl border-2 border-blue-600 bg-blue-50 px-3 text-sm font-semibold text-blue-700 disabled:opacity-40"
+          className={[
+            'flex h-9 items-center justify-center',
+            'rounded-400 border-primary-400 bg-primary-50 border-2',
+            'text-body-3-bold text-primary-400',
+            'px-3 disabled:opacity-40',
+          ].join(' ')}
         >
-          보내기
+          전송
         </button>
       </div>
     </section>

@@ -19,6 +19,7 @@ export type PrecheckQuestion = {
   title: string; // 질문 문구
   hintIcon?: 'info' | 'alert'; // 보조 아이콘 타입
   kind: QuestionKind; // 질문 유형
+  description?: string; // Tooltip 등에서 사용할 상세 설명
 
   // kind === 'confirm' 일 때 사용
   confirmChip?: ConfirmChip;
@@ -35,3 +36,7 @@ export type WizardState = {
 };
 
 export type OffenseType = '사기죄' | '모욕죄';
+
+export type ComplaintWizardState = WizardState & {
+  offense: OffenseType | null;
+};

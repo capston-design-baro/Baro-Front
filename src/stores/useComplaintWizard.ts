@@ -1,5 +1,4 @@
-import type { BinaryAnswer, PrecheckQuestion, WizardState } from '@/types/complaint';
-import type { OffenseType } from '@/types/complaint';
+import type { BinaryAnswer, ComplaintWizardState, PrecheckQuestion } from '@/types/complaint';
 import { create } from 'zustand';
 
 // 사전 확인 질문 목록
@@ -10,6 +9,7 @@ const initialPrechecks: PrecheckQuestion[] = [
     hintIcon: 'info',
     kind: 'binary',
     answer: null,
+    description: '이미 동일한 사건으로 고소나 진정을 한 경우, 중복 접수로 처리될 수 있습니다.',
   },
   {
     id: 'withdrawnBefore',
@@ -17,6 +17,8 @@ const initialPrechecks: PrecheckQuestion[] = [
     hintIcon: 'info',
     kind: 'binary',
     answer: null,
+    description:
+      '이전에 같은 사건을 취하한 이력이 있는 경우, 다시 고소하는 데 제한이 있을 수 있습니다.',
   },
   {
     id: 'knowFalseAccusation',
@@ -28,18 +30,21 @@ const initialPrechecks: PrecheckQuestion[] = [
       label: '관련 안내를 확인했습니다.',
       checked: false,
     },
+    description: '사실이 아닌 내용을 고의로 신고할 경우 무고죄로 처벌될 수 있습니다.',
   },
 ];
 
 export type ComplaintWizardStore = {
   // 마법사 전역 상태 -> 현재 단계, 총 단계 수, 사전확인 질문들 등
-  state: WizardState & {
-    offense: OffenseType | null; // 선택된 죄목
-  };
-  setOffense: (offense: OffenseType) => void;
+  state: ComplaintWizardState;
+
+  setOffense: (offense: ComplaintWizardState['offense']) => void;
 
   // 사용자가 다음을 눌렸는지 여부
   triedNext: boolean;
+
+  // 어떤 사전 질문 때문에 진행이 막혔는지 (툴팁 열어줄 대상)
+  blockedPrecheckId: string | null;
 
   // 모든 질문이 충족되었는지 여부
   allChecked: () => boolean;
@@ -72,12 +77,13 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
     offense: null,
   },
   triedNext: false,
+  blockedPrecheckId: null,
 
   // 모든 질문 충족 여부 계산
   allChecked: () => {
     const { prechecks } = get().state;
     return prechecks.every((q) =>
-      q.kind === 'confirm' ? !!q.confirmChip?.checked : q.answer !== null,
+      q.kind === 'confirm' ? !!q.confirmChip?.checked : q.answer != null,
     );
   },
 
@@ -85,6 +91,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
   toggleConfirm: (questionId: string) => {
     set(({ state }) => ({
       triedNext: false,
+      blockedPrecheckId: null,
       state: {
         ...state,
         prechecks: state.prechecks.map((q) =>
@@ -100,6 +107,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
   setBinaryAnswer: (questionId: string, answer: BinaryAnswer) => {
     set(({ state }) => ({
       triedNext: false,
+      blockedPrecheckId: null,
       state: {
         ...state,
         prechecks: state.prechecks.map((q) =>
@@ -123,6 +131,20 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
 
   // 다음 단계로 이동을 시도해봄
   attemptNext: () => {
+    const { prechecks } = get().state;
+
+    const q1 = prechecks.find((q) => q.id === 'alreadyFiled');
+    const q2 = prechecks.find((q) => q.id === 'withdrawnBefore');
+
+    // 1, 2번 질문 중 하나라도 "예"이면 다음 단계 막고 툴팁 타깃 지정
+    if (q1?.answer === 'yes' || q2?.answer === 'yes') {
+      set({
+        triedNext: true,
+        blockedPrecheckId: q1?.answer === 'yes' ? q1.id : (q2?.id ?? null),
+      });
+      return;
+    }
+
     // 모든 질문에 체크했으면 triedNext를 끄고 다음 단계로 넘어감
     if (get().allChecked()) {
       set({ triedNext: false });
@@ -141,7 +163,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
     return Math.round(((step + 1) / stepsTotal) * 100);
   },
 
-  setOffense: (offense: OffenseType) =>
+  setOffense: (offense) =>
     set(({ state }) => ({
       state: { ...state, offense },
     })),

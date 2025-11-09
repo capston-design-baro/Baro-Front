@@ -8,9 +8,10 @@ type BubbleProps = {
   text: string; // 채팅 메시지 텍스트
   time: string; // 타임스탬프
   srLabel: string; // 스크린리더 접근성 레이블
+  isTyping?: boolean;
 };
 
-export function ChatBubble({ side, text, time, srLabel }: BubbleProps) {
+export function ChatBubble({ side, text, time, srLabel, isTyping }: BubbleProps) {
   // 말풍선의 최대 폭 클래스
   const widthClasses = bubbleWidthClasses;
 
@@ -36,10 +37,18 @@ export function ChatBubble({ side, text, time, srLabel }: BubbleProps) {
 
           {/* 실제 메시지 텍스트 */}
           <p
-            ref={pRef}
+            ref={isTyping ? undefined : pRef}
             className={`${textBase()} ${alignClass}`}
           >
-            {text}
+            {isTyping ? (
+              <span className="inline-flex items-center gap-1 px-4">
+                <span className="bg-primary-200 h-[5px] w-[5px] animate-bounce rounded-full" />
+                <span className="bg-primary-300 h-[5px] w-[5px] animate-bounce rounded-full [animation-delay:0.15s]" />
+                <span className="bg-primary-400 h-[5px] w-[5px] animate-bounce rounded-full [animation-delay:0.3s]" />
+              </span>
+            ) : (
+              text
+            )}
           </p>
         </div>
 

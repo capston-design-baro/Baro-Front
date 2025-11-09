@@ -1,3 +1,4 @@
+import FormErrorMessage from '@/components/FormErrorMessage';
 import React, { useState } from 'react';
 
 type SignupProfileData = {
@@ -83,7 +84,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
               className="material-symbols-outlined text-primary-600/50"
               style={{ fontSize: '24px' }}
             >
-              people
+              person
             </span>
             <input
               id="name"
@@ -211,12 +212,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
       </div>
 
       {/* 경고 문구 */}
-      <div
-        aria-live="polite"
-        className="mb-4 flex min-h-[24px] justify-center"
-      >
-        {error && <p className="text-body-3-regular text-warning-200">{error}</p>}
-      </div>
+      <FormErrorMessage error={error} />
 
       <div className="flex gap-4">
         <button
