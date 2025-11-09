@@ -200,7 +200,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
       className={[
         'flex flex-col items-center justify-between',
         'h-[620px] w-full max-w-[1000px]',
-        'bg-neutral-0 pb-6',
+        'bg-neutral-0 pt-6 pb-6',
       ].join(' ')}
     >
       {/* 채팅 로그 */}

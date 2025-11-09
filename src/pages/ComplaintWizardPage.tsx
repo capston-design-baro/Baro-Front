@@ -115,12 +115,10 @@ const ComplaintWizardPage: React.FC = () => {
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 4 && (
-            <div className="mx-auto flex w-full justify-center">
-              <ChatWindowSection
-                complaintId={complaintId}
-                offense={offense ?? undefined}
-              />
-            </div>
+            <ChatWindowSection
+              complaintId={complaintId}
+              offense={offense ?? undefined}
+            />
           )}
 
         <div className="mx-auto flex w-full max-w-[420px] items-center justify-center">
