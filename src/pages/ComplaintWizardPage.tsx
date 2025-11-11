@@ -1,3 +1,4 @@
+import { generateFinal } from '@/apis/complaints';
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -9,6 +10,7 @@ import ChatWindowSection from '@/sections/ChatWindowSection';
 import ComplainantInfoSection from '@/sections/ComplaintInfoSection';
 import type { ComplainantInfoSectionHandle } from '@/sections/ComplaintInfoSection';
 import ComplaintIntroSection from '@/sections/ComplaintIntroSection';
+import ComplaintPreviewSection from '@/sections/ComplaintPreviewSection';
 import { useComplaintWizard } from '@/stores/useComplaintWizard';
 import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -26,6 +28,10 @@ const ComplaintWizardPage: React.FC = () => {
 
   // 고소인 저장 후 받은 complaintId를 보관해서 피고소인 섹션에 넘김
   const [complaintId, setComplaintId] = useState<number | null>(null);
+
+  // AI가 생성한 최종 고소장 텍스트
+  const [generatedComplaint, setGeneratedComplaint] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // 작성 종료 모달 노출 여부
   const [showExitModal, setShowExitModal] = useState(false);
@@ -66,6 +72,24 @@ const ComplaintWizardPage: React.FC = () => {
         // onSaved 에서 next() 호출
       } catch {
         // 섹션 내부에서 에러 처리
+      }
+      return;
+    }
+
+    // step 4 (AI 채팅 후 고소장 생성)
+    if (step === 4) {
+      if (!complaintId) return;
+
+      try {
+        setIsGenerating(true);
+        const res = await generateFinal(complaintId);
+        setGeneratedComplaint(res.generated_complaint);
+        next(); // step 5로 이동
+      } catch (e) {
+        console.error('failed to generate complaint', e);
+        // TODO: 토스트 / 알럿으로 사용자에게 안내
+      } finally {
+        setIsGenerating(false);
       }
       return;
     }
@@ -121,6 +145,20 @@ const ComplaintWizardPage: React.FC = () => {
             />
           )}
 
+        {/* 5단계: 완성된 고소장 미리보기 */}
+        {typeof complaintId === 'number' &&
+          Number.isFinite(complaintId) &&
+          complaintId > 0 &&
+          step === 5 &&
+          generatedComplaint && (
+            <div className="mx-auto mt-6 flex w-full justify-center">
+              <ComplaintPreviewSection
+                complaintId={complaintId}
+                content={generatedComplaint}
+              />
+            </div>
+          )}
+
         <div className="mx-auto flex w-full max-w-[420px] items-center justify-center">
           <div className={['flex w-full', 'items-center justify-between gap-3'].join(' ')}>
             <button
@@ -133,6 +171,7 @@ const ComplaintWizardPage: React.FC = () => {
             <button
               type="button"
               onClick={handleNext}
+              disabled={isGenerating}
               className="rounded-200 bg-primary-400 text-body-3-bold text-neutral-0 flex h-12 w-[220px] items-center justify-center px-6 py-[9px]"
             >
               다음
