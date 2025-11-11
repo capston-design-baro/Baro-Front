@@ -2,6 +2,7 @@ import { generateFinal } from '@/apis/complaints';
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import WizardNavButtons from '@/components/WizardNavButtons';
 import WizardProgress from '@/components/WizardProgress';
 import AccusedInfoSection from '@/sections/AccusedInfoSection';
 import type { AccusedInfoSectionHandle } from '@/sections/AccusedInfoSection';
@@ -20,6 +21,7 @@ const ComplaintWizardPage: React.FC = () => {
   const step = useComplaintWizard((s) => s.state.step);
   const next = useComplaintWizard((s) => s.attemptNext);
   const prev = useComplaintWizard((s) => s.prev);
+  const resetWizard = useComplaintWizard((s) => s.reset);
 
   const infoRef = useRef<ComplainantInfoSectionHandle>(null);
   const accusedRef = useRef<AccusedInfoSectionHandle>(null);
@@ -159,25 +161,12 @@ const ComplaintWizardPage: React.FC = () => {
             </div>
           )}
 
-        <div className="mx-auto flex w-full max-w-[420px] items-center justify-center">
-          <div className={['flex w-full', 'items-center justify-between gap-3'].join(' ')}>
-            <button
-              type="button"
-              onClick={prev}
-              className="rounded-200 bg-primary-400 text-body-3-bold text-neutral-0 flex h-12 w-[220px] items-center justify-center px-6 py-[9px]"
-            >
-              이전
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={isGenerating}
-              className="rounded-200 bg-primary-400 text-body-3-bold text-neutral-0 flex h-12 w-[220px] items-center justify-center px-6 py-[9px]"
-            >
-              다음
-            </button>
-          </div>
-        </div>
+        <WizardNavButtons
+          onPrev={prev}
+          onNext={handleNext}
+          isNextDisabled={isGenerating}
+          disablePrev={step === 0 || step === 4} // 필요하면
+        />
       </main>
       <Footer />
 
@@ -189,7 +178,8 @@ const ComplaintWizardPage: React.FC = () => {
             onCancel={() => setShowExitModal(false)} // 계속 작성하기
             onConfirm={() => {
               setShowExitModal(false);
-              navigate(-1); // 진짜 나가기 (이전 페이지로)
+              resetWizard();
+              navigate('/'); // 진짜 나가기
             }}
           />
         </div>
