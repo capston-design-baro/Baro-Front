@@ -21,6 +21,7 @@ const ComplaintWizardPage: React.FC = () => {
   const step = useComplaintWizard((s) => s.state.step);
   const next = useComplaintWizard((s) => s.attemptNext);
   const prev = useComplaintWizard((s) => s.prev);
+  const resetWizard = useComplaintWizard((s) => s.reset);
 
   const infoRef = useRef<ComplainantInfoSectionHandle>(null);
   const accusedRef = useRef<AccusedInfoSectionHandle>(null);
@@ -177,6 +178,7 @@ const ComplaintWizardPage: React.FC = () => {
             onCancel={() => setShowExitModal(false)} // 계속 작성하기
             onConfirm={() => {
               setShowExitModal(false);
+              resetWizard();
               navigate('/'); // 진짜 나가기
             }}
           />

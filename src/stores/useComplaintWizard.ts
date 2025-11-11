@@ -34,6 +34,13 @@ const initialPrechecks: PrecheckQuestion[] = [
   },
 ];
 
+const INITIAL_STATE: ComplaintWizardState = {
+  step: 0,
+  stepsTotal: 10,
+  prechecks: initialPrechecks,
+  offense: null,
+};
+
 export type ComplaintWizardStore = {
   // 마법사 전역 상태 -> 현재 단계, 총 단계 수, 사전확인 질문들 등
   state: ComplaintWizardState;
@@ -66,16 +73,14 @@ export type ComplaintWizardStore = {
 
   // “다음” 시도 핸들러 -> 모두 체크면 다음 단계로, 아니면 경고만 켜기
   attemptNext: () => void;
+
+  // 마법사 전체를 초기 상태로 되돌리기
+  reset: () => void;
 };
 
 // zustand 스토어 생성
 export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
-  state: {
-    step: 0,
-    stepsTotal: 10,
-    prechecks: initialPrechecks,
-    offense: null,
-  },
+  state: INITIAL_STATE,
   triedNext: false,
   blockedPrecheckId: null,
 
@@ -167,4 +172,11 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
     set(({ state }) => ({
       state: { ...state, offense },
     })),
+
+  reset: () =>
+    set({
+      state: INITIAL_STATE,
+      triedNext: false,
+      blockedPrecheckId: null,
+    }),
 }));
