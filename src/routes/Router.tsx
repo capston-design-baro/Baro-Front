@@ -1,5 +1,6 @@
 import AgreementsPage from '@/pages/AgreementPage';
 import ComplaintWizardPage from '@/pages/ComplaintWizardPage';
+import FaqPage from '@/pages/FaqPage';
 import LoginPage from '@/pages/LoginPage';
 import MainPage from '@/pages/MainPage';
 import SignupPage from '@/pages/SignupPage';
@@ -40,6 +41,14 @@ const Router = () => {
         <Route
           path="/complaint"
           element={<ComplaintWizardPage />}
+        />
+      }
+
+      {/* "/faq" 경로 */}
+      {
+        <Route
+          path="/faq"
+          element={<FaqPage />}
         />
       }
     </Routes>
