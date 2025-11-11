@@ -63,7 +63,7 @@ const CrimeTypeSection: React.FC = () => {
           })}
         </div>
 
-        {/* 좌측 카테고리 목록 + 우측 상세 */}
+        {/* 카테고리 목록 + 상세 보기 */}
         <div className="grid gap-8 md:grid-cols-[260px,1fr]">
           {/* 카테고리 리스트 */}
           <aside className="rounded-200 flex flex-col gap-2 bg-neutral-50 p-4">
@@ -78,13 +78,13 @@ const CrimeTypeSection: React.FC = () => {
                   className={[
                     'text-body-3 rounded-200 flex w-full items-center justify-between px-3 py-2 text-left transition-colors',
                     isActive
-                      ? 'bg-primary-50 text-primary-700'
+                      ? 'bg-primary-50 text-primary-500'
                       : 'text-neutral-700 hover:bg-neutral-100',
                   ].join(' ')}
                 >
                   <span>{cat.name}</span>
                   {isActive && (
-                    <span className="material-symbols-outlined text-primary-500 text-sm">
+                    <span className="material-symbols-outlined text-primary-400">
                       arrow_forward
                     </span>
                   )}
