@@ -21,7 +21,7 @@ const FaqSection: React.FC = () => {
 
   return (
     <section className="bg-neutral-0 w-full">
-      <div className="mx-auto flex max-w-[960px] flex-col items-center gap-15 px-4 py-16">
+      <div className="mx-auto flex max-w-[960px] flex-col items-center gap-20 px-4 py-16">
         {/* 상단 타이틀 영역 */}
         <IntroHeader
           title="자주 하는 질문"
@@ -31,7 +31,7 @@ const FaqSection: React.FC = () => {
         />
 
         {/* FAQ 리스트 + 페이지네이션 묶음 -> 높이 고정 */}
-        <div className="flex min-h-[500px] w-full flex-col justify-between">
+        <div className="flex min-h-[550px] w-full flex-col justify-between">
           {/* FAQ 리스트 (한 화면에 최대 3개) */}
           <div className="flex w-full flex-1 flex-col gap-10">
             {visibleFaqs.map((item) => (
@@ -43,7 +43,7 @@ const FaqSection: React.FC = () => {
           </div>
 
           {/* 페이지네이션 버튼 */}
-          <div className="mt-4 flex items-center justify-center gap-3">
+          <div className="mt-8 flex items-center justify-center gap-3">
             {Array.from({ length: totalPages }).map((_, idx) => {
               const isActive = idx === currentPage;
               return (
