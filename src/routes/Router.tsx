@@ -3,6 +3,7 @@ import ComplaintWizardPage from '@/pages/ComplaintWizardPage';
 import FaqPage from '@/pages/FaqPage';
 import LoginPage from '@/pages/LoginPage';
 import MainPage from '@/pages/MainPage';
+import CrimeTypePage from '@/pages/PrecedentPage';
 import SignupPage from '@/pages/SignupPage';
 import { Route, Routes } from 'react-router-dom';
 
@@ -51,6 +52,12 @@ const Router = () => {
           element={<FaqPage />}
         />
       }
+
+      {/* "/precedent" 경로 */}
+      <Route
+        path="/precedent"
+        element={<CrimeTypePage />}
+      />
     </Routes>
   );
 };
