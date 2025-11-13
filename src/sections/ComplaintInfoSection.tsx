@@ -1,16 +1,27 @@
 import { getMe } from '@/apis/auth';
-import { createComplaint } from '@/apis/complaints';
 import FormErrorMessage from '@/components/FormErrorMessage';
 import IntroHeader from '@/components/IntroHeader';
 import { splitAddressTo3FromString, splitPhoneKR } from '@/utils/krContact';
 import type { AxiosError } from 'axios';
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 
+// 부모에서 사용할 타입
+export type ComplaintBasicInfo = {
+  name: string;
+  email: string;
+  address: string;
+  phone: string;
+  unknownName: boolean;
+  unknownEmail: boolean;
+  unknownAddr: boolean;
+  unknownPhone: boolean;
+};
+
 // 부모 컴포넌트에서 save()를 직접 호출할 수 있도록 인터페이스 정의
 type Props = { onLoaded?: () => void };
 
 export type ComplainantInfoSectionHandle = {
-  save: () => Promise<number>;
+  save: () => Promise<ComplaintBasicInfo>;
 };
 
 const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
@@ -28,7 +39,6 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
     const [p3, setP3] = useState('');
 
     // UI 상태 관리
-    const [loading, setLoading] = useState(false);
     const [err, setErr] = useState<string | null>(null); // 에러 메시지만 유지
 
     const renderLabel = (text: string, required: boolean) => {
@@ -77,46 +87,37 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
       }
     };
 
-    // 저장 로직
-    const doSave = async (): Promise<number> => {
+    // 기본 정보 객체 만들기
+    const buildBasicInfo = (): ComplaintBasicInfo => {
       setErr(null);
 
-      if (!name.trim()) throw new Error('필수 항목을 입력해주세요.');
+      if (!name.trim()) {
+        const msg = '필수 항목을 입력해주세요.';
+        setErr(msg);
+        throw new Error(msg);
+      }
+
       const address = [addr1, addr2, addr3].filter(Boolean).join(' ').trim();
       const phone = [p1, p2, p3].join('-').replace(/--+/g, '-').trim();
 
-      try {
-        const res = await createComplaint({
-          complainant_name: name.trim(),
-          complainant_address: address,
-          complainant_phone: phone,
-        });
-
-        onLoaded?.();
-        const id = Number(res?.id);
-        if (!Number.isFinite(id) || id <= 0) {
-          throw new Error('유효하지 않은 complaint id');
-        }
-        return id;
-      } catch (e: unknown) {
-        const ax = e as AxiosError | undefined;
-        const status = ax?.response?.status;
-
-        if (status === 422) throw new Error('입력값 형식을 확인해주세요.');
-        if (status === 401) throw new Error('로그인이 필요해요. 다시 로그인 후 시도해주세요.');
-        if (status === 403) throw new Error('접근 권한이 없어요.');
-        if (status === 404) throw new Error('API 경로가 없어요.');
-        throw new Error('저장 중 문제가 발생했습니다.');
-      } finally {
-        setLoading(false);
-      }
+      return {
+        name: name.trim(),
+        email: email.trim(),
+        address,
+        phone,
+        // 아직 "모름/비공개" 체크 UI가 없으니 기본값은 false
+        unknownName: false,
+        unknownEmail: false,
+        unknownAddr: false,
+        unknownPhone: false,
+      };
     };
 
     useImperativeHandle(ref, () => ({
       save: async () => {
         try {
-          const id = await doSave();
-          return id;
+          const info = buildBasicInfo();
+          return info;
         } catch (e: unknown) {
           const msg = (e as { message?: string })?.message ?? '에러가 발생했습니다.';
           setErr(msg);
@@ -127,15 +128,19 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
-      void doSave().catch((e) => {
-        const msg = (e as { message?: string })?.message ?? '에러가 발생했습니다.';
-        setErr(msg);
-      });
+      try {
+        const info = buildBasicInfo();
+        // 이 폼에서 직접 submit 버튼 눌렀을 때도 onLoaded 호출할지 여부는 선택
+        onLoaded?.();
+        // submit 시에는 그냥 검증 성공만 해도 되기 때문에 추가 동작은 선택사항
+        void info; // eslint 안 쓰게 한줄
+      } catch {
+        // 에러는 buildBasicInfo 안에서 setErr로 처리됨
+      }
     };
 
     return (
       <section
-        aria-busy={loading}
         className={[
           'flex flex-col items-center justify-between',
           'h-[680px] w-full max-w-[1000px]',
