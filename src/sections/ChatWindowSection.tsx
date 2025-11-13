@@ -199,7 +199,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
     <section
       className={[
         'flex flex-col items-center justify-between',
-        'h-[680px] w-full max-w-[1000px]',
+        'mx-auto h-[680px] w-full max-w-[1000px]',
         'bg-neutral-0 pt-6 pb-6',
       ].join(' ')}
     >
