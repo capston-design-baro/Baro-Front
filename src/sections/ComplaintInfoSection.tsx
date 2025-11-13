@@ -19,6 +19,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
     // 입력값 상태 관리
     const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [addr1, setAddr1] = useState('');
     const [addr2, setAddr2] = useState('');
     const [addr3, setAddr3] = useState('');
@@ -56,6 +57,8 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
         const me = await getMe();
 
         setName(me.name ?? '');
+        setEmail(me.email ?? '');
+
         const { a1, a2, a3 } = splitAddressTo3FromString(me.address);
         setAddr1(a1);
         setAddr2(a2);
@@ -135,7 +138,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
         aria-busy={loading}
         className={[
           'flex flex-col items-center justify-between',
-          'h-[620px] w-full max-w-[1000px]',
+          'h-[680px] w-full max-w-[1000px]',
           'pb-6',
           'bg-neutral-0',
         ].join(' ')}
@@ -195,6 +198,32 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
                   placeholder="홍길동"
+                />
+              </div>
+            </div>
+
+            {/* 이메일 */}
+            <div className="flex flex-col gap-2">
+              {renderLabel('이메일', false)} {/* 필수로 바꾸고 싶으면 true */}
+              <div className="flex items-center gap-4">
+                <span
+                  className="material-symbols-outlined text-primary-600/50"
+                  style={{ fontSize: '24px' }}
+                >
+                  email
+                </span>
+                <input
+                  id="email"
+                  type="email"
+                  className={[
+                    'rounded-200 h-10 flex-1 px-3',
+                    'border border-neutral-300',
+                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                  ].join(' ')}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  placeholder="example@email.com"
                 />
               </div>
             </div>
