@@ -10,8 +10,14 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 /** 고소인 정보 등록 -> Complaint 생성 */
 export type ComplainantInfoCreate = {
   complainant_name: string;
+  complainant_email: string;
   complainant_address: string;
   complainant_phone: string;
+
+  complainant_occupation: string;
+  complainant_office_address: string;
+  complainant_office_phone: string;
+  complainant_home_phone: string;
 };
 
 export type Complaint = {
@@ -31,8 +37,14 @@ export async function createComplaint(data: ComplainantInfoCreate): Promise<Comp
 /** 피고소인 정보 등록 */
 export type AccusedInfoCreate = {
   accused_name: string;
+  accused_email: string;
   accused_address: string;
   accused_phone: string;
+
+  accused_occupation: string;
+  accused_office_address: string;
+  accused_office_phone: string;
+  accused_home_phone: string;
 };
 
 export async function registerAccused(complaintId: number, data: AccusedInfoCreate) {
