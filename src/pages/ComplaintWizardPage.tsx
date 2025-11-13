@@ -1,11 +1,17 @@
-import { generateFinal } from '@/apis/complaints';
+import { type AccusedInfoCreate, generateFinal, registerAccused } from '@/apis/complaints';
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import WizardNavButtons from '@/components/WizardNavButtons';
 import WizardProgress from '@/components/WizardProgress';
-import AccusedInfoSection from '@/sections/AccusedInfoSection';
-import type { AccusedInfoSectionHandle } from '@/sections/AccusedInfoSection';
+import AccusedExtraInfoSection, {
+  type AccusedExtraInfo,
+  type AccusedExtraInfoSectionHandle,
+} from '@/sections/AccusedExtraInfoSection';
+import AccusedInfoSection, {
+  type AccusedBasicInfo,
+  type AccusedInfoSectionHandle,
+} from '@/sections/AccusedInfoSection';
 import ChatInfoSection from '@/sections/ChatInfoSection';
 import ChatWindowSection from '@/sections/ChatWindowSection';
 import ComplainantInfoSection from '@/sections/ComplaintInfoSection';
@@ -25,11 +31,15 @@ const ComplaintWizardPage: React.FC = () => {
 
   const infoRef = useRef<ComplainantInfoSectionHandle>(null);
   const accusedRef = useRef<AccusedInfoSectionHandle>(null);
+  const accusedExtraRef = useRef<AccusedExtraInfoSectionHandle>(null);
 
   const offense = useComplaintWizard((s) => s.state.offense);
 
   // 고소인 저장 후 받은 complaintId를 보관해서 피고소인 섹션에 넘김
   const [complaintId, setComplaintId] = useState<number | null>(null);
+
+  // 피고소인 기본 정보 (섹션 1에서 받은 값)
+  const [accusedBasicInfo, setAccusedBasicInfo] = useState<AccusedBasicInfo | null>(null);
 
   // AI가 생성한 최종 고소장 텍스트
   const [generatedComplaint, setGeneratedComplaint] = useState<string | null>(null);
@@ -70,16 +80,47 @@ const ComplaintWizardPage: React.FC = () => {
     // step 2 (피고소인 정보)
     if (step === 2) {
       try {
-        await accusedRef.current?.save();
-        // onSaved 에서 next() 호출
+        const basic = await accusedRef.current?.save();
+        if (basic) {
+          setAccusedBasicInfo(basic);
+          next(); // → step 3 (추가 정보 섹션으로 이동)
+        }
       } catch {
         // 섹션 내부에서 에러 처리
       }
       return;
     }
 
-    // step 4 (AI 채팅 후 고소장 생성)
-    if (step === 4) {
+    // step 3 (피고소인 추가 정보 입력 + 서버에 최종 한 번 저장)
+    if (step === 3) {
+      if (!complaintId || !accusedBasicInfo) return;
+      if (!accusedExtraRef.current) return;
+
+      try {
+        const extra: AccusedExtraInfo = await accusedExtraRef.current.save();
+
+        const payload: AccusedInfoCreate = {
+          accused_name: accusedBasicInfo.name,
+          accused_email: accusedBasicInfo.email,
+          accused_address: accusedBasicInfo.address,
+          accused_phone: accusedBasicInfo.phone,
+          accused_occupation: extra.occupation,
+          accused_office_address: extra.officeAddress,
+          accused_office_phone: extra.officePhone,
+          accused_home_phone: extra.homePhone,
+        };
+
+        await registerAccused(complaintId, payload);
+        next(); // step 4 (채팅 안내)
+      } catch (e) {
+        console.error('failed to register accused info', e);
+        // TODO: 토스트 / 알럿으로 사용자에게 안내
+      }
+      return;
+    }
+
+    // step 5 (AI 채팅 후 고소장 생성)
+    if (step === 5) {
       if (!complaintId) return;
 
       try {
@@ -117,21 +158,28 @@ const ComplaintWizardPage: React.FC = () => {
             <ComplainantInfoSection ref={infoRef} />
           </div>
 
-          {/* 2단계: 피고소인 정보 */}
+          {/* 2단계: 피고소인 기본 정보 */}
           {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
             <div className={step === 2 ? 'block' : 'hidden'}>
               <AccusedInfoSection
                 ref={accusedRef}
                 complaintId={complaintId}
-                onSaved={() => {
-                  next();
-                }}
               />
             </div>
           )}
 
-          {/* 3단계: 채팅 안내 */}
-          <div className={step === 3 ? 'block' : 'hidden'}>
+          {/* 3단계: 피고소인 추가 정보 */}
+          {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
+            <div className={step === 3 ? 'block' : 'hidden'}>
+              <AccusedExtraInfoSection
+                ref={accusedExtraRef}
+                complaintId={complaintId}
+              />
+            </div>
+          )}
+
+          {/* 4단계: 채팅 안내 */}
+          <div className={step === 4 ? 'block' : 'hidden'}>
             <ChatInfoSection />
           </div>
         </div>
@@ -140,7 +188,7 @@ const ComplaintWizardPage: React.FC = () => {
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
-          step === 4 && (
+          step === 5 && (
             <ChatWindowSection
               complaintId={complaintId}
               offense={offense ?? undefined}
@@ -151,7 +199,7 @@ const ComplaintWizardPage: React.FC = () => {
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
-          step === 5 &&
+          step === 6 &&
           generatedComplaint && (
             <div className="mx-auto mt-6 flex w-full justify-center">
               <ComplaintPreviewSection
