@@ -7,6 +7,16 @@ const api = axiosInstance;
 // API 기본 prefix
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+/** 사전 확인 */
+export const registerRelatedCases = (
+  complaintId: number,
+  payload: {
+    duplicate_complaint: boolean;
+    related_criminal_case: boolean;
+    related_civil_case: boolean;
+  },
+) => api.post(`${BASE_URL}/complaints/info/related-cases/${complaintId}`, payload);
+
 /** 고소인 정보 등록 -> Complaint 생성 */
 export type ComplainantInfoCreate = {
   complainant_name: string;
@@ -77,11 +87,41 @@ export async function sendChat(complaintId: number, aiSessionId: string, message
 /** 최종 고소장 생성 */
 export async function generateFinal(complaintId: number) {
   const res = await api.post(`${BASE_URL}/complaints/${complaintId}/generate`);
-  return res.data as {
+  const data = res.data as {
     complaint_id: number;
-    generated_complaint: string;
+    criminal_facts: string;
+    accusation_reason: string;
     status: 'completed';
   };
+
+  // 위자드에서 쓰기 편하게 가공해서 리턴
+  return {
+    complaint_id: data.complaint_id,
+    status: data.status,
+    criminal_facts: data.criminal_facts,
+    accusation_reason: data.accusation_reason,
+    generated_complaint: `[범죄 사실]\n${data.criminal_facts}\n\n[고소 이유]\n${data.accusation_reason}`,
+  };
+}
+
+/** DOCX 고소장 다운로드 */
+export async function downloadComplaintDocx(complaintId: number) {
+  const res = await api.get(`${BASE_URL}/complaints/${complaintId}/download`, {
+    responseType: 'blob', // 파일(binary)로 받기
+  });
+
+  const blob = new Blob([res.data], {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  });
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `고소장_${complaintId}.docx`; // 파일 이름
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
 }
 
 /** 내 고소장 목록 */

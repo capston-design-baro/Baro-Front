@@ -14,6 +14,7 @@ type Props = {
   complaintId: number; // 고소장 ID
   offense?: string; // 선택: 미지정 시 채팅에서 먼저 물어봄
   onReady?: (aiSessionId: string) => void;
+  onComplete?: () => void;
 };
 
 // 타임스탬프 표시
@@ -35,7 +36,7 @@ function parseOffense(
 
 type Phase = 'askOffense' | 'starting' | 'chatting';
 
-const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) => {
+const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onComplete }) => {
   const listRef = useRef<HTMLDivElement>(null);
 
   const [aiSessionId, setAiSessionId] = useState<string | null>(null);
@@ -47,6 +48,8 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
     key: 'fraud' | 'insult';
     label: '사기죄' | '모욕죄';
   } | null>(offense ? (parseOffense(offense) ?? { key: 'fraud', label: '사기죄' }) : null);
+
+  const [isCompleted, setIsCompleted] = useState(false);
 
   // 최초 마운트: offense가 없으면 죄목 질문부터
   useEffect(() => {
@@ -119,6 +122,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
   const handleSend = useCallback(async () => {
     const text = input.trim();
     if (!text) return;
+    if (isCompleted) return;
 
     // 1) 아직 세션 전: 죄목 선택 단계 처리
     if (phase === 'askOffense') {
@@ -159,7 +163,13 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
     // 2) 채팅 단계: 일반 채팅 처리
     if (phase !== 'chatting' || !aiSessionId) return;
 
-    const userMsg: Msg = { id: `m-${Date.now()}`, side: 'right', text, time: fmtTime() };
+    // 사용자 메시지 추가
+    const userMsg: Msg = {
+      id: `m-${Date.now()}`,
+      side: 'right',
+      text,
+      time: fmtTime(),
+    };
     setMsgs((prev) => [...prev, userMsg]);
     setInput('');
 
@@ -167,8 +177,38 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
       setIsBotTyping(true);
 
       const { reply } = await sendChat(complaintId, aiSessionId, text);
-      const botMsg: Msg = { id: `r-${Date.now()}`, side: 'left', text: reply, time: fmtTime() };
-      setMsgs((prev) => [...prev, botMsg]);
+
+      // AI 답변 버블
+      const botMsg: Msg = {
+        id: `r-${Date.now()}`,
+        side: 'left',
+        text: reply,
+        time: fmtTime(),
+      };
+
+      const donePhrase = '필수 정보가 충족되었습니다. 고소장을 작성해드릴게요.';
+      const isDoneReply = reply.includes(donePhrase);
+
+      setMsgs((prev) => {
+        const nextMsgs = [...prev, botMsg];
+
+        if (isDoneReply) {
+          const guideMsg: Msg = {
+            id: `done-guide-${Date.now()}`,
+            side: 'left',
+            text: '필수 정보가 모두 확인되었어요. 이제 화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
+            time: fmtTime(),
+          };
+          nextMsgs.push(guideMsg);
+        }
+
+        return nextMsgs;
+      });
+
+      if (isDoneReply) {
+        setIsCompleted(true); // 입력 잠금
+        onComplete?.(); // 부모 위자드에게 “채팅 끝!” 알림
+      }
     } catch {
       setMsgs((prev) => [
         ...prev,
@@ -182,7 +222,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
     } finally {
       setIsBotTyping(false);
     }
-  }, [phase, aiSessionId, input, complaintId]);
+  }, [phase, aiSessionId, input, complaintId, isCompleted, onComplete]);
 
   // Enter 전송 / Shift+Enter 줄바꿈
   const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
@@ -193,7 +233,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady }) =
   };
 
   // 하단 입력 비활성화 규칙: 'starting' 단계에서만 입력 잠금(세션 시작 중)
-  const inputDisabled = phase === 'starting';
+  const inputDisabled = phase === 'starting' || isCompleted;
 
   return (
     <section

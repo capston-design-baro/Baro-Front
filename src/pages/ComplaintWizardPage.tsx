@@ -1,4 +1,9 @@
-import { type AccusedInfoCreate, generateFinal, registerAccused } from '@/apis/complaints';
+import {
+  type AccusedInfoCreate,
+  generateFinal,
+  registerAccused,
+  registerRelatedCases,
+} from '@/apis/complaints';
 import type { ComplainantInfoCreate } from '@/apis/complaints';
 import { createComplaint } from '@/apis/complaints';
 import CharacterModal from '@/components/CharacterModal';
@@ -16,6 +21,7 @@ import AccusedInfoSection, {
 } from '@/sections/AccusedInfoSection';
 import ChatInfoSection from '@/sections/ChatInfoSection';
 import ChatWindowSection from '@/sections/ChatWindowSection';
+import ComplaintDownloadSection from '@/sections/ComplaintDownloadSection';
 import type { ComplainantExtraInfoSectionHandle } from '@/sections/ComplaintExtraInfoSection';
 import type { ComplainantExtraInfo } from '@/sections/ComplaintExtraInfoSection';
 import ComplainantExtraInfoSection from '@/sections/ComplaintExtraInfoSection';
@@ -34,6 +40,7 @@ const ComplaintWizardPage: React.FC = () => {
   const next = useComplaintWizard((s) => s.attemptNext);
   const prev = useComplaintWizard((s) => s.prev);
   const resetWizard = useComplaintWizard((s) => s.reset);
+  const [isChatCompleted, setIsChatCompleted] = useState(false);
 
   const complainantRef = useRef<ComplainantInfoSectionHandle>(null);
   const complainantExtraRef = useRef<ComplainantExtraInfoSectionHandle>(null);
@@ -108,6 +115,19 @@ const ComplaintWizardPage: React.FC = () => {
         }
 
         setComplaintId(id);
+
+        const prechecks = useComplaintWizard.getState().state.prechecks;
+
+        const criminal = prechecks.find((q) => q.id === 'alreadyCriminalFiled');
+        const civil = prechecks.find((q) => q.id === 'alreadyCivilFiled');
+        const withdrawn = prechecks.find((q) => q.id === 'withdrawnBefore');
+
+        await registerRelatedCases(id, {
+          duplicate_complaint: withdrawn?.answer === 'yes',
+          related_criminal_case: criminal?.answer === 'yes',
+          related_civil_case: civil?.answer === 'yes',
+        });
+
         next(); // → step 3 (피고소인 기본 정보)
       } catch (e) {
         console.error('failed to create complaint', e);
@@ -169,10 +189,10 @@ const ComplaintWizardPage: React.FC = () => {
         next(); // step 5로 이동
       } catch (e) {
         console.error('failed to generate complaint', e);
-        // TODO: 토스트 / 알럿으로 사용자에게 안내
       } finally {
         setIsGenerating(false);
       }
+
       return;
     }
 
@@ -182,7 +202,7 @@ const ComplaintWizardPage: React.FC = () => {
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
       <Header />
-      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4">
+      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col overflow-hidden px-6 py-4">
         <WizardProgress onExit={handleExit} />
 
         {/* 위자드 본문: 0~3단계 (420px 카드) */}
@@ -233,10 +253,13 @@ const ComplaintWizardPage: React.FC = () => {
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 6 && (
-            <ChatWindowSection
-              complaintId={complaintId}
-              offense={offense ?? undefined}
-            />
+            <div className="mt-6 flex flex-1 justify-center overflow-hidden">
+              <ChatWindowSection
+                complaintId={complaintId}
+                offense={offense ?? undefined}
+                onComplete={() => setIsChatCompleted(true)}
+              />
+            </div>
           )}
 
         {/* 7단계: 완성된 고소장 미리보기 */}
@@ -245,19 +268,23 @@ const ComplaintWizardPage: React.FC = () => {
           complaintId > 0 &&
           step === 7 &&
           generatedComplaint && (
-            <div className="mx-auto mt-6 flex w-full justify-center">
-              <ComplaintPreviewSection
-                complaintId={complaintId}
-                content={generatedComplaint}
-              />
-            </div>
+            <ComplaintPreviewSection
+              complaintId={complaintId}
+              content={generatedComplaint}
+            />
           )}
+
+        {/* 8단계: DOCX 다운로드 섹션 */}
+        {typeof complaintId === 'number' &&
+          Number.isFinite(complaintId) &&
+          complaintId > 0 &&
+          step === 8 && <ComplaintDownloadSection complaintId={complaintId} />}
 
         <WizardNavButtons
           onPrev={prev}
           onNext={handleNext}
-          isNextDisabled={isGenerating}
-          disablePrev={step === 0 || step === 4} // 필요하면
+          isNextDisabled={isGenerating || (step === 6 && !isChatCompleted)}
+          disablePrev={step === 0 || step === 4}
         />
       </main>
       <Footer />

@@ -1,3 +1,4 @@
+import IntroHeader from '@/components/IntroHeader';
 import React from 'react';
 
 type ComplaintPreviewSectionProps = {
@@ -13,23 +14,27 @@ const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
     <section
       aria-label={`고소장 미리보기 (ID: ${complaintId})`}
       className={[
-        'flex flex-col items-center justify-start',
-        'w-full max-w-[720px]',
-        'bg-neutral-0',
+        'flex flex-col items-center justify-between',
+        'mx-auto h-[680px] w-full max-w-[480px]',
+        'bg-neutral-0 pt-6 pb-6',
       ].join(' ')}
     >
-      <div className="w-full">
-        <h2 className="text-heading-3-bold text-neutral-900">완성된 고소장 미리보기</h2>
-        <p className="text-body-3-regular mt-2 text-neutral-600">
-          아래 내용은 AI가 초안으로 작성한 고소장입니다. 필요한 부분은 이후 단계에서 수정·보완할 수
-          있습니다.
-        </p>
-      </div>
+      <IntroHeader
+        title="완성된 고소장 미리 보기"
+        lines={[
+          '바로가 완성한 고소장 초안이에요.',
+          '모두 정확히 작성 됐는지 확인해보고,',
+          '다음으로 넘어가서 다운로드 받아 보세요.',
+        ]}
+        center
+        showArrow
+      />
 
       <div
         className={[
-          'mt-4 h-[420px] w-full',
-          'rounded-200 bg-neutral-0 overflow-y-auto border border-neutral-200',
+          'items-center justify-center',
+          'overflow-y-auto', // 세로 스크롤
+          'rounded-200 bg-neutral-0 border border-neutral-200',
           'px-5 py-4',
         ].join(' ')}
       >
