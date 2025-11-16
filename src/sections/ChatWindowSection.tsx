@@ -163,8 +163,6 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
     // 2) 채팅 단계: 일반 채팅 처리
     if (phase !== 'chatting' || !aiSessionId) return;
 
-    const isDoneCommand = text === '작성완료';
-
     // 사용자 메시지 추가
     const userMsg: Msg = {
       id: `m-${Date.now()}`,
@@ -178,7 +176,6 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
     try {
       setIsBotTyping(true);
 
-      // 항상 AI에 전송
       const { reply } = await sendChat(complaintId, aiSessionId, text);
 
       // AI 답변 버블
@@ -188,20 +185,29 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
         text: reply,
         time: fmtTime(),
       };
-      setMsgs((prev) => [...prev, botMsg]);
 
-      // ✅ 작성완료 명령이면 추가 처리
-      if (isDoneCommand) {
-        const guideMsg: Msg = {
-          id: `done-ack-${Date.now()}`,
-          side: 'left',
-          text: '이제 화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
-          time: fmtTime(),
-        };
-        setMsgs((prev) => [...prev, guideMsg]);
+      const donePhrase = '필수 정보가 충족되었습니다. 고소장을 작성해드릴게요.';
+      const isDoneReply = reply.includes(donePhrase);
 
+      setMsgs((prev) => {
+        const nextMsgs = [...prev, botMsg];
+
+        if (isDoneReply) {
+          const guideMsg: Msg = {
+            id: `done-guide-${Date.now()}`,
+            side: 'left',
+            text: '필수 정보가 모두 확인되었어요. 이제 화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
+            time: fmtTime(),
+          };
+          nextMsgs.push(guideMsg);
+        }
+
+        return nextMsgs;
+      });
+
+      if (isDoneReply) {
         setIsCompleted(true); // 입력 잠금
-        onComplete?.(); // 부모 위자드에게 완료 알림
+        onComplete?.(); // 부모 위자드에게 “채팅 끝!” 알림
       }
     } catch {
       setMsgs((prev) => [

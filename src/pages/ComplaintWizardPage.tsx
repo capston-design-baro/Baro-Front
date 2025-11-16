@@ -1,4 +1,4 @@
-import { type AccusedInfoCreate, registerAccused } from '@/apis/complaints';
+import { type AccusedInfoCreate, generateFinal, registerAccused } from '@/apis/complaints';
 import type { ComplainantInfoCreate } from '@/apis/complaints';
 import { createComplaint } from '@/apis/complaints';
 import CharacterModal from '@/components/CharacterModal';
@@ -164,39 +164,6 @@ const ComplaintWizardPage: React.FC = () => {
     if (step === 6) {
       if (!complaintId) return;
 
-      // TODO: 나중에 실제 AI 연동되면 generateFinal 호출로 다시 바꾸기
-      try {
-        setIsGenerating(true);
-        const mockCriminalFacts = `2025년 10월경, 피고소인은 카카오톡 메신저를 통해
-고소인에게 "원금과 수익금을 합쳐 300만 원을 보장해 주겠다"고 말하며
-투자를 권유하였습니다.
-
-고소인은 피고소인의 말을 믿고, 같은 해 10월 15일경
-피고소인이 지정한 계좌(국민은행 123456-78-901234)로
-총 300만 원을 송금하였습니다.
-
-그러나 그 이후 피고소인은 고소인에게 약속한 수익금을 지급하지 않았을 뿐 아니라,
-투자 원금 반환 요구에도 응하지 않은 채 연락을 회피하였습니다.`;
-
-        const mockAccusationReason = `피고소인의 위와 같은 행위는
-형법 제347조 제1항의 사기죄에 해당합니다.
-
-피고소인은 처음부터 정상적인 투자나 원금/수익금 지급 의사 없이
-고소인을 기망하여 재산상 이득을 취득한 것으로 보이며,
-이에 고소인은 피고소인을 형법 제347조 제1항(사기죄) 위반으로
-엄중히 처벌해주시기를 바랍니다.`;
-
-        const merged = `${mockCriminalFacts}\n\n${mockAccusationReason}`;
-
-        setGeneratedComplaint(merged);
-        next();
-      } finally {
-        setIsGenerating(false); // 로딩 끝
-      }
-
-      /* 서버 코드 수정되면 다시 복구할 예정
-      if (!complaintId) return;
-
       try {
         setIsGenerating(true);
         const res = await generateFinal(complaintId);
@@ -204,12 +171,9 @@ const ComplaintWizardPage: React.FC = () => {
         next(); // step 5로 이동
       } catch (e) {
         console.error('failed to generate complaint', e);
-        // TODO: 토스트 / 알럿으로 사용자에게 안내
       } finally {
         setIsGenerating(false);
       }
-      return;
-      */
 
       return;
     }
@@ -220,7 +184,7 @@ const ComplaintWizardPage: React.FC = () => {
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
       <Header />
-      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4">
+      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col overflow-hidden px-6 py-4">
         <WizardProgress onExit={handleExit} />
 
         {/* 위자드 본문: 0~3단계 (420px 카드) */}
@@ -271,11 +235,13 @@ const ComplaintWizardPage: React.FC = () => {
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 6 && (
-            <ChatWindowSection
-              complaintId={complaintId}
-              offense={offense ?? undefined}
-              onComplete={() => setIsChatCompleted(true)}
-            />
+            <div className="mt-6 flex flex-1 justify-center overflow-hidden">
+              <ChatWindowSection
+                complaintId={complaintId}
+                offense={offense ?? undefined}
+                onComplete={() => setIsChatCompleted(true)}
+              />
+            </div>
           )}
 
         {/* 7단계: 완성된 고소장 미리보기 */}

@@ -15,16 +15,16 @@ const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
       aria-label={`고소장 미리보기 (ID: ${complaintId})`}
       className={[
         'flex flex-col items-center justify-between',
-        'mx-auto h-[680px] w-full max-w-[1000px]',
+        'mx-auto h-[680px] w-full max-w-[480px]',
         'bg-neutral-0 pt-6 pb-6',
       ].join(' ')}
     >
       <IntroHeader
         title="완성된 고소장 미리 보기"
         lines={[
-          '고소장 작성 전에 확인해야 할 것들이 있어요.',
-          '고소장 접수가 불가능할 수도 있으니',
-          '솔직하게 체크해주세요.',
+          '바로가 완성한 고소장 초안이에요.',
+          '모두 정확히 작성 됐는지 확인해보고,',
+          '다음으로 넘어가서 다운로드 받아 보세요.',
         ]}
         center
         showArrow
