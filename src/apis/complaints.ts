@@ -7,6 +7,16 @@ const api = axiosInstance;
 // API 기본 prefix
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+/** 사전 확인 */
+export const registerRelatedCases = (
+  complaintId: number,
+  payload: {
+    duplicate_complaint: boolean;
+    related_criminal_case: boolean;
+    related_civil_case: boolean;
+  },
+) => api.post(`${BASE_URL}/complaints/info/related-cases/${complaintId}`, payload);
+
 /** 고소인 정보 등록 -> Complaint 생성 */
 export type ComplainantInfoCreate = {
   complainant_name: string;
@@ -90,7 +100,7 @@ export async function generateFinal(complaintId: number) {
     status: data.status,
     criminal_facts: data.criminal_facts,
     accusation_reason: data.accusation_reason,
-    generated_complaint: `$[범죄 사실]\n{data.criminal_facts}\n\n[고소 이유]\n${data.accusation_reason}`,
+    generated_complaint: `[범죄 사실]\n${data.criminal_facts}\n\n[고소 이유]\n${data.accusation_reason}`,
   };
 }
 

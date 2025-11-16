@@ -4,12 +4,21 @@ import { create } from 'zustand';
 // 사전 확인 질문 목록
 const initialPrechecks: PrecheckQuestion[] = [
   {
-    id: 'alreadyFiled',
-    title: '이 사건에 대해 고소하거나 진정한 적이 있나요?',
+    id: 'alreadyCriminalFiled',
+    title: '이 사건에 대해 형사 고소(고소장 제출)를 한 적이 있나요?',
     hintIcon: 'info',
     kind: 'binary',
     answer: null,
-    description: '이미 동일한 사건으로 고소나 진정을 한 경우, 중복 접수로 처리될 수 있습니다.',
+    description: '이미 동일한 사건으로 형사 고소를 한 경우, 중복 접수로 처리될 수 있습니다.',
+  },
+  {
+    id: 'alreadyCivilFiled',
+    title: '이 사건에 대해 민사 소송(손해배상 청구 등)을 제기한 적이 있나요?',
+    hintIcon: 'info',
+    kind: 'binary',
+    answer: null,
+    description:
+      '이미 동일한 사건으로 민사 소송을 진행 중인 경우, 형사 고소보다 민사 절차를 우선 검토해야 할 수 있습니다.',
   },
   {
     id: 'withdrawnBefore',
@@ -138,14 +147,20 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
   attemptNext: () => {
     const { prechecks } = get().state;
 
-    const q1 = prechecks.find((q) => q.id === 'alreadyFiled');
-    const q2 = prechecks.find((q) => q.id === 'withdrawnBefore');
+    const criminal = prechecks.find((q) => q.id === 'alreadyCriminalFiled');
+    const civil = prechecks.find((q) => q.id === 'alreadyCivilFiled');
+    const withdrawn = prechecks.find((q) => q.id === 'withdrawnBefore');
 
-    // 1, 2번 질문 중 하나라도 "예"이면 다음 단계 막고 툴팁 타깃 지정
-    if (q1?.answer === 'yes' || q2?.answer === 'yes') {
+    // 형사 / 민사 / 취하 질문 중 하나라도 "예"면 다음 단계 막고 툴팁 타깃 지정
+    if (criminal?.answer === 'yes' || civil?.answer === 'yes' || withdrawn?.answer === 'yes') {
       set({
         triedNext: true,
-        blockedPrecheckId: q1?.answer === 'yes' ? q1.id : (q2?.id ?? null),
+        blockedPrecheckId:
+          criminal?.answer === 'yes'
+            ? criminal.id
+            : civil?.answer === 'yes'
+              ? civil.id
+              : (withdrawn?.id ?? null),
       });
       return;
     }
