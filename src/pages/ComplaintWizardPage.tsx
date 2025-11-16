@@ -1,4 +1,4 @@
-import { type AccusedInfoCreate, generateFinal, registerAccused } from '@/apis/complaints';
+import { type AccusedInfoCreate, registerAccused } from '@/apis/complaints';
 import type { ComplainantInfoCreate } from '@/apis/complaints';
 import { createComplaint } from '@/apis/complaints';
 import CharacterModal from '@/components/CharacterModal';
@@ -34,6 +34,7 @@ const ComplaintWizardPage: React.FC = () => {
   const next = useComplaintWizard((s) => s.attemptNext);
   const prev = useComplaintWizard((s) => s.prev);
   const resetWizard = useComplaintWizard((s) => s.reset);
+  const [isChatCompleted, setIsChatCompleted] = useState(false);
 
   const complainantRef = useRef<ComplainantInfoSectionHandle>(null);
   const complainantExtraRef = useRef<ComplainantExtraInfoSectionHandle>(null);
@@ -162,6 +163,39 @@ const ComplaintWizardPage: React.FC = () => {
     if (step === 6) {
       if (!complaintId) return;
 
+      // TODO: 나중에 실제 AI 연동되면 generateFinal 호출로 다시 바꾸기
+      try {
+        setIsGenerating(true);
+        const mockCriminalFacts = `2025년 10월경, 피고소인은 카카오톡 메신저를 통해
+고소인에게 "원금과 수익금을 합쳐 300만 원을 보장해 주겠다"고 말하며
+투자를 권유하였습니다.
+
+고소인은 피고소인의 말을 믿고, 같은 해 10월 15일경
+피고소인이 지정한 계좌(국민은행 123456-78-901234)로
+총 300만 원을 송금하였습니다.
+
+그러나 그 이후 피고소인은 고소인에게 약속한 수익금을 지급하지 않았을 뿐 아니라,
+투자 원금 반환 요구에도 응하지 않은 채 연락을 회피하였습니다.`;
+
+        const mockAccusationReason = `피고소인의 위와 같은 행위는
+형법 제347조 제1항의 사기죄에 해당합니다.
+
+피고소인은 처음부터 정상적인 투자나 원금/수익금 지급 의사 없이
+고소인을 기망하여 재산상 이득을 취득한 것으로 보이며,
+이에 고소인은 피고소인을 형법 제347조 제1항(사기죄) 위반으로
+엄중히 처벌해주시기를 바랍니다.`;
+
+        const merged = `${mockCriminalFacts}\n\n${mockAccusationReason}`;
+
+        setGeneratedComplaint(merged);
+        next();
+      } finally {
+        setIsGenerating(false); // 로딩 끝
+      }
+
+      /* 서버 코드 수정되면 다시 복구할 예정
+      if (!complaintId) return;
+
       try {
         setIsGenerating(true);
         const res = await generateFinal(complaintId);
@@ -173,6 +207,9 @@ const ComplaintWizardPage: React.FC = () => {
       } finally {
         setIsGenerating(false);
       }
+      return;
+      */
+
       return;
     }
 
@@ -236,6 +273,7 @@ const ComplaintWizardPage: React.FC = () => {
             <ChatWindowSection
               complaintId={complaintId}
               offense={offense ?? undefined}
+              onComplete={() => setIsChatCompleted(true)}
             />
           )}
 
@@ -245,19 +283,17 @@ const ComplaintWizardPage: React.FC = () => {
           complaintId > 0 &&
           step === 7 &&
           generatedComplaint && (
-            <div className="mx-auto mt-6 flex w-full justify-center">
-              <ComplaintPreviewSection
-                complaintId={complaintId}
-                content={generatedComplaint}
-              />
-            </div>
+            <ComplaintPreviewSection
+              complaintId={complaintId}
+              content={generatedComplaint}
+            />
           )}
 
         <WizardNavButtons
           onPrev={prev}
           onNext={handleNext}
-          isNextDisabled={isGenerating}
-          disablePrev={step === 0 || step === 4} // 필요하면
+          isNextDisabled={isGenerating || (step === 6 && !isChatCompleted)}
+          disablePrev={step === 0 || step === 4}
         />
       </main>
       <Footer />

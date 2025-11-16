@@ -77,10 +77,20 @@ export async function sendChat(complaintId: number, aiSessionId: string, message
 /** 최종 고소장 생성 */
 export async function generateFinal(complaintId: number) {
   const res = await api.post(`${BASE_URL}/complaints/${complaintId}/generate`);
-  return res.data as {
+  const data = res.data as {
     complaint_id: number;
-    generated_complaint: string;
+    criminal_facts: string;
+    accusation_reason: string;
     status: 'completed';
+  };
+
+  // 위자드에서 쓰기 편하게 가공해서 리턴
+  return {
+    complaint_id: data.complaint_id,
+    status: data.status,
+    criminal_facts: data.criminal_facts,
+    accusation_reason: data.accusation_reason,
+    generated_complaint: `$[범죄 사실]\n{data.criminal_facts}\n\n[고소 이유]\n${data.accusation_reason}`,
   };
 }
 
