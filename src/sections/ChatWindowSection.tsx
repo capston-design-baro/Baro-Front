@@ -163,38 +163,46 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
     // 2) 채팅 단계: 일반 채팅 처리
     if (phase !== 'chatting' || !aiSessionId) return;
 
-    if (text === '작성완료') {
-      const userMsg: Msg = {
-        id: `done-${Date.now()}`,
-        side: 'right',
-        text,
-        time: fmtTime(),
-      };
+    const isDoneCommand = text === '작성완료';
 
-      const botMsg: Msg = {
-        id: `done-ack-${Date.now()}`,
-        side: 'left',
-        text: '이제 화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
-        time: fmtTime(),
-      };
-
-      setMsgs((prev) => [...prev, userMsg, botMsg]);
-      setInput('');
-      setIsCompleted(true); // 입력 잠금
-      onComplete?.(); // 부모 위자드에게 완료 알림
-      return;
-    }
-
-    const userMsg: Msg = { id: `m-${Date.now()}`, side: 'right', text, time: fmtTime() };
+    // 사용자 메시지 추가
+    const userMsg: Msg = {
+      id: `m-${Date.now()}`,
+      side: 'right',
+      text,
+      time: fmtTime(),
+    };
     setMsgs((prev) => [...prev, userMsg]);
     setInput('');
 
     try {
       setIsBotTyping(true);
 
+      // 항상 AI에 전송
       const { reply } = await sendChat(complaintId, aiSessionId, text);
-      const botMsg: Msg = { id: `r-${Date.now()}`, side: 'left', text: reply, time: fmtTime() };
+
+      // AI 답변 버블
+      const botMsg: Msg = {
+        id: `r-${Date.now()}`,
+        side: 'left',
+        text: reply,
+        time: fmtTime(),
+      };
       setMsgs((prev) => [...prev, botMsg]);
+
+      // ✅ 작성완료 명령이면 추가 처리
+      if (isDoneCommand) {
+        const guideMsg: Msg = {
+          id: `done-ack-${Date.now()}`,
+          side: 'left',
+          text: '이제 화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
+          time: fmtTime(),
+        };
+        setMsgs((prev) => [...prev, guideMsg]);
+
+        setIsCompleted(true); // 입력 잠금
+        onComplete?.(); // 부모 위자드에게 완료 알림
+      }
     } catch {
       setMsgs((prev) => [
         ...prev,
@@ -208,7 +216,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
     } finally {
       setIsBotTyping(false);
     }
-  }, [phase, aiSessionId, input, complaintId, onComplete]);
+  }, [phase, aiSessionId, input, complaintId, isCompleted, onComplete]);
 
   // Enter 전송 / Shift+Enter 줄바꿈
   const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {

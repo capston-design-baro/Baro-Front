@@ -94,6 +94,26 @@ export async function generateFinal(complaintId: number) {
   };
 }
 
+/** DOCX 고소장 다운로드 */
+export async function downloadComplaintDocx(complaintId: number) {
+  const res = await api.get(`${BASE_URL}/complaints/${complaintId}/download`, {
+    responseType: 'blob', // 파일(binary)로 받기
+  });
+
+  const blob = new Blob([res.data], {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  });
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `고소장_${complaintId}.docx`; // 파일 이름
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}
+
 /** 내 고소장 목록 */
 export async function getMyComplaints() {
   const res = await api.get(`${BASE_URL}/complaints`);

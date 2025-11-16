@@ -16,6 +16,7 @@ import AccusedInfoSection, {
 } from '@/sections/AccusedInfoSection';
 import ChatInfoSection from '@/sections/ChatInfoSection';
 import ChatWindowSection from '@/sections/ChatWindowSection';
+import ComplaintDownloadSection from '@/sections/ComplaintDownloadSection';
 import type { ComplainantExtraInfoSectionHandle } from '@/sections/ComplaintExtraInfoSection';
 import type { ComplainantExtraInfo } from '@/sections/ComplaintExtraInfoSection';
 import ComplainantExtraInfoSection from '@/sections/ComplaintExtraInfoSection';
@@ -288,6 +289,12 @@ const ComplaintWizardPage: React.FC = () => {
               content={generatedComplaint}
             />
           )}
+
+        {/* 8단계: DOCX 다운로드 섹션 */}
+        {typeof complaintId === 'number' &&
+          Number.isFinite(complaintId) &&
+          complaintId > 0 &&
+          step === 8 && <ComplaintDownloadSection complaintId={complaintId} />}
 
         <WizardNavButtons
           onPrev={prev}
