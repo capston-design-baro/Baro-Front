@@ -1,5 +1,4 @@
-import { applyTokens } from '@/apis/axiosInstance';
-import axiosInstance from '@/apis/axiosInstance';
+import axiosInstance, { applyTokens } from '@/apis/axiosInstance';
 import { ACCESS_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE } from '@/constants/auth';
 import { useUserStore } from '@/stores/useUserStore';
 import type {
@@ -15,6 +14,7 @@ import { Cookies } from 'react-cookie';
 // 쿠키 관리 객체 생성
 const cookies = new Cookies();
 
+// 폼 값을 로그인 요청 dto로 변환
 function toLoginRequestDto(values: LoginFormValues): LoginRequestDto {
   return {
     email: values.email.trim(),
@@ -22,6 +22,7 @@ function toLoginRequestDto(values: LoginFormValues): LoginRequestDto {
   };
 }
 
+// 폼 값을 회원가입 요청 dto로 변환
 function toRegisterRequestDto(values: RegisterFormValues): RegisterRequestDto {
   const { email, name, password } = values;
   const { address, phone_number } = values;
@@ -48,11 +49,8 @@ function toRegisterRequestDto(values: RegisterFormValues): RegisterRequestDto {
 }
 
 // 로그인
-// -> 응답으로 acces token이랑 refresh token을 발급받음
-// -> 토큰을 쿠키에 저장하고, zustand user 상태 업데이트
 export async function login(values: LoginFormValues): Promise<TokenResponse> {
   const body = toLoginRequestDto(values);
-
   const { data } = await axiosInstance.post<TokenResponse>(`/auth/login`, body);
 
   applyTokens(data);
@@ -73,13 +71,11 @@ export async function getMe(): Promise<UserResponse> {
 // 회원가입
 export async function register(values: RegisterFormValues): Promise<UserResponse> {
   const body = toRegisterRequestDto(values);
-
   const { data } = await axiosInstance.post<UserResponse>(`/auth/register`, body);
-
   return data;
 }
 
-// 토큰 갱신 -> refreshToken을 이용해 accessToken을 재발급
+// (수동) 토큰 갱신 -> refreshToken을 이용해 accessToken을 재발급
 export async function refreshAccessToken(refreshTokenArg?: string) {
   const refreshToken = refreshTokenArg ?? cookies.get(REFRESH_COOKIE);
   if (!refreshToken) throw new Error('NO_REFRESH_TOKEN');
