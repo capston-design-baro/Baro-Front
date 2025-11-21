@@ -1,5 +1,5 @@
 import { register } from '@/apis/auth';
-import type { RegisterRequest } from '@/types/auth';
+import type { RegisterFormValues } from '@/types/auth';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -57,7 +57,7 @@ const SignupCard: React.FC = () => {
     const nextData = { ...formData, ...partialData };
     setFormData(nextData);
 
-    const payload: RegisterRequest = {
+    const payload: RegisterFormValues = {
       email: nextData.email,
       name: nextData.name,
       password: nextData.password,
