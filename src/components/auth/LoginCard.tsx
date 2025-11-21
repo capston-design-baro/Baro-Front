@@ -1,12 +1,14 @@
 import FormErrorMessage from '@/components/FormErrorMessage';
-import type { LoginCardProps } from '@/types/auth';
+import type { LoginCardProps, LoginFormValues } from '@/types/auth';
 import React, { useState } from 'react';
 
 const SIGNUP_HREF = './terms';
 
 const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [pw, setPw] = useState('');
+  const [values, setValues] = useState<LoginFormValues>({
+    email: '',
+    password: '',
+  });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -16,7 +18,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
 
     try {
       if (onLogin) {
-        await onLogin(email, pw);
+        await onLogin(values);
       } else {
         // 기본 동작 (API 연결 전 임시): 실패 예시
         throw new Error('NO_API');
@@ -68,8 +70,8 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
                 'border border-neutral-300',
                 'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
               ].join(' ')}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={values.email}
+              onChange={(e) => setValues((prev) => ({ ...prev, email: e.target.value }))}
               required
               autoComplete="email"
             />
@@ -94,8 +96,8 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
                 'border border-neutral-300',
                 'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
               ].join(' ')}
-              value={pw}
-              onChange={(e) => setPw(e.target.value)}
+              value={values.password}
+              onChange={(e) => setValues((prev) => ({ ...prev, password: e.target.value }))}
               required
               autoComplete="current-password"
             />

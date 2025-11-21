@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import LoginCard from '@/components/auth/LoginCard';
 import WelcomeCard from '@/components/auth/WelcomeCard';
 import useIsMdUp from '@/hooks/useIsMdUp';
+import type { LoginFormValues } from '@/types/auth';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,10 +12,8 @@ const LoginPage: React.FC = () => {
   const isMdUp = useIsMdUp(); // md 이상일 때만 true
   const navigate = useNavigate();
 
-  const handleLogin = async (email: string, password: string) => {
-    // 1) 로그인 → 토큰 쿠키 저장 + axios 헤더 설정
-    await login({ email, password });
-
+  const handleLogin = async (values: LoginFormValues) => {
+    await login(values);
     navigate('/');
   };
 
