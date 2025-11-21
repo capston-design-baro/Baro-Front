@@ -6,14 +6,18 @@ import {
   REFRESH_MAX_AGE,
 } from '@/constants/auth';
 import type { TokenResponse } from '@/types/auth';
-import { AxiosError, AxiosHeaders } from 'axios';
-import type { InternalAxiosRequestConfig } from 'axios';
-import axios from 'axios';
+import axios, { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import { Cookies } from 'react-cookie';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const cookies = new Cookies();
 
+// 401 재시도 여부 플래그가 있는 요청 config
+type RetryableRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+};
+
+// 토큰을 쿠키에 저장
 export function applyTokens(data: TokenResponse) {
   const { access_token, refresh_token } = data;
 
@@ -30,6 +34,13 @@ export function applyTokens(data: TokenResponse) {
   }
 }
 
+// refresh 실패 시 인증 정리 후 로그인 페이지로 이동
+function clearAuthAndRedirect() {
+  cookies.remove(ACCESS_COOKIE, { path: COOKIE_OPTIONS.path });
+  cookies.remove(REFRESH_COOKIE, { path: COOKIE_OPTIONS.path });
+  window.location.assign('/login');
+}
+
 // Axios 인스턴스 생성
 const axiosInstance = axios.create({ baseURL: BASE_URL });
 
@@ -38,7 +49,7 @@ function ensureHeaders(cfg: InternalAxiosRequestConfig): AxiosHeaders {
   if (cfg.headers instanceof AxiosHeaders) return cfg.headers;
 
   const headers = AxiosHeaders.from(cfg.headers ?? {});
-  cfg.headers = headers; // AxiosRequestHeaders로 안전하게 대입
+  cfg.headers = headers;
   return headers;
 }
 
@@ -79,15 +90,25 @@ async function doRefresh() {
   applyTokens(data);
 }
 
+// 새 accessToken으로 원래 요청 재시도
+function retryWithNewAccessToken(original: RetryableRequestConfig) {
+  const access = cookies.get(ACCESS_COOKIE);
+  if (access) {
+    removeRequestAuthHeader(original);
+    setRequestAuthHeader(original, access);
+  }
+
+  original._retry = true;
+  return axiosInstance(original);
+}
+
 // 응답 인터셉터 -> 응답에서 401 Unauthorized가 나오면 refreshToken으로 토큰 재발급 시도
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
     const status = error.response?.status;
+    const original = error.config as RetryableRequestConfig | undefined;
 
-    const original = error.config as
-      | (InternalAxiosRequestConfig & { _retry?: boolean })
-      | undefined;
     const url = original?.url ?? '';
     const isRefreshCall = url.includes('/auth/refresh');
 
@@ -99,15 +120,7 @@ axiosInstance.interceptors.response.use(
       if (isRefreshing) {
         // 이미 갱신 중이면 → 큐에 넣고 완료될 때까지 대기
         await new Promise<void>((resolve) => queue.push(resolve));
-        original._retry = true;
-
-        // 대기 끝나면 새 accessToken으로 Authorization 붙여서 재요청
-        const access = cookies.get(ACCESS_COOKIE);
-        if (access) {
-          removeRequestAuthHeader(original);
-          setRequestAuthHeader(original, access);
-        }
-        return axiosInstance(original);
+        return retryWithNewAccessToken(original);
       }
 
       try {
@@ -119,21 +132,10 @@ axiosInstance.interceptors.response.use(
         queue.forEach((fn) => fn());
         queue = [];
 
-        original._retry = true;
-
-        // 새 accessToken으로 헤더 갱신 후 원래 요청 다시 실행
-        const access = cookies.get(ACCESS_COOKIE);
-        if (access) {
-          removeRequestAuthHeader(original);
-          setRequestAuthHeader(original, access);
-        }
-        return axiosInstance(original);
+        return retryWithNewAccessToken(original);
       } catch (e) {
         queue = [];
-        // 리프레시 실패 → 쿠키 제거 후 로그인 페이지 이동
-        cookies.remove(ACCESS_COOKIE, { path: COOKIE_OPTIONS.path });
-        cookies.remove(REFRESH_COOKIE, { path: COOKIE_OPTIONS.path });
-        window.location.assign('/login');
+        clearAuthAndRedirect();
         throw e;
       } finally {
         isRefreshing = false; // 갱신 상태 해제
