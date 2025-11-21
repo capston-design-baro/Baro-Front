@@ -7,7 +7,14 @@ import {
   REFRESH_MAX_AGE,
 } from '@/constants/auth';
 import { useUserStore } from '@/stores/useUserStore';
-import type { LoginRequest, RegisterRequest, TokenResponse, UserResponse } from '@/types/auth';
+import type {
+  LoginFormValues,
+  LoginRequestDto,
+  RegisterFormValues,
+  RegisterRequestDto,
+  TokenResponse,
+  UserResponse,
+} from '@/types/auth';
 import { Cookies } from 'react-cookie';
 
 // 쿠키 관리 객체 생성
@@ -23,10 +30,45 @@ function setAuthHeader(accessToken?: string) {
     delete axiosInstance.defaults.headers.common.Authorization;
   }
 }
+
+function toLoginRequestDto(values: LoginFormValues): LoginRequestDto {
+  return {
+    email: values.email.trim(),
+    password: values.password,
+  };
+}
+
+function toRegisterRequestDto(values: RegisterFormValues): RegisterRequestDto {
+  const { email, name, password } = values;
+  const { address, phone_number } = values;
+
+  // 주소 합치기
+  const { city, district, town } = address ?? {};
+  const fullAddress = [city, district, town]
+    .filter((part) => !!part && part.trim().length > 0)
+    .join(' ')
+    .trim();
+
+  const addressOrNull = fullAddress.length > 0 ? fullAddress : null;
+
+  // 전화번호 처리
+  const phoneOrNull = phone_number && phone_number.trim().length > 0 ? phone_number.trim() : null;
+
+  return {
+    email: email.trim(),
+    name: name.trim(),
+    password,
+    address: addressOrNull,
+    phone_number: phoneOrNull,
+  };
+}
+
 // 로그인
 // -> 응답으로 acces token이랑 refresh token을 발급받음
 // -> 토큰을 쿠키에 저장하고, zustand user 상태 업데이트
-export async function login(body: LoginRequest): Promise<TokenResponse> {
+export async function login(values: LoginFormValues): Promise<TokenResponse> {
+  const body = toLoginRequestDto(values);
+
   const { data } = await axiosInstance.post<TokenResponse>(`/auth/login`, body);
 
   const { access_token, refresh_token } = data;
@@ -66,15 +108,11 @@ export async function getMe(): Promise<UserResponse> {
 }
 
 // 회원가입
-export async function register(payload: RegisterRequest): Promise<UserResponse> {
-  // payload의 주소 객체(city, district, town)를 문자열로 합쳐서 서버에 전송
-  const fullAddress =
-    `${payload.address?.city ?? ''} ${payload.address?.district ?? ''} ${payload.address?.town ?? ''}`.trim();
-
-  // string으로 변환한 address를 서버에 전송
-  const body = { ...payload, address: fullAddress };
+export async function register(values: RegisterFormValues): Promise<UserResponse> {
+  const body = toRegisterRequestDto(values);
 
   const { data } = await axiosInstance.post<UserResponse>(`/auth/register`, body);
+
   return data;
 }
 
