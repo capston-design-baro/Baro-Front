@@ -1,11 +1,6 @@
+import { applyTokens } from '@/apis/axiosInstance';
 import axiosInstance from '@/apis/axiosInstance';
-import {
-  ACCESS_COOKIE,
-  ACCESS_MAX_AGE,
-  COOKIE_OPTIONS,
-  REFRESH_COOKIE,
-  REFRESH_MAX_AGE,
-} from '@/constants/auth';
+import { ACCESS_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE } from '@/constants/auth';
 import { useUserStore } from '@/stores/useUserStore';
 import type {
   LoginFormValues,
@@ -19,17 +14,6 @@ import { Cookies } from 'react-cookie';
 
 // 쿠키 관리 객체 생성
 const cookies = new Cookies();
-
-// 공통: Authorization 기본 헤더 갱신
-// -> 로그인 시 받은 accessToken을 axios 전역 Authorization 헤더에 설정
-// -> 로그아웃하거나 토큰이 없으면 헤더 삭제
-function setAuthHeader(accessToken?: string) {
-  if (accessToken) {
-    axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-  } else {
-    delete axiosInstance.defaults.headers.common.Authorization;
-  }
-}
 
 function toLoginRequestDto(values: LoginFormValues): LoginRequestDto {
   return {
@@ -71,22 +55,7 @@ export async function login(values: LoginFormValues): Promise<TokenResponse> {
 
   const { data } = await axiosInstance.post<TokenResponse>(`/auth/login`, body);
 
-  const { access_token, refresh_token } = data;
-
-  // accessToken → 단기 쿠키 저장
-  cookies.set(ACCESS_COOKIE, access_token, {
-    ...COOKIE_OPTIONS,
-    maxAge: ACCESS_MAX_AGE,
-  });
-
-  // refreshToken → 장기 쿠키 저장
-  cookies.set(REFRESH_COOKIE, refresh_token, {
-    ...COOKIE_OPTIONS,
-    maxAge: REFRESH_MAX_AGE,
-  });
-
-  // axios 전역 Authorization 헤더 설정
-  setAuthHeader(access_token);
+  applyTokens(data);
 
   // 로그인 직후 사용자 정보 조회 → zustand 저장
   const me = await getMe();
@@ -97,12 +66,6 @@ export async function login(values: LoginFormValues): Promise<TokenResponse> {
 
 // 내 정보 조회
 export async function getMe(): Promise<UserResponse> {
-  // accessToken이 없으면 쿠키에서 복원 후 Authorization 헤더 설정
-  if (!axiosInstance.defaults.headers.common.Authorization) {
-    const token: string | undefined = cookies.get(ACCESS_COOKIE);
-    if (token) setAuthHeader(token);
-  }
-
   const { data } = await axiosInstance.get<UserResponse>(`/auth/me`);
   return data;
 }
@@ -125,24 +88,7 @@ export async function refreshAccessToken(refreshTokenArg?: string) {
     refresh_token: refreshToken,
   });
 
-  const { access_token, refresh_token } = data;
-
-  // accessToken 갱신
-  cookies.set(ACCESS_COOKIE, access_token, {
-    ...COOKIE_OPTIONS,
-    maxAge: ACCESS_MAX_AGE,
-  });
-
-  // refreshToken이 새로 발급된 경우 → 교체
-  if (refresh_token) {
-    cookies.set(REFRESH_COOKIE, refresh_token, {
-      ...COOKIE_OPTIONS,
-      maxAge: REFRESH_MAX_AGE,
-    });
-  }
-
-  // axios Authorization 헤더 업데이트
-  setAuthHeader(access_token);
+  applyTokens(data);
 
   return data;
 }
@@ -162,9 +108,6 @@ export function initAuthStatus() {
   // accessToken / refreshToken 쿠키 제거
   cookies.remove(ACCESS_COOKIE, { path: COOKIE_OPTIONS.path });
   cookies.remove(REFRESH_COOKIE, { path: COOKIE_OPTIONS.path });
-
-  // axios Authorization 헤더 제거
-  setAuthHeader(undefined);
 
   // zustand user 상태 초기화
   useUserStore.getState().clearUser();

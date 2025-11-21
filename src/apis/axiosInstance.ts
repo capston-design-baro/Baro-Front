@@ -5,15 +5,30 @@ import {
   REFRESH_COOKIE,
   REFRESH_MAX_AGE,
 } from '@/constants/auth';
+import type { TokenResponse } from '@/types/auth';
 import { AxiosError, AxiosHeaders } from 'axios';
 import type { InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
 import { Cookies } from 'react-cookie';
 
-// ← 이건 이제 제거해도 됨 (아래 설명 참고)
-
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const cookies = new Cookies();
+
+export function applyTokens(data: TokenResponse) {
+  const { access_token, refresh_token } = data;
+
+  cookies.set(ACCESS_COOKIE, access_token, {
+    ...COOKIE_OPTIONS,
+    maxAge: ACCESS_MAX_AGE,
+  });
+
+  if (refresh_token) {
+    cookies.set(REFRESH_COOKIE, refresh_token, {
+      ...COOKIE_OPTIONS,
+      maxAge: REFRESH_MAX_AGE,
+    });
+  }
+}
 
 // Axios 인스턴스 생성
 const axiosInstance = axios.create({ baseURL: BASE_URL });
@@ -61,28 +76,7 @@ async function doRefresh() {
     refresh_token: refresh,
   });
 
-  const { access_token, refresh_token } = data as {
-    access_token: string;
-    refresh_token: string;
-    token_type: string;
-  };
-
-  // 새로운 accessToken 쿠키 저장
-  cookies.set(ACCESS_COOKIE, access_token, {
-    ...COOKIE_OPTIONS,
-    maxAge: ACCESS_MAX_AGE,
-  });
-
-  // refreshToken이 새로 내려온 경우 → 교체
-  if (refresh_token) {
-    cookies.set(REFRESH_COOKIE, refresh_token, {
-      ...COOKIE_OPTIONS,
-      maxAge: REFRESH_MAX_AGE,
-    });
-  }
-
-  // 기본 헤더 업데이트(다음 요청 대비)
-  axiosInstance.defaults.headers.common.Authorization = `Bearer ${access_token}`;
+  applyTokens(data);
 }
 
 // 응답 인터셉터 -> 응답에서 401 Unauthorized가 나오면 refreshToken으로 토큰 재발급 시도
