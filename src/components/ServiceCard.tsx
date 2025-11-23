@@ -4,12 +4,15 @@
  * - 서비스 아이콘 + 제목 표시
  * - 클릭 시 onClick(service) 호출
  */
-import type { Service } from '@/types/service';
+import type { Service, ServiceClickHandler } from '@/types/service';
 import React from 'react';
 
-type Props = { service: Service; onClick?: (s: Service) => void };
+interface ServiceCardProps {
+  service: Service;
+  onClick?: ServiceClickHandler;
+}
 
-const ServiceCard: React.FC<Props> = ({ service, onClick }) => (
+const ServiceCard: React.FC<ServiceCardProps> = ({ service, onClick }) => (
   <button
     type="button"
     onClick={() => onClick?.(service)}

@@ -5,6 +5,8 @@ export type ServiceIcon = 'edit_note' | 'content_paste_search' | 'contact_suppor
 export interface Service {
   id: ServiceId;
   title: string;
-  icon: string;
+  icon: ServiceIcon;
   to: string;
 }
+
+export type ServiceClickHandler = (service: Service) => void;

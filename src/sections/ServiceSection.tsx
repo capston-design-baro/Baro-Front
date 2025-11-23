@@ -1,11 +1,11 @@
 import ServiceCard from '@/components/ServiceCard';
 import { SERVICES } from '@/constants/service';
 import '@/styles/main.css';
-import type { Service } from '@/types/service';
+import type { ServiceClickHandler } from '@/types/service';
 import React from 'react';
 
 interface ServiceSectionProps {
-  onClickCard?: (s: Service) => void;
+  onClickCard?: ServiceClickHandler;
 }
 
 const ServiceSectionHeader = () => (
@@ -21,7 +21,7 @@ const ServiceSectionHeader = () => (
   </div>
 );
 
-const ServiceCardGrid = ({ onClickCard }: { onClickCard?: (service: Service) => void }) => (
+const ServiceCardGrid: React.FC<{ onClickCard?: ServiceClickHandler }> = ({ onClickCard }) => (
   <div className="mx-auto mt-10 grid max-w-[1000px] grid-cols-1 justify-items-center gap-5 sm:mt-14 sm:grid-cols-3 sm:gap-6">
     {SERVICES.map((service) => (
       <ServiceCard
