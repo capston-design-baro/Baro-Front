@@ -1,6 +1,15 @@
-import { sendChat, startAiSession } from '@/apis/complaints';
+// src/sections/ChatWindowSection.tsx
+import {
+  type ChatMessageHistoryItem,
+  getChatHistory,
+  getMyComplaints,
+  initChatSession,
+  sendChat,
+} from '@/apis/complaints';
+import type { RagCase } from '@/apis/complaints';
 import { ChatBubble } from '@/components/ChatBubble';
 import type { Side } from '@/types/side';
+import type { AxiosError } from 'axios';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 type Msg = {
@@ -8,113 +17,141 @@ type Msg = {
   side: Side; // 'left' | 'right'
   text: string;
   time: string;
+  reason?: string | null;
 };
+
+type Phase = 'askSummary' | 'initializing' | 'chatting';
 
 type Props = {
-  complaintId: number; // 고소장 ID
-  offense?: string; // 선택: 미지정 시 채팅에서 먼저 물어봄
+  complaintId: number;
   onReady?: (aiSessionId: string) => void;
   onComplete?: () => void;
+  onInitMeta?: (meta: {
+    offense: string;
+    rag_keyword: string | null;
+    rag_cases: RagCase[];
+  }) => void;
+
+  /** 🔹 이어쓰기 모드용 */
+  mode?: 'new' | 'resume';
+  initialAiSessionId?: string | null;
 };
 
-// 타임스탬프 표시
 function fmtTime(d = new Date()) {
   return d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 }
 
-// 사용자가 입력한 문자열을 백엔드 키로 매핑 ('fraud' | 'insult')
-function parseOffense(
-  inputRaw: string,
-): { key: 'fraud' | 'insult'; label: '사기죄' | '모욕죄' } | null {
-  const s = inputRaw.trim().toLowerCase();
-  if (!s) return null;
-  // 허용 패턴(한/영/변형)
-  if (/(사기|사기죄|fraud)/i.test(s)) return { key: 'fraud', label: '사기죄' };
-  if (/(모욕|모욕죄|insult)/i.test(s)) return { key: 'insult', label: '모욕죄' };
-  return null;
-}
-
-type Phase = 'askOffense' | 'starting' | 'chatting';
-
-const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onComplete }) => {
+const ChatWindowSection: React.FC<Props> = ({
+  complaintId,
+  onReady,
+  onComplete,
+  onInitMeta,
+  mode = 'new',
+  initialAiSessionId = null,
+}) => {
   const listRef = useRef<HTMLDivElement>(null);
 
-  const [aiSessionId, setAiSessionId] = useState<string | null>(null);
+  const [aiSessionId, setAiSessionId] = useState<string | null>(
+    mode === 'resume' ? initialAiSessionId : null,
+  );
+  const [phase, setPhase] = useState<Phase>(
+    mode === 'resume' && initialAiSessionId ? 'chatting' : 'askSummary',
+  );
+
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
   const [isBotTyping, setIsBotTyping] = useState(false);
-  const [phase, setPhase] = useState<Phase>(offense ? 'starting' : 'askOffense');
-  const [chosen, setChosen] = useState<{
-    key: 'fraud' | 'insult';
-    label: '사기죄' | '모욕죄';
-  } | null>(offense ? (parseOffense(offense) ?? { key: 'fraud', label: '사기죄' }) : null);
-
   const [isCompleted, setIsCompleted] = useState(false);
 
-  // 최초 마운트: offense가 없으면 죄목 질문부터
+  /** 🟢 새 세션: 사건 개요 안내 메시지 */
   useEffect(() => {
-    if (phase !== 'askOffense') return;
+    if (mode === 'resume') return;
+    if (phase !== 'askSummary') return;
+
     setMsgs([
       {
-        id: `ask-${Date.now()}`,
+        id: `intro-${Date.now()}`,
         side: 'left',
-        text: '사기죄와 모욕죄 중에서 고소장을 작성하고 싶은 죄목을 입력해주세요 (예: 사기죄)',
+        text: '먼저 사건의 경위를 자유롭게 작성해 주세요.',
         time: fmtTime(),
       },
     ]);
-  }, [phase]);
+  }, [mode, phase]);
 
-  // offense가 미리 넘어왔거나, 사용자가 선택을 마친 경우 세션 시작
+  /** 🟣 이어쓰기 모드: 히스토리 로드 */
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      if (phase !== 'starting') return;
+    if (mode !== 'resume') return;
+    if (!complaintId) return; // ✅ complaintId만 있으면 히스토리 호출 가능
 
-      const key = chosen?.key ?? 'fraud'; // 안전 기본값
+    const loadHistory = async () => {
       try {
-        // 세션 시작
-        const res = await startAiSession(complaintId, key);
-        if (!mounted) return;
+        const history: ChatMessageHistoryItem[] = await getChatHistory(complaintId);
 
-        setAiSessionId(res.ai_session_id);
-        onReady?.(res.ai_session_id);
+        if (!history || history.length === 0) {
+          setMsgs([
+            {
+              id: `resume-${Date.now()}`,
+              side: 'left',
+              text: '이전에 작성하시던 고소장 상담을 이어서 도와드릴게요.',
+              time: fmtTime(),
+            },
+          ]);
+        } else {
+          const restored: Msg[] = history.map((msg, idx) => ({
+            id: `hist-${idx}`,
+            side: msg.role === 'assistant' ? 'left' : 'right',
+            text: msg.content,
+            time: fmtTime(new Date(msg.created_at)),
+            reason: msg.reason ?? null,
+          }));
 
-        // 봇의 첫 질문 노출
-        setMsgs((prev) => [
-          ...prev,
-          {
-            id: `q-${Date.now()}`,
-            side: 'left',
-            text: res.first_question || '사건에 대해 설명해 주세요.',
-            time: fmtTime(),
-          },
-        ]);
-        setPhase('chatting');
-      } catch {
-        if (!mounted) return;
-        setMsgs((prev) => [
-          ...prev,
-          {
-            id: `err-${Date.now()}`,
-            side: 'left',
-            text: 'AI 세션 초기화에 실패했어요. 잠시 후 다시 시도해 주세요.',
-            time: fmtTime(),
-          },
-        ]);
-        // 다시 죄목부터 물어보도록 되돌리기
-        setPhase('askOffense');
-      } finally {
-        if (mounted) {
-          setIsBotTyping(false);
+          setMsgs(restored);
         }
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [phase, chosen, complaintId, onReady]);
 
-  // 스크롤 하단 유지
+        // 🔹 세션 ID는 있으면 세팅, 없으면 일단 채팅 모드로만 전환
+        if (initialAiSessionId) {
+          setAiSessionId(initialAiSessionId);
+          setPhase('chatting');
+          onReady?.(initialAiSessionId);
+        } else {
+          setPhase('chatting');
+        }
+      } catch (e) {
+        console.error('히스토리 로드 실패:', e);
+      }
+    };
+
+    void loadHistory();
+  }, [mode, complaintId, initialAiSessionId, onReady]);
+
+  /**
+   * 🟣 이어쓰기 모드: location.state 에 aiSessionId가 없을 수도 있으므로
+   * 백엔드 목록에서 해당 complaint의 ai_session_id를 다시 가져와서 복구
+   */
+  useEffect(() => {
+    if (mode !== 'resume') return;
+    if (aiSessionId) return; // 이미 있으면 스킵
+    if (!complaintId) return;
+
+    const fetchSessionId = async () => {
+      try {
+        const list = await getMyComplaints();
+        const target = list.find((c) => c.id === complaintId);
+
+        if (target && target.ai_session_id) {
+          setAiSessionId(target.ai_session_id);
+          setPhase('chatting');
+          onReady?.(target.ai_session_id);
+        }
+      } catch (e) {
+        console.error('ai_session_id 복구 실패:', e);
+      }
+    };
+
+    void fetchSessionId();
+  }, [mode, complaintId, aiSessionId, onReady]);
+
+  /** 스크롤 항상 아래로 */
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
   }, [msgs.length]);
@@ -124,46 +161,111 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
     if (!text) return;
     if (isCompleted) return;
 
-    // 1) 아직 세션 전: 죄목 선택 단계 처리
-    if (phase === 'askOffense') {
-      const parsed = parseOffense(text);
-      // 사용자 입력 버블
-      setMsgs((prev) => [...prev, { id: `u-${Date.now()}`, side: 'right', text, time: fmtTime() }]);
+    /** 1) 새 세션: 사건 개요 입력 → initChatSession */
+    if (mode === 'new' && phase === 'askSummary') {
+      const userMsg: Msg = {
+        id: `u-summary-${Date.now()}`,
+        side: 'right',
+        text,
+        time: fmtTime(),
+      };
+      setMsgs((prev) => [...prev, userMsg]);
       setInput('');
 
-      if (!parsed) {
-        // 잘못된 입력 → 재요청
+      setPhase('initializing');
+      setIsBotTyping(true);
+
+      try {
+        const { session_id, offense, rag_keyword, rag_cases } = await initChatSession(
+          complaintId,
+          text,
+        );
+
+        console.log('✅ Chat init meta:', { session_id, offense, rag_keyword, rag_cases });
+
+        setAiSessionId(session_id);
+        onReady?.(session_id);
+
+        onInitMeta?.({
+          offense: offense ?? '',
+          rag_keyword: rag_keyword ?? null,
+          rag_cases: rag_cases ?? [],
+        });
+
+        const keywordText = rag_keyword
+          ? `입력해주신 내용에서 "${rag_keyword}"를(을) 핵심 키워드로 인식했어요. 이 키워드를 중심으로 사건을 분류하고, 이어서 몇 가지 질문을 드릴게요.`
+          : '입력해주신 내용을 바탕으로 사건을 분류했어요. 이어서 몇 가지 질문을 드릴게요.';
+
+        const keywordMsg: Msg = {
+          id: `offense-${Date.now()}`,
+          side: 'left',
+          text: keywordText,
+          time: fmtTime(),
+        };
+
+        const { reply } = await sendChat(
+          complaintId,
+          session_id,
+          '위 사건 개요를 기반으로, 고소장 작성을 위해 필요한 정보를 단계적으로 질문해 주세요.',
+        );
+
+        const firstQuestion: Msg = {
+          id: `q-first-${Date.now()}`,
+          side: 'left',
+          text: reply || '사건에 대해 조금 더 자세히 알려주세요.',
+          time: fmtTime(),
+        };
+
+        setMsgs((prev) => [...prev, keywordMsg, firstQuestion]);
+        setPhase('chatting');
+      } catch (e) {
+        const err = e as AxiosError<{ detail?: string }>;
+        const detail = err.response?.data?.detail;
+
+        console.error('initChatSession error', err.response?.data || err);
+
         setMsgs((prev) => [
           ...prev,
           {
-            id: `reprompt-${Date.now()}`,
+            id: `err-init-${Date.now()}`,
             side: 'left',
-            text: '죄목을 정확히 입력해주세요. (예: 사기죄)',
+            text:
+              'AI 세션 초기화에 실패했어요. 잠시 후 다시 시도해 주세요.' +
+              (detail ? `\n\n(상세: ${detail})` : ''),
             time: fmtTime(),
           },
         ]);
-        return;
+
+        setPhase('askSummary');
+      } finally {
+        setIsBotTyping(false);
       }
 
-      // 올바른 선택 → 안내 후 세션 시작
-      setChosen(parsed);
-      setMsgs((prev) => [
-        ...prev,
-        {
-          id: `ack-${Date.now()}`,
-          side: 'left',
-          text: `${parsed.label}로 고소장 작성을 진행할게요.`,
-          time: fmtTime(),
-        },
-      ]);
-      setPhase('starting');
       return;
     }
 
-    // 2) 채팅 단계: 일반 채팅 처리
-    if (phase !== 'chatting' || !aiSessionId) return;
+    /** 2) 이어쓰기 / 일반 공통: 이미 세션 있는 상태에서 채팅 */
+    if (phase !== 'chatting') {
+      console.warn('전송 불가: phase가 chatting이 아님', { phase, mode });
+      return;
+    }
 
-    // 사용자 메시지 추가
+    if (!aiSessionId) {
+      // ❗ 조용히 return 하지 말고 사용자한테 알려주기
+      setMsgs((prev) => [
+        ...prev,
+        {
+          id: `err-no-session-${Date.now()}`,
+          side: 'left',
+          text:
+            '이 고소장은 아직 AI 세션 정보가 없어, 이어서 채팅을 진행할 수 없어요.\n' +
+            '새 고소장 작성으로 다시 시작해 주세요.',
+          time: fmtTime(),
+        },
+      ]);
+      return;
+    }
+
     const userMsg: Msg = {
       id: `m-${Date.now()}`,
       side: 'right',
@@ -178,7 +280,6 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
 
       const { reply } = await sendChat(complaintId, aiSessionId, text);
 
-      // AI 답변 버블
       const botMsg: Msg = {
         id: `r-${Date.now()}`,
         side: 'left',
@@ -206,8 +307,8 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
       });
 
       if (isDoneReply) {
-        setIsCompleted(true); // 입력 잠금
-        onComplete?.(); // 부모 위자드에게 “채팅 끝!” 알림
+        setIsCompleted(true);
+        onComplete?.();
       }
     } catch {
       setMsgs((prev) => [
@@ -222,9 +323,8 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
     } finally {
       setIsBotTyping(false);
     }
-  }, [phase, aiSessionId, input, complaintId, isCompleted, onComplete]);
+  }, [mode, phase, aiSessionId, input, complaintId, isCompleted, onComplete, onInitMeta]);
 
-  // Enter 전송 / Shift+Enter 줄바꿈
   const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -232,8 +332,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
     }
   };
 
-  // 하단 입력 비활성화 규칙: 'starting' 단계에서만 입력 잠금(세션 시작 중)
-  const inputDisabled = phase === 'starting' || isCompleted;
+  const inputDisabled = phase === 'initializing' || isCompleted;
 
   return (
     <section
@@ -243,7 +342,6 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
         'bg-neutral-0 pt-6 pb-6',
       ].join(' ')}
     >
-      {/* 채팅 로그 */}
       <div
         ref={listRef}
         className={[
@@ -267,14 +365,14 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
         {isBotTyping && (
           <ChatBubble
             side="left"
-            text="..." // 실제 텍스트는 isTyping일 때는 안 보이고, 점 애니메이션만 보임
+            text="..."
             time={fmtTime()}
             srLabel="바로가 입력 중입니다."
             isTyping
           />
         )}
       </div>
-      {/* 하단 입력 바 */}
+
       <div
         className={[
           'mt-4 flex h-12 w-full max-w-[720px] items-center justify-between',
@@ -288,8 +386,8 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
           placeholder={
-            phase === 'askOffense'
-              ? '범죄 유형을 입력하세요. (예: 사기죄)'
+            mode === 'new' && phase === 'askSummary'
+              ? '사건의 경위를 자유롭게 입력해 주세요.'
               : '여기에 입력하고 Enter로 전송하세요. (줄바꿈은 Shift+Enter)'
           }
           rows={1}
@@ -305,7 +403,7 @@ const ChatWindowSection: React.FC<Props> = ({ complaintId, offense, onReady, onC
         <button
           type="button"
           onClick={handleSend}
-          disabled={inputDisabled || (phase === 'chatting' && !input.trim())}
+          disabled={inputDisabled || !input.trim()}
           className={[
             'flex h-9 items-center justify-center',
             'rounded-400 border-primary-400 bg-primary-50 border-2',

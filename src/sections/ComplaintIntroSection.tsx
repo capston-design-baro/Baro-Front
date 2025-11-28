@@ -33,7 +33,7 @@ const ComplaintIntroSection: React.FC = () => {
         showArrow
       />
 
-      <div className="flex flex-col gap-10">
+      <div className="flex flex-col gap-5">
         {prechecks.map((q) => (
           <Question
             key={q.id}

@@ -45,7 +45,7 @@ const initialPrechecks: PrecheckQuestion[] = [
 
 const INITIAL_STATE: ComplaintWizardState = {
   step: 0,
-  stepsTotal: 10,
+  stepsTotal: 11,
   prechecks: initialPrechecks,
   offense: null,
 };
@@ -79,6 +79,9 @@ export type ComplaintWizardStore = {
 
   // 다음 단계로 이동
   next: () => void;
+
+  /** 임의 단계로 점프 (이어쓰기용) */
+  setStep: (step: number) => void;
 
   // “다음” 시도 핸들러 -> 모두 체크면 다음 단계로, 아니면 경고만 켜기
   attemptNext: () => void;
@@ -141,6 +144,14 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
   prev: () =>
     set(({ state }) => ({
       state: { ...state, step: Math.max(state.step - 1, 0) },
+    })),
+
+  setStep: (step: number) =>
+    set(({ state }) => ({
+      state: {
+        ...state,
+        step: Math.min(Math.max(step, 0), state.stepsTotal - 1),
+      },
     })),
 
   // 다음 단계로 이동을 시도해봄
