@@ -81,7 +81,7 @@ const ChatWindowSection: React.FC<Props> = ({
   /** 🟣 이어쓰기 모드: 히스토리 로드 */
   useEffect(() => {
     if (mode !== 'resume') return;
-    if (!complaintId) return; // ✅ complaintId만 있으면 히스토리 호출 가능
+    if (!complaintId) return;
 
     const loadHistory = async () => {
       try {
@@ -123,7 +123,7 @@ const ChatWindowSection: React.FC<Props> = ({
         if (initialAiSessionId) {
           setAiSessionId(initialAiSessionId);
           setPhase('chatting');
-          onReady?.(initialAiSessionId);
+          // onReady?.(initialAiSessionId)
         } else {
           setPhase('chatting');
         }
@@ -152,7 +152,7 @@ const ChatWindowSection: React.FC<Props> = ({
         if (target && target.ai_session_id) {
           setAiSessionId(target.ai_session_id);
           setPhase('chatting');
-          onReady?.(target.ai_session_id);
+          // onReady?.(target.ai_session_id);
         }
       } catch (e) {
         console.error('ai_session_id 복구 실패:', e);
@@ -192,8 +192,6 @@ const ChatWindowSection: React.FC<Props> = ({
           text,
         );
 
-        console.log('✅ Chat init meta:', { session_id, offense, rag_keyword, rag_cases });
-
         setAiSessionId(session_id);
         onReady?.(session_id);
 
@@ -214,20 +212,27 @@ const ChatWindowSection: React.FC<Props> = ({
           time: fmtTime(),
         };
 
-        const { reply } = await sendChat(
-          complaintId,
-          session_id,
-          '위 사건 개요를 기반으로, 고소장 작성을 위해 필요한 정보를 단계적으로 질문해 주세요.',
-        );
+        /**
+         * ❗❗ 여기 핵심: 첫 질문(sendChat)은 NEW 모드에서만 호출
+         */
+        let firstQuestionMsg: Msg | null = null;
 
-        const firstQuestion: Msg = {
-          id: `q-first-${Date.now()}`,
-          side: 'left',
-          text: reply || '사건에 대해 조금 더 자세히 알려주세요.',
-          time: fmtTime(),
-        };
+        if (mode === 'new') {
+          const { reply } = await sendChat(
+            complaintId,
+            session_id,
+            '위 사건 개요를 기반으로, 고소장 작성을 위해 필요한 정보를 단계적으로 질문해 주세요.',
+          );
 
-        setMsgs((prev) => [...prev, keywordMsg, firstQuestion]);
+          firstQuestionMsg = {
+            id: `q-first-${Date.now()}`,
+            side: 'left',
+            text: reply || '사건에 대해 조금 더 자세히 알려주세요.',
+            time: fmtTime(),
+          };
+        }
+
+        setMsgs((prev) => [...prev, keywordMsg, ...(firstQuestionMsg ? [firstQuestionMsg] : [])]);
         setPhase('chatting');
       } catch (e) {
         const err = e as AxiosError<{ detail?: string }>;
