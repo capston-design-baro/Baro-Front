@@ -105,6 +105,17 @@ const ChatWindowSection: React.FC<Props> = ({
             reason: msg.reason ?? null,
           }));
 
+          // 마지막 메시지가 user로 끝난 경우, 안내 버블 한 줄 더 붙이기
+          const last = history[history.length - 1];
+          if (last && last.role === 'user') {
+            restored.push({
+              id: `resume-hint-${Date.now()}`,
+              side: 'left',
+              text: '이전 질문에 대한 답변을 다시 작성해 주세요.',
+              time: fmtTime(),
+            });
+          }
+
           setMsgs(restored);
         }
 
