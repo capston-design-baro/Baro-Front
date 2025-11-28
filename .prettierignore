@@ -4,3 +4,6 @@ build
 coverage
 *.log
 pnpm-lock.yaml
+index.html
+*.html
+public/**/*.html
