@@ -3,6 +3,7 @@ import ComplaintWizardPage from '@/pages/ComplaintWizardPage';
 import FaqPage from '@/pages/FaqPage';
 import LoginPage from '@/pages/LoginPage';
 import MainPage from '@/pages/MainPage';
+import MyComplaintsPage from '@/pages/MyComplaintsPage';
 import CrimeTypePage from '@/pages/PrecedentPage';
 import SignupPage from '@/pages/SignupPage';
 import { Route, Routes } from 'react-router-dom';
@@ -57,6 +58,11 @@ const Router = () => {
       <Route
         path="/precedent"
         element={<CrimeTypePage />}
+      />
+
+      <Route
+        path="/complaints"
+        element={<MyComplaintsPage />}
       />
     </Routes>
   );

@@ -12,7 +12,6 @@ const ChatInfoSection: React.FC = () => {
         'bg-neutral-0',
       ].join(' ')}
     >
-      {' '}
       <IntroHeader
         title="고소장 작성하기"
         lines={[

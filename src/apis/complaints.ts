@@ -1,7 +1,6 @@
 import axiosInstance from '@/apis/axiosInstance';
 
 // 공용 인스턴스 (Authorization 자동 세팅됨)
-
 const api = axiosInstance;
 
 // API 기본 prefix
@@ -24,7 +23,7 @@ export type ComplainantInfoCreate = {
   complainant_address: string;
   complainant_phone: string;
 
-  complainant_occupation: string;
+  complainant_job: string;
   complainant_office_address: string;
   complainant_office_phone: string;
   complainant_home_phone: string;
@@ -39,10 +38,20 @@ export type Complaint = {
   crime_type?: string | null;
 };
 
-export async function createComplaint(data: ComplainantInfoCreate): Promise<Complaint> {
-  const res = await api.post(`${BASE_URL}/complaints/info/complainant`, data);
-  return res.data as Complaint;
-}
+export type RagCase = {
+  case_no: string;
+  label: string;
+  summary: string;
+  result: string;
+  similarity: string;
+};
+
+export type ChatInitResponse = {
+  session_id: string;
+  offense: string | null;
+  rag_keyword?: string | null;
+  rag_cases?: RagCase[] | null;
+};
 
 /** 피고소인 정보 등록 */
 export type AccusedInfoCreate = {
@@ -51,28 +60,46 @@ export type AccusedInfoCreate = {
   accused_address: string;
   accused_phone: string;
 
-  accused_occupation: string;
+  accused_job: string;
   accused_office_address: string;
-  accused_office_phone: string;
-  accused_home_phone: string;
 };
 
+export type EvidenceCreate = {
+  has_evidence: boolean;
+};
+
+export type ChatMessageHistoryItem = {
+  id: number;
+  complaint_id: number;
+  role: 'user' | 'assistant';
+  content: string;
+  reason?: string | null;
+  created_at: string;
+};
+
+/** 고소인 정보 등록 */
+export async function createComplaint(data: ComplainantInfoCreate): Promise<Complaint> {
+  const res = await api.post(`${BASE_URL}/complaints/info/complainant`, data);
+  return res.data as Complaint;
+}
+
+/** 피고소인 정보 등록 */
 export async function registerAccused(complaintId: number, data: AccusedInfoCreate) {
   const res = await api.post(`${BASE_URL}/complaints/info/accused/${complaintId}`, data);
   return res.data;
 }
 
 /** AI 세션 시작 */
-export async function startAiSession(complaintId: number, offense: string) {
-  const res = await api.post(`${BASE_URL}/complaints/${complaintId}/start`, { offense });
-  return res.data as {
-    id: number;
-    user_id: number;
-    status: string;
-    crime_type: string;
-    created_at: string;
-    ai_session_id: string;
-    first_question: string;
+export async function initChatSession(complaintId: number, text: string) {
+  const res = await api.post(`${BASE_URL}/complaints/${complaintId}/chat/init`, { text });
+
+  const data = res.data as ChatInitResponse;
+
+  return {
+    session_id: data.session_id,
+    offense: data.offense ?? '',
+    rag_keyword: data.rag_keyword ?? null,
+    rag_cases: data.rag_cases ?? [],
   };
 }
 
@@ -81,7 +108,7 @@ export async function sendChat(complaintId: number, aiSessionId: string, message
   const res = await api.post(`${BASE_URL}/complaints/${complaintId}/chat/${aiSessionId}`, {
     message,
   });
-  return res.data as { reply: string };
+  return res.data as { reply: string; reason?: string | null };
 }
 
 /** 최종 고소장 생성 */
@@ -124,15 +151,23 @@ export async function downloadComplaintDocx(complaintId: number) {
   window.URL.revokeObjectURL(url);
 }
 
+/** 증거 여부 등록 */
+export async function registerEvidence(complaintId: number, payload: EvidenceCreate) {
+  const res = await api.post(`${BASE_URL}/complaints/info/evidence/${complaintId}`, payload);
+  return res.data;
+}
+
 /** 내 고소장 목록 */
 export async function getMyComplaints() {
   const res = await api.get(`${BASE_URL}/complaints`);
-  return res.data as Array<{
-    id: number;
-    status: string;
-    crime_type?: string | null;
-    created_at: string;
-  }>;
+  return res.data as Complaint[];
+}
+
+/** 채팅 히스토리 */
+export async function getChatHistory(complaintId: number): Promise<ChatMessageHistoryItem[]> {
+  const res = await api.get(`${BASE_URL}/complaints/${complaintId}/chat/history`);
+  const data = res.data as { messages: ChatMessageHistoryItem[] };
+  return data.messages ?? [];
 }
 
 /** 삭제 */
