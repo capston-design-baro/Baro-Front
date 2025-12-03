@@ -434,10 +434,11 @@ const ComplaintWizardPage: React.FC = () => {
         <WizardNavButtons
           onPrev={prev}
           onNext={handleNext}
-          // 🔁 채팅 단계(step 8)에서만 채팅 완료 여부에 따라 Next 비활성
           isNextDisabled={isGenerating || (step === 8 && !isChatCompleted)}
           disablePrev={step === 0 || step === 4}
-          nextLabel={step === 10 ? '종료' : '다음'}
+          nextLabel={
+            step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
+          }
         />
       </main>
       <Footer />
