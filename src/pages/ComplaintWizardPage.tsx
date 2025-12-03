@@ -66,6 +66,8 @@ const ComplaintWizardPage: React.FC = () => {
 
   const [isChatCompleted, setIsChatCompleted] = useState(false);
 
+  const [entryMode, setEntryMode] = useState<'new' | 'resume' | null>(null);
+
   const complainantRef = useRef<ComplainantInfoSectionHandle>(null);
   const complainantExtraRef = useRef<ComplainantExtraInfoSectionHandle>(null);
   const accusedRef = useRef<AccusedInfoSectionHandle>(null);
@@ -101,7 +103,17 @@ const ComplaintWizardPage: React.FC = () => {
   const handleNext = async () => {
     // 0: 엔트리 → 그냥 다음 단계로
     if (step === 0) {
-      nextRaw();
+      // 아직 아무 것도 안 골랐으면 그냥 리턴 (혹은 여기서 토스트 띄워도 됨)
+      if (!entryMode) return;
+
+      if (entryMode === 'new') {
+        // 새 고소장 → 인트로(step 1)로
+        nextRaw(); // 0 -> 1
+      } else if (entryMode === 'resume') {
+        // 이어 작성 → /complaints로
+        navigate('/complaints');
+      }
+
       return;
     }
 
@@ -260,14 +272,9 @@ const ComplaintWizardPage: React.FC = () => {
           {/* 0: 시작 선택 (새로 작성 / 이어쓰기 / 목록 보기) */}
           {step === 0 && (
             <ComplaintEntrySection
-              onNew={() => {
-                // 새로 작성하기 → 인트로로
-                useComplaintWizard.getState().next();
-              }}
-              onResumeDrafts={() => {
-                // 임시 저장 목록 페이지로
-                navigate('/complaints');
-              }}
+              activeMode={entryMode}
+              onNew={() => setEntryMode('new')}
+              onResumeDrafts={() => setEntryMode('resume')}
             />
           )}
 
