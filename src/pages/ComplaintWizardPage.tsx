@@ -268,10 +268,6 @@ const ComplaintWizardPage: React.FC = () => {
                 // 임시 저장 목록 페이지로
                 navigate('/complaints');
               }}
-              onList={() => {
-                // 전체 목록 보기
-                navigate('/complaints');
-              }}
             />
           )}
 
