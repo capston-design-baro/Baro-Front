@@ -11,29 +11,60 @@ function renderStyledContent(text: string) {
   const lines = text.split('\n');
 
   return lines.map((line, idx) => {
-    if (line.trim() === '[범죄 사실]' || line.trim() === '[고소 이유]') {
+    const trimmed = line.trim();
+
+    // 공백 줄 → 살짝 여백만 추가
+    if (!trimmed) {
       return (
         <div
           key={idx}
-          className="text-body-1-bold mt-4 mb-2 text-center text-neutral-900"
+          className="h-2"
+        />
+      );
+    }
+
+    // 섹션 제목: [범죄 사실], [고소 이유]
+    if (trimmed === '[범죄 사실]' || trimmed === '[고소 이유]') {
+      const title = trimmed.replace(/^\[|\]$/g, ''); // 대괄호 제거
+
+      return (
+        <div
+          key={idx}
+          className="text-body-1-bold mt-6 mb-3 text-center text-neutral-900"
         >
-          {line}
+          {title}
         </div>
       );
     }
 
-    // 기본 줄
+    // 불릿 문단: "○ ..." 로 시작하는 줄
+    if (trimmed.startsWith('○')) {
+      const body = trimmed.replace(/^○\s*/, '');
+
+      return (
+        <div
+          key={idx}
+          className="mb-2 flex items-start gap-2"
+        >
+          <span className="text-primary-200 mt-[6px] text-[8px]">●</span>
+          <p className="text-body-3-regular leading-relaxed break-words whitespace-pre-wrap text-neutral-800">
+            {body}
+          </p>
+        </div>
+      );
+    }
+
+    // 기본 문단
     return (
-      <div
+      <p
         key={idx}
         className="text-body-3-regular leading-relaxed break-words whitespace-pre-wrap text-neutral-800"
       >
         {line}
-      </div>
+      </p>
     );
   });
 }
-
 const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
   complaintId,
   content,
