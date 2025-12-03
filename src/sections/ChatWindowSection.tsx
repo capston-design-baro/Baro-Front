@@ -53,6 +53,8 @@ function isAiMetaMessage(content: ChatMessageHistoryItem['content']): content is
   );
 }
 
+const DONE_PHRASE = '필수 정보가 충족되었습니다. 고소장을 작성해드릴게요.';
+
 const ChatWindowSection: React.FC<Props> = ({
   complaintId,
   onReady,
@@ -230,7 +232,7 @@ const ChatWindowSection: React.FC<Props> = ({
         });
 
         const keywordText = rag_keyword
-          ? `입력해주신 내용에서 "${rag_keyword}"를(을) 핵심 키워드로 인식했어요. 이 키워드를 중심으로 사건을 분류하고, 이어서 몇 가지 질문을 드릴게요.`
+          ? `입력해주신 내용에서 "${rag_keyword}"를(을) 핵심 키워드로 인식했어요. 이 키워드를 중심으로 고소장을 작성해 드릴게요.`
           : '입력해주신 내용을 바탕으로 사건을 분류했어요. 이어서 몇 가지 질문을 드릴게요.';
 
         const keywordMsg: Msg = {
@@ -241,6 +243,7 @@ const ChatWindowSection: React.FC<Props> = ({
         };
 
         let firstQuestionMsg: Msg | null = null;
+        let isDoneReply = false;
 
         if (mode === 'new') {
           const { reply } = await sendChat(
@@ -248,6 +251,8 @@ const ChatWindowSection: React.FC<Props> = ({
             session_id,
             '위 사건 개요를 기반으로, 고소장 작성을 위해 필요한 정보를 단계적으로 질문해 주세요.',
           );
+
+          isDoneReply = reply.includes(DONE_PHRASE);
 
           firstQuestionMsg = {
             id: `q-first-${Date.now()}`,
@@ -257,8 +262,28 @@ const ChatWindowSection: React.FC<Props> = ({
           };
         }
 
-        setMsgs((prev) => [...prev, keywordMsg, ...(firstQuestionMsg ? [firstQuestionMsg] : [])]);
+        setMsgs((prev) => {
+          const nextMsgs = [...prev, keywordMsg, ...(firstQuestionMsg ? [firstQuestionMsg] : [])];
+
+          if (isDoneReply) {
+            const guideMsg: Msg = {
+              id: `done-guide-${Date.now()}`,
+              side: 'left',
+              text: '필수 정보가 모두 확인되었어요. 이제 화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
+              time: fmtTime(),
+            };
+            nextMsgs.push(guideMsg);
+          }
+
+          return nextMsgs;
+        });
+
         setPhase('chatting');
+
+        if (isDoneReply) {
+          setIsCompleted(true);
+          onComplete?.();
+        }
       } catch (e) {
         const err = e as AxiosError<{ detail?: string }>;
         const detail = err.response?.data?.detail;
@@ -327,8 +352,7 @@ const ChatWindowSection: React.FC<Props> = ({
         time: fmtTime(),
       };
 
-      const donePhrase = '필수 정보가 충족되었습니다. 고소장을 작성해드릴게요.';
-      const isDoneReply = reply.includes(donePhrase);
+      const isDoneReply = reply.includes(DONE_PHRASE);
 
       setMsgs((prev) => {
         const nextMsgs = [...prev, botMsg];
