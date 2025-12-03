@@ -264,7 +264,7 @@ const ComplaintWizardPage: React.FC = () => {
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
       <Header />
-      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col overflow-hidden px-6 py-4">
+      <main className="mx-auto flex min-h-0 w-full max-w-[1200px] flex-1 flex-col overflow-hidden px-6 py-4">
         <WizardProgress onExit={handleExit} />
 
         {/* 위자드 본문: 0~7단계 (420px 카드) */}
