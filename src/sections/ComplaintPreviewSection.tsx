@@ -6,6 +6,34 @@ type ComplaintPreviewSectionProps = {
   content: string;
 };
 
+// 섹션 타이틀을 감지해서 스타일 적용하는 함수
+function renderStyledContent(text: string) {
+  const lines = text.split('\n');
+
+  return lines.map((line, idx) => {
+    if (line.trim() === '[범죄 사실]' || line.trim() === '[고소 이유]') {
+      return (
+        <div
+          key={idx}
+          className="text-body-1-bold mt-4 mb-2 text-center text-neutral-900"
+        >
+          {line}
+        </div>
+      );
+    }
+
+    // 기본 줄
+    return (
+      <div
+        key={idx}
+        className="text-body-3-regular leading-relaxed break-words whitespace-pre-wrap text-neutral-800"
+      >
+        {line}
+      </div>
+    );
+  });
+}
+
 const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
   complaintId,
   content,
@@ -15,8 +43,8 @@ const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
       aria-label={`고소장 미리보기 (ID: ${complaintId})`}
       className={[
         'flex flex-col items-center justify-between',
-        'mx-auto h-[680px] w-full max-w-[480px]',
-        'bg-neutral-0 pt-6 pb-6',
+        'mx-auto h-[680px] w-full max-w-[600px]',
+        'bg-neutral-0 gap-5 pt-6 pb-6',
       ].join(' ')}
     >
       <IntroHeader
@@ -30,15 +58,37 @@ const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
         showArrow
       />
 
+      {/* 문서 카드 */}
       <div
         className={[
-          'items-center justify-center',
-          'overflow-y-auto', // 세로 스크롤
-          'rounded-200 bg-neutral-0 border border-neutral-200',
+          'flex min-h-0 w-full flex-1 flex-col',
+          'rounded-200 bg-neutral-0 border border-neutral-200 shadow-sm',
           'px-5 py-4',
         ].join(' ')}
       >
-        <pre className="text-body-3-regular whitespace-pre-wrap text-neutral-800">{content}</pre>
+        {/* 카드 헤더 (ID / 상태 뱃지) */}
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="flex w-full items-center justify-between">
+            <span className="text-caption-regular text-neutral-500">고소장 초안</span>
+            <span className="text-body-3-bold text-neutral-900">문서 ID #{complaintId}</span>
+          </div>
+        </div>
+
+        {/* 구분선 */}
+        <div className="mb-3 h-px w-full bg-neutral-100" />
+
+        {/* 실제 내용 스크롤 영역 */}
+        <div
+          className={[
+            'relative min-h-0 flex-1',
+            'overflow-y-auto',
+            'pr-3', // 스크롤바 여유
+          ].join(' ')}
+        >
+          <div className={['relative min-h-0 flex-1', 'overflow-y-auto', 'pr-3'].join(' ')}>
+            {renderStyledContent(content)}
+          </div>
+        </div>
       </div>
     </section>
   );
