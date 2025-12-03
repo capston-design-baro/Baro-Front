@@ -255,6 +255,12 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
+    if (step === 10) {
+      resetWizard(); // 위자드 상태 초기화
+      navigate('/'); // 홈으로 이동
+      return;
+    }
+
     // 나머지 단계는 그냥 +1
     nextRaw();
   };
@@ -431,6 +437,7 @@ const ComplaintWizardPage: React.FC = () => {
           // 🔁 채팅 단계(step 8)에서만 채팅 완료 여부에 따라 Next 비활성
           isNextDisabled={isGenerating || (step === 8 && !isChatCompleted)}
           disablePrev={step === 0 || step === 4}
+          nextLabel={step === 10 ? '종료' : '다음'}
         />
       </main>
       <Footer />
