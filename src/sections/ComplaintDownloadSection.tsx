@@ -1,4 +1,5 @@
 import { downloadComplaintDocx } from '@/apis/complaints';
+import DocxIcon from '@/assets/Docs.svg';
 import IntroHeader from '@/components/IntroHeader';
 import React, { useState } from 'react';
 
@@ -84,14 +85,23 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
             onClick={handleDownload}
             disabled={isDownloading}
             className={[
-              'flex h-11 w-full items-center justify-center',
-              'rounded-400 bg-primary-500 px-8',
+              'flex h-12 w-full items-center justify-center gap-2',
+              'rounded-400 bg-primary-500 px-6',
               'text-body-3-bold text-neutral-0',
               'transition-colors',
               'hover:bg-primary-600 disabled:hover:bg-primary-500',
               'disabled:cursor-not-allowed disabled:opacity-50',
             ].join(' ')}
           >
+            {/* DOCX 아이콘 */}
+            <span className="bg-primary-400/15 flex h-9 w-9 items-center justify-center rounded-[12px]">
+              <img
+                src={DocxIcon}
+                alt="DOCX 파일 아이콘"
+                className="h-5 w-5"
+              />
+            </span>
+
             {isDownloading ? '다운로드 준비 중...' : 'DOCX 파일 다운로드'}
           </button>
 
