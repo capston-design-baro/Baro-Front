@@ -401,40 +401,46 @@ const ChatWindowSection: React.FC<Props> = ({
   return (
     <section
       className={[
-        'flex flex-col items-center justify-between',
-        'mx-auto h-[680px] w-full max-w-[1000px]',
+        'flex min-h-0 flex-1 flex-col items-center justify-between',
+        'mx-auto w-full max-w-[1000px]',
         'bg-neutral-0 pt-6 pb-6',
       ].join(' ')}
     >
-      <div
-        ref={listRef}
-        className={[
-          'flex min-h-0 w-full flex-1 flex-col',
-          'max-w-[720px]',
-          'rounded-200 bg-neutral-0 overflow-y-auto border border-gray-300',
-          'px-6 py-3',
-        ].join(' ')}
-        role="list"
-        aria-label="채팅 메시지"
-      >
-        {msgs.map((m) => (
-          <ChatBubble
-            key={m.id}
-            side={m.side}
-            text={m.text}
-            time={m.time}
-            srLabel={`${m.side === 'left' ? '바로' : '사용자'} 메시지`}
-          />
-        ))}
-        {isBotTyping && (
-          <ChatBubble
-            side="left"
-            text="..."
-            time={fmtTime()}
-            srLabel="바로가 입력 중입니다."
-            isTyping
-          />
-        )}
+      <div className="flex min-h-0 w-full flex-1 justify-center">
+        <div
+          className={[
+            'flex min-h-0 w-full max-w-[720px] flex-1 flex-col',
+            'rounded-200 bg-neutral-0 border border-gray-300',
+            'px-6 py-3',
+          ].join(' ')}
+        >
+          {/* 🔹 실제로 스크롤 되는 영역 (padding / border 없음) */}
+          <div
+            ref={listRef}
+            className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+            role="list"
+            aria-label="채팅 메시지"
+          >
+            {msgs.map((m) => (
+              <ChatBubble
+                key={m.id}
+                side={m.side}
+                text={m.text}
+                time={m.time}
+                srLabel={`${m.side === 'left' ? '바로' : '사용자'} 메시지`}
+              />
+            ))}
+            {isBotTyping && (
+              <ChatBubble
+                side="left"
+                text="..."
+                time={fmtTime()}
+                srLabel="바로가 입력 중입니다."
+                isTyping
+              />
+            )}
+          </div>
+        </div>
       </div>
 
       <div
