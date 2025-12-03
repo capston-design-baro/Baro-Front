@@ -68,11 +68,19 @@ export type EvidenceCreate = {
   has_evidence: boolean;
 };
 
+// 메타 페이로드용 타입 분리
+export type ChatMetaPayload = {
+  offense?: string | null;
+  rag_keyword?: string | null;
+  rag_cases?: RagCase[] | null;
+  [key: string]: string | number | boolean | RagCase[] | null | undefined;
+};
+
 export type ChatMessageHistoryItem = {
   id: number;
   complaint_id: number;
   role: 'user' | 'assistant';
-  content: string;
+  content: string | ChatMetaPayload;
   reason?: string | null;
   created_at: string;
 };

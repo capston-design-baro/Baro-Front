@@ -1,4 +1,3 @@
-// src/sections/ChatWindowSection.tsx
 import {
   type ChatMessageHistoryItem,
   getChatHistory,
@@ -6,7 +5,7 @@ import {
   initChatSession,
   sendChat,
 } from '@/apis/complaints';
-import type { RagCase } from '@/apis/complaints';
+import type { ChatMetaPayload, RagCase } from '@/apis/complaints';
 import { ChatBubble } from '@/components/ChatBubble';
 import type { Side } from '@/types/side';
 import type { AxiosError } from 'axios';
@@ -41,6 +40,19 @@ function fmtTime(d = new Date()) {
   return d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 }
 
+/** history.content가 메타 객체인지 판별하는 타입가드 */
+function isAiMetaMessage(content: ChatMessageHistoryItem['content']): content is ChatMetaPayload {
+  if (typeof content !== 'object' || content === null) return false;
+
+  const c = content as ChatMetaPayload;
+
+  return (
+    typeof c.offense !== 'undefined' ||
+    typeof c.rag_keyword !== 'undefined' ||
+    typeof c.rag_cases !== 'undefined'
+  );
+}
+
 const ChatWindowSection: React.FC<Props> = ({
   complaintId,
   onReady,
@@ -54,9 +66,9 @@ const ChatWindowSection: React.FC<Props> = ({
   const [aiSessionId, setAiSessionId] = useState<string | null>(
     mode === 'resume' ? initialAiSessionId : null,
   );
-  const [phase, setPhase] = useState<Phase>(
-    mode === 'resume' && initialAiSessionId ? 'chatting' : 'askSummary',
-  );
+
+  // 이어쓰기는 바로 chatting, 새 작성은 askSummary
+  const [phase, setPhase] = useState<Phase>(mode === 'resume' ? 'chatting' : 'askSummary');
 
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
@@ -65,7 +77,7 @@ const ChatWindowSection: React.FC<Props> = ({
 
   /** 🟢 새 세션: 사건 개요 안내 메시지 */
   useEffect(() => {
-    if (mode === 'resume') return;
+    if (mode !== 'new') return;
     if (phase !== 'askSummary') return;
 
     setMsgs([
@@ -78,7 +90,7 @@ const ChatWindowSection: React.FC<Props> = ({
     ]);
   }, [mode, phase]);
 
-  /** 🟣 이어쓰기 모드: 히스토리 로드 */
+  /** 🟣 이어쓰기 모드: 히스토리 로드 + 메타 복원 */
   useEffect(() => {
     if (mode !== 'resume') return;
     if (!complaintId) return;
@@ -97,15 +109,27 @@ const ChatWindowSection: React.FC<Props> = ({
             },
           ]);
         } else {
-          const restored: Msg[] = history.map((msg, idx) => ({
-            id: `hist-${idx}`,
-            side: msg.role === 'assistant' ? 'left' : 'right',
-            text: msg.content,
-            time: fmtTime(new Date(msg.created_at)),
-            reason: msg.reason ?? null,
-          }));
+          const restored: Msg[] = [];
+          let lastMeta: ChatMetaPayload | undefined;
 
-          // 마지막 메시지가 user로 끝난 경우, 안내 버블 한 줄 더 붙이기
+          history.forEach((msg, idx) => {
+            if (isAiMetaMessage(msg.content)) {
+              lastMeta = msg.content; // 여기서 content가 ChatMetaPayload로 좁혀짐
+              return;
+            }
+
+            const text =
+              typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+
+            restored.push({
+              id: `hist-${idx}`,
+              side: msg.role === 'assistant' ? 'left' : 'right',
+              text,
+              time: fmtTime(new Date(msg.created_at)),
+              reason: msg.reason ?? null,
+            });
+          });
+
           const last = history[history.length - 1];
           if (last && last.role === 'user') {
             restored.push({
@@ -117,15 +141,18 @@ const ChatWindowSection: React.FC<Props> = ({
           }
 
           setMsgs(restored);
+
+          if (lastMeta) {
+            onInitMeta?.({
+              offense: lastMeta.offense ?? '',
+              rag_keyword: lastMeta.rag_keyword ?? null,
+              rag_cases: lastMeta.rag_cases ?? [],
+            });
+          }
         }
 
-        // 🔹 세션 ID는 있으면 세팅, 없으면 일단 채팅 모드로만 전환
         if (initialAiSessionId) {
           setAiSessionId(initialAiSessionId);
-          setPhase('chatting');
-          // onReady?.(initialAiSessionId)
-        } else {
-          setPhase('chatting');
         }
       } catch (e) {
         console.error('히스토리 로드 실패:', e);
@@ -133,15 +160,18 @@ const ChatWindowSection: React.FC<Props> = ({
     };
 
     void loadHistory();
-  }, [mode, complaintId, initialAiSessionId, onReady]);
+
+    // 🔴 onInitMeta 제거
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, complaintId, initialAiSessionId]);
 
   /**
-   * 🟣 이어쓰기 모드: location.state 에 aiSessionId가 없을 수도 있으므로
-   * 백엔드 목록에서 해당 complaint의 ai_session_id를 다시 가져와서 복구
+   * 🟣 이어쓰기 모드: location.state에 aiSessionId가 없을 수도 있으므로
+   * 목록에서 다시 복구
    */
   useEffect(() => {
     if (mode !== 'resume') return;
-    if (aiSessionId) return; // 이미 있으면 스킵
+    if (aiSessionId) return;
     if (!complaintId) return;
 
     const fetchSessionId = async () => {
@@ -151,8 +181,6 @@ const ChatWindowSection: React.FC<Props> = ({
 
         if (target && target.ai_session_id) {
           setAiSessionId(target.ai_session_id);
-          setPhase('chatting');
-          // onReady?.(target.ai_session_id);
         }
       } catch (e) {
         console.error('ai_session_id 복구 실패:', e);
@@ -160,7 +188,7 @@ const ChatWindowSection: React.FC<Props> = ({
     };
 
     void fetchSessionId();
-  }, [mode, complaintId, aiSessionId, onReady]);
+  }, [mode, complaintId, aiSessionId]);
 
   /** 스크롤 항상 아래로 */
   useEffect(() => {
@@ -212,9 +240,6 @@ const ChatWindowSection: React.FC<Props> = ({
           time: fmtTime(),
         };
 
-        /**
-         * ❗❗ 여기 핵심: 첫 질문(sendChat)은 NEW 모드에서만 호출
-         */
         let firstQuestionMsg: Msg | null = null;
 
         if (mode === 'new') {
@@ -267,7 +292,6 @@ const ChatWindowSection: React.FC<Props> = ({
     }
 
     if (!aiSessionId) {
-      // ❗ 조용히 return 하지 말고 사용자한테 알려주기
       setMsgs((prev) => [
         ...prev,
         {
@@ -339,7 +363,7 @@ const ChatWindowSection: React.FC<Props> = ({
     } finally {
       setIsBotTyping(false);
     }
-  }, [mode, phase, aiSessionId, input, complaintId, isCompleted, onComplete, onInitMeta]);
+  }, [mode, phase, aiSessionId, input, complaintId, isCompleted, onComplete, onReady, onInitMeta]);
 
   const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
