@@ -41,28 +41,64 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
         showArrow
       />
 
-      <div className="mt-10 flex flex-col items-center gap-4">
-        <p className="text-body-3-regular text-neutral-700">
-          &quot;DOCX 파일 다운로드&quot; 버튼을 누르면 브라우저에서 파일 저장 창이 열립니다.
-        </p>
+      <div
+        className={[
+          'mt-8 flex min-h-0 w-full max-w-[520px] flex-1 flex-col',
+          'rounded-200 bg-neutral-0 border border-neutral-200 shadow-sm',
+          'px-6 py-5',
+        ].join(' ')}
+      >
+        {/* 상단 아이콘 + 타이틀 */}
+        <div className="mb-6 flex items-center gap-3">
+          <div
+            className={[
+              'flex h-10 w-10 items-center justify-center',
+              'bg-primary-50 text-primary-500 rounded-full',
+              'text-body-2-bold',
+            ].join(' ')}
+          >
+            W
+          </div>
+          <div className="flex flex-col">
+            <span className="text-caption-regular text-neutral-500">문서 ID #{complaintId}</span>
+            <span className="text-body-2-bold text-neutral-900">
+              고소장을 Word 문서로 저장할 수 있어요
+            </span>
+          </div>
+        </div>
 
-        <button
-          type="button"
-          onClick={handleDownload}
-          disabled={isDownloading}
-          className={[
-            'mt-4 flex h-11 items-center justify-center',
-            'rounded-400 bg-primary-500 px-8',
-            'text-body-3-bold text-neutral-0',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-          ].join(' ')}
-        >
-          {isDownloading ? '다운로드 준비 중...' : 'DOCX 파일 다운로드'}
-        </button>
+        {/* 안내 텍스트/단계 */}
+        <div className="text-body-3-regular mb-5 space-y-2 text-neutral-700">
+          <p>아래 버튼을 눌러 DOCX 파일을 내려받은 뒤, 필요에 따라 수정·보관해 주세요.</p>
+          <ul className="text-caption-regular space-y-1 text-neutral-600">
+            <li>1️⃣ 다운로드한 파일을 열어 내용이 정확한지 다시 한 번 확인해 주세요.</li>
+            <li>2️⃣ 필요하다면 일부 문장을 직접 수정하거나 추가 메모를 남길 수 있어요.</li>
+            <li>3️⃣ 완성된 문서를 인쇄해 제출하거나, 전자문서로 보관할 수 있습니다.</li>
+          </ul>
+        </div>
 
-        <p className="text-detail-regular mt-4 text-neutral-500">
-          * 브라우저 팝업 차단이 설정되어 있다면, 다운로드가 막힐 수 있어요.
-        </p>
+        {/* 버튼 영역 */}
+        <div className="mt-auto flex flex-col items-center gap-3">
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className={[
+              'flex h-11 w-full items-center justify-center',
+              'rounded-400 bg-primary-500 px-8',
+              'text-body-3-bold text-neutral-0',
+              'transition-colors',
+              'hover:bg-primary-600 disabled:hover:bg-primary-500',
+              'disabled:cursor-not-allowed disabled:opacity-50',
+            ].join(' ')}
+          >
+            {isDownloading ? '다운로드 준비 중...' : 'DOCX 파일 다운로드'}
+          </button>
+
+          <p className="text-detail-regular text-neutral-500">
+            * 브라우저의 팝업 차단 설정에 따라 다운로드 창이 보이지 않을 수 있어요.
+          </p>
+        </div>
       </div>
     </section>
   );
