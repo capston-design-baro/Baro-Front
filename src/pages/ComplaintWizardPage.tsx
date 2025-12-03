@@ -268,182 +268,175 @@ const ComplaintWizardPage: React.FC = () => {
   const chatMode: 'new' | 'resume' = resumeMode ? 'resume' : 'new';
 
   return (
-    <div className="flex max-h-screen min-h-screen w-full flex-col overflow-hidden bg-white">
+    <div className="flex h-screen w-full flex-col bg-white">
       <Header />
-      <div className="flex min-h-0 flex-1 flex-col">
-        <main className="mx-auto flex min-h-0 w-full max-w-[1200px] flex-1 flex-col overflow-hidden px-6 py-4">
-          <WizardProgress onExit={handleExit} />
+      <main className="mx-auto flex min-h-0 w-full max-w-[1200px] flex-1 flex-col overflow-y-auto px-6 py-4">
+        <WizardProgress onExit={handleExit} />
+        {/* 위자드 본문: 0~7단계 (420px 카드) */}
+        <div className="mx-auto w-full max-w-[420px]">
+          {/* 0: 시작 선택 (새로 작성 / 이어쓰기 / 목록 보기) */}
+          {step === 0 && (
+            <ComplaintEntrySection
+              activeMode={entryMode}
+              onNew={() => setEntryMode('new')}
+              onResumeDrafts={() => setEntryMode('resume')}
+            />
+          )}
 
-          {/* 위자드 본문: 0~7단계 (420px 카드) */}
-          <div className="mx-auto w-full max-w-[420px]">
-            {/* 0: 시작 선택 (새로 작성 / 이어쓰기 / 목록 보기) */}
-            {step === 0 && (
-              <ComplaintEntrySection
-                activeMode={entryMode}
-                onNew={() => setEntryMode('new')}
-                onResumeDrafts={() => setEntryMode('resume')}
-              />
-            )}
-
-            {/* 1: 인트로 / 안내 */}
-            <div className={step === 1 ? 'block' : 'hidden'}>
-              <ComplaintIntroSection />
-            </div>
-
-            {/* 2: 고소인 기본정보 */}
-            <div className={step === 2 ? 'block' : 'hidden'}>
-              <ComplainantInfoSection ref={complainantRef} />
-            </div>
-
-            {/* 3: 고소인 추가정보 */}
-            <div className={step === 3 ? 'block' : 'hidden'}>
-              <ComplainantExtraInfoSection ref={complainantExtraRef} />
-            </div>
-
-            {/* 4: 피고소인 기본정보 */}
-            {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
-              <div className={step === 4 ? 'block' : 'hidden'}>
-                <AccusedInfoSection
-                  ref={accusedRef}
-                  complaintId={complaintId}
-                />
-              </div>
-            )}
-
-            {/* 5: 피고소인 추가정보 */}
-            {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
-              <div className={step === 5 ? 'block' : 'hidden'}>
-                <AccusedExtraInfoSection
-                  ref={accusedExtraRef}
-                  complaintId={complaintId}
-                />
-              </div>
-            )}
-
-            {/* 6: 채팅 안내 */}
-            <div className={step === 6 ? 'block' : 'hidden'}>
-              <ChatInfoSection />
-            </div>
-
-            {/* 7: 증거 제출 여부 확인 */}
-            {typeof complaintId === 'number' &&
-              Number.isFinite(complaintId) &&
-              complaintId > 0 &&
-              step === 7 && <EvidenceInfoSection ref={evidenceRef} />}
+          {/* 1: 인트로 / 안내 */}
+          <div className={step === 1 ? 'block' : 'hidden'}>
+            <ComplaintIntroSection />
           </div>
 
-          {/* 8: 실제 채팅창 + 오른쪽 메타 패널 */}
-          {typeof complaintId === 'number' &&
-            Number.isFinite(complaintId) &&
-            complaintId > 0 &&
-            step === 8 && (
-              <div className="mt-6 flex min-h-0 flex-1 gap-2 overflow-hidden">
-                <div className="flex min-h-0 flex-1 justify-center">
-                  <ChatWindowSection
-                    complaintId={complaintId}
-                    mode={chatMode}
-                    initialAiSessionId={initialAiSessionIdFromState ?? null}
-                    onComplete={() => setIsChatCompleted(true)}
-                    onInitMeta={({ offense, rag_keyword, rag_cases }) => {
-                      console.log('📌 onInitMeta in Wizard:', {
-                        offense,
-                        rag_keyword,
-                        rag_cases,
-                      });
-                      setRagKeyword(rag_keyword ?? null);
-                      setRagCases(rag_cases ?? []);
-                    }}
-                  />
-                </div>
+          {/* 2: 고소인 기본정보 */}
+          <div className={step === 2 ? 'block' : 'hidden'}>
+            <ComplainantInfoSection ref={complainantRef} />
+          </div>
 
-                <aside className="rounded-200 bg-neutral-0 mt-6 h-[630px] w-[340px] border border-neutral-200 p-4">
-                  <h2 className="text-body-2-bold mb-2">AI가 찾은 핵심 키워드</h2>
-                  <p className="text-body-3-regular mb-4 text-neutral-700">
-                    {ragKeyword
-                      ? `"${ragKeyword}"`
-                      : '사건 개요를 입력하면, AI가 핵심 키워드를 분석해서 보여드려요.'}
-                  </p>
+          {/* 3: 고소인 추가정보 */}
+          <div className={step === 3 ? 'block' : 'hidden'}>
+            <ComplainantExtraInfoSection ref={complainantExtraRef} />
+          </div>
 
-                  {ragKeyword && (
-                    <>
-                      <h3 className="text-body-3-bold mb-1">검색 기준</h3>
-                      <p className="text-caption-regular mb-3 text-neutral-600">
-                        유사 판례는 "{ragKeyword}"를 중심으로 검색했어요.
-                      </p>
-                    </>
-                  )}
-
-                  <h3 className="text-body-3-bold mb-2">유사 판례</h3>
-
-                  {ragCases.length === 0 ? (
-                    <p className="text-caption-regular text-neutral-500">
-                      아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.
-                    </p>
-                  ) : (
-                    <ul className="flex flex-col gap-3">
-                      {ragCases.map((c, idx) => (
-                        <li
-                          key={c.case_no || idx}
-                          className="rounded-200 h-48 overflow-y-auto border border-neutral-200 bg-neutral-50 px-3 py-2"
-                        >
-                          <p className="text-body-4-bold text-neutral-800">{c.label}</p>
-                          <p className="text-caption-regular mt-0.5 text-neutral-600">
-                            사건번호: {c.case_no}
-                          </p>
-                          <div className="text-caption-regular mt-2 flex flex-col gap-1 whitespace-pre-line text-neutral-700">
-                            <p>
-                              <span className="font-semibold text-neutral-800">사건 개요</span>{' '}
-                              {c.summary}
-                            </p>
-                            <p>
-                              <span className="font-semibold text-neutral-800">판결 요지</span>{' '}
-                              {c.result}
-                            </p>
-                            <p>
-                              <span className="font-semibold text-neutral-800">
-                                내 사건과의 유사점
-                              </span>{' '}
-                              {c.similarity}
-                            </p>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </aside>
-              </div>
-            )}
-
-          {/* 9: 완성된 고소장 미리보기 */}
-          {typeof complaintId === 'number' &&
-            Number.isFinite(complaintId) &&
-            complaintId > 0 &&
-            step === 9 &&
-            generatedComplaint && (
-              <ComplaintPreviewSection
+          {/* 4: 피고소인 기본정보 */}
+          {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
+            <div className={step === 4 ? 'block' : 'hidden'}>
+              <AccusedInfoSection
+                ref={accusedRef}
                 complaintId={complaintId}
-                content={generatedComplaint}
               />
-            )}
+            </div>
+          )}
 
-          {/* 10: DOCX 다운로드 섹션 */}
+          {/* 5: 피고소인 추가정보 */}
+          {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
+            <div className={step === 5 ? 'block' : 'hidden'}>
+              <AccusedExtraInfoSection
+                ref={accusedExtraRef}
+                complaintId={complaintId}
+              />
+            </div>
+          )}
+
+          {/* 6: 채팅 안내 */}
+          <div className={step === 6 ? 'block' : 'hidden'}>
+            <ChatInfoSection />
+          </div>
+
+          {/* 7: 증거 제출 여부 확인 */}
           {typeof complaintId === 'number' &&
             Number.isFinite(complaintId) &&
             complaintId > 0 &&
-            step === 10 && <ComplaintDownloadSection complaintId={complaintId} />}
+            step === 7 && <EvidenceInfoSection ref={evidenceRef} />}
+        </div>
+        {/* 8: 실제 채팅창 + 오른쪽 메타 패널 */}
+        {typeof complaintId === 'number' &&
+          Number.isFinite(complaintId) &&
+          complaintId > 0 &&
+          step === 8 && (
+            <div className="mt-6 flex min-h-0 flex-1 gap-2 overflow-hidden">
+              <div className="flex min-h-0 flex-1 justify-center">
+                <ChatWindowSection
+                  complaintId={complaintId}
+                  mode={chatMode}
+                  initialAiSessionId={initialAiSessionIdFromState ?? null}
+                  onComplete={() => setIsChatCompleted(true)}
+                  onInitMeta={({ offense, rag_keyword, rag_cases }) => {
+                    console.log('📌 onInitMeta in Wizard:', {
+                      offense,
+                      rag_keyword,
+                      rag_cases,
+                    });
+                    setRagKeyword(rag_keyword ?? null);
+                    setRagCases(rag_cases ?? []);
+                  }}
+                />
+              </div>
 
-          <WizardNavButtons
-            onPrev={prev}
-            onNext={handleNext}
-            isNextDisabled={isGenerating || (step === 8 && !isChatCompleted)}
-            disablePrev={step === 0 || step === 4}
-            nextLabel={
-              step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
-            }
-          />
-        </main>
-        <Footer />
-      </div>
+              <aside className="rounded-200 bg-neutral-0 mt-6 h-[630px] w-[340px] border border-neutral-200 p-4">
+                <h2 className="text-body-2-bold mb-2">AI가 찾은 핵심 키워드</h2>
+                <p className="text-body-3-regular mb-4 text-neutral-700">
+                  {ragKeyword
+                    ? `"${ragKeyword}"`
+                    : '사건 개요를 입력하면, AI가 핵심 키워드를 분석해서 보여드려요.'}
+                </p>
+
+                {ragKeyword && (
+                  <>
+                    <h3 className="text-body-3-bold mb-1">검색 기준</h3>
+                    <p className="text-caption-regular mb-3 text-neutral-600">
+                      유사 판례는 "{ragKeyword}"를 중심으로 검색했어요.
+                    </p>
+                  </>
+                )}
+
+                <h3 className="text-body-3-bold mb-2">유사 판례</h3>
+
+                {ragCases.length === 0 ? (
+                  <p className="text-caption-regular text-neutral-500">
+                    아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.
+                  </p>
+                ) : (
+                  <ul className="flex flex-col gap-3">
+                    {ragCases.map((c, idx) => (
+                      <li
+                        key={c.case_no || idx}
+                        className="rounded-200 h-48 overflow-y-auto border border-neutral-200 bg-neutral-50 px-3 py-2"
+                      >
+                        <p className="text-body-4-bold text-neutral-800">{c.label}</p>
+                        <p className="text-caption-regular mt-0.5 text-neutral-600">
+                          사건번호: {c.case_no}
+                        </p>
+                        <div className="text-caption-regular mt-2 flex flex-col gap-1 whitespace-pre-line text-neutral-700">
+                          <p>
+                            <span className="font-semibold text-neutral-800">사건 개요</span>{' '}
+                            {c.summary}
+                          </p>
+                          <p>
+                            <span className="font-semibold text-neutral-800">판결 요지</span>{' '}
+                            {c.result}
+                          </p>
+                          <p>
+                            <span className="font-semibold text-neutral-800">
+                              내 사건과의 유사점
+                            </span>{' '}
+                            {c.similarity}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </aside>
+            </div>
+          )}
+        {/* 9: 완성된 고소장 미리보기 */}
+        {typeof complaintId === 'number' &&
+          Number.isFinite(complaintId) &&
+          complaintId > 0 &&
+          step === 9 &&
+          generatedComplaint && (
+            <ComplaintPreviewSection
+              complaintId={complaintId}
+              content={generatedComplaint}
+            />
+          )}
+        {/* 10: DOCX 다운로드 섹션 */}
+        {typeof complaintId === 'number' &&
+          Number.isFinite(complaintId) &&
+          complaintId > 0 &&
+          step === 10 && <ComplaintDownloadSection complaintId={complaintId} />}
+        <WizardNavButtons
+          onPrev={prev}
+          onNext={handleNext}
+          isNextDisabled={isGenerating || (step === 8 && !isChatCompleted)}
+          disablePrev={step === 0 || step === 4}
+          nextLabel={
+            step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
+          }
+        />
+      </main>
+      <Footer />
 
       {showExitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
