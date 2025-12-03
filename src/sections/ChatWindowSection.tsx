@@ -1,4 +1,3 @@
-// src/sections/ChatWindowSection.tsx
 import {
   type ChatMessageHistoryItem,
   getChatHistory,
@@ -6,7 +5,7 @@ import {
   initChatSession,
   sendChat,
 } from '@/apis/complaints';
-import type { RagCase } from '@/apis/complaints';
+import type { ChatMetaPayload, RagCase } from '@/apis/complaints';
 import { ChatBubble } from '@/components/ChatBubble';
 import type { Side } from '@/types/side';
 import type { AxiosError } from 'axios';
@@ -41,6 +40,21 @@ function fmtTime(d = new Date()) {
   return d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 }
 
+/** history.content가 메타 객체인지 판별하는 타입가드 */
+function isAiMetaMessage(content: ChatMessageHistoryItem['content']): content is ChatMetaPayload {
+  if (typeof content !== 'object' || content === null) return false;
+
+  const c = content as ChatMetaPayload;
+
+  return (
+    typeof c.offense !== 'undefined' ||
+    typeof c.rag_keyword !== 'undefined' ||
+    typeof c.rag_cases !== 'undefined'
+  );
+}
+
+const DONE_PHRASE = '필수 정보가 충족되었습니다. 고소장을 작성해드릴게요.';
+
 const ChatWindowSection: React.FC<Props> = ({
   complaintId,
   onReady,
@@ -54,9 +68,9 @@ const ChatWindowSection: React.FC<Props> = ({
   const [aiSessionId, setAiSessionId] = useState<string | null>(
     mode === 'resume' ? initialAiSessionId : null,
   );
-  const [phase, setPhase] = useState<Phase>(
-    mode === 'resume' && initialAiSessionId ? 'chatting' : 'askSummary',
-  );
+
+  // 이어쓰기는 바로 chatting, 새 작성은 askSummary
+  const [phase, setPhase] = useState<Phase>(mode === 'resume' ? 'chatting' : 'askSummary');
 
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
@@ -65,7 +79,7 @@ const ChatWindowSection: React.FC<Props> = ({
 
   /** 🟢 새 세션: 사건 개요 안내 메시지 */
   useEffect(() => {
-    if (mode === 'resume') return;
+    if (mode !== 'new') return;
     if (phase !== 'askSummary') return;
 
     setMsgs([
@@ -78,7 +92,7 @@ const ChatWindowSection: React.FC<Props> = ({
     ]);
   }, [mode, phase]);
 
-  /** 🟣 이어쓰기 모드: 히스토리 로드 */
+  /** 🟣 이어쓰기 모드: 히스토리 로드 + 메타 복원 */
   useEffect(() => {
     if (mode !== 'resume') return;
     if (!complaintId) return;
@@ -97,15 +111,27 @@ const ChatWindowSection: React.FC<Props> = ({
             },
           ]);
         } else {
-          const restored: Msg[] = history.map((msg, idx) => ({
-            id: `hist-${idx}`,
-            side: msg.role === 'assistant' ? 'left' : 'right',
-            text: msg.content,
-            time: fmtTime(new Date(msg.created_at)),
-            reason: msg.reason ?? null,
-          }));
+          const restored: Msg[] = [];
+          let lastMeta: ChatMetaPayload | undefined;
 
-          // 마지막 메시지가 user로 끝난 경우, 안내 버블 한 줄 더 붙이기
+          history.forEach((msg, idx) => {
+            if (isAiMetaMessage(msg.content)) {
+              lastMeta = msg.content; // 여기서 content가 ChatMetaPayload로 좁혀짐
+              return;
+            }
+
+            const text =
+              typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+
+            restored.push({
+              id: `hist-${idx}`,
+              side: msg.role === 'assistant' ? 'left' : 'right',
+              text,
+              time: fmtTime(new Date(msg.created_at)),
+              reason: msg.reason ?? null,
+            });
+          });
+
           const last = history[history.length - 1];
           if (last && last.role === 'user') {
             restored.push({
@@ -117,15 +143,18 @@ const ChatWindowSection: React.FC<Props> = ({
           }
 
           setMsgs(restored);
+
+          if (lastMeta) {
+            onInitMeta?.({
+              offense: lastMeta.offense ?? '',
+              rag_keyword: lastMeta.rag_keyword ?? null,
+              rag_cases: lastMeta.rag_cases ?? [],
+            });
+          }
         }
 
-        // 🔹 세션 ID는 있으면 세팅, 없으면 일단 채팅 모드로만 전환
         if (initialAiSessionId) {
           setAiSessionId(initialAiSessionId);
-          setPhase('chatting');
-          // onReady?.(initialAiSessionId)
-        } else {
-          setPhase('chatting');
         }
       } catch (e) {
         console.error('히스토리 로드 실패:', e);
@@ -133,15 +162,18 @@ const ChatWindowSection: React.FC<Props> = ({
     };
 
     void loadHistory();
-  }, [mode, complaintId, initialAiSessionId, onReady]);
+
+    // 🔴 onInitMeta 제거
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, complaintId, initialAiSessionId]);
 
   /**
-   * 🟣 이어쓰기 모드: location.state 에 aiSessionId가 없을 수도 있으므로
-   * 백엔드 목록에서 해당 complaint의 ai_session_id를 다시 가져와서 복구
+   * 🟣 이어쓰기 모드: location.state에 aiSessionId가 없을 수도 있으므로
+   * 목록에서 다시 복구
    */
   useEffect(() => {
     if (mode !== 'resume') return;
-    if (aiSessionId) return; // 이미 있으면 스킵
+    if (aiSessionId) return;
     if (!complaintId) return;
 
     const fetchSessionId = async () => {
@@ -151,8 +183,6 @@ const ChatWindowSection: React.FC<Props> = ({
 
         if (target && target.ai_session_id) {
           setAiSessionId(target.ai_session_id);
-          setPhase('chatting');
-          // onReady?.(target.ai_session_id);
         }
       } catch (e) {
         console.error('ai_session_id 복구 실패:', e);
@@ -160,7 +190,7 @@ const ChatWindowSection: React.FC<Props> = ({
     };
 
     void fetchSessionId();
-  }, [mode, complaintId, aiSessionId, onReady]);
+  }, [mode, complaintId, aiSessionId]);
 
   /** 스크롤 항상 아래로 */
   useEffect(() => {
@@ -202,7 +232,7 @@ const ChatWindowSection: React.FC<Props> = ({
         });
 
         const keywordText = rag_keyword
-          ? `입력해주신 내용에서 "${rag_keyword}"를(을) 핵심 키워드로 인식했어요. 이 키워드를 중심으로 사건을 분류하고, 이어서 몇 가지 질문을 드릴게요.`
+          ? `입력해주신 내용에서 "${rag_keyword}"를(을) 핵심 키워드로 인식했어요. 이 키워드를 중심으로 고소장을 작성해 드릴게요.`
           : '입력해주신 내용을 바탕으로 사건을 분류했어요. 이어서 몇 가지 질문을 드릴게요.';
 
         const keywordMsg: Msg = {
@@ -212,10 +242,8 @@ const ChatWindowSection: React.FC<Props> = ({
           time: fmtTime(),
         };
 
-        /**
-         * ❗❗ 여기 핵심: 첫 질문(sendChat)은 NEW 모드에서만 호출
-         */
         let firstQuestionMsg: Msg | null = null;
+        let isDoneReply = false;
 
         if (mode === 'new') {
           const { reply } = await sendChat(
@@ -223,6 +251,8 @@ const ChatWindowSection: React.FC<Props> = ({
             session_id,
             '위 사건 개요를 기반으로, 고소장 작성을 위해 필요한 정보를 단계적으로 질문해 주세요.',
           );
+
+          isDoneReply = reply.includes(DONE_PHRASE);
 
           firstQuestionMsg = {
             id: `q-first-${Date.now()}`,
@@ -232,8 +262,28 @@ const ChatWindowSection: React.FC<Props> = ({
           };
         }
 
-        setMsgs((prev) => [...prev, keywordMsg, ...(firstQuestionMsg ? [firstQuestionMsg] : [])]);
+        setMsgs((prev) => {
+          const nextMsgs = [...prev, keywordMsg, ...(firstQuestionMsg ? [firstQuestionMsg] : [])];
+
+          if (isDoneReply) {
+            const guideMsg: Msg = {
+              id: `done-guide-${Date.now()}`,
+              side: 'left',
+              text: '필수 정보가 모두 확인되었어요. 이제 화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
+              time: fmtTime(),
+            };
+            nextMsgs.push(guideMsg);
+          }
+
+          return nextMsgs;
+        });
+
         setPhase('chatting');
+
+        if (isDoneReply) {
+          setIsCompleted(true);
+          onComplete?.();
+        }
       } catch (e) {
         const err = e as AxiosError<{ detail?: string }>;
         const detail = err.response?.data?.detail;
@@ -267,7 +317,6 @@ const ChatWindowSection: React.FC<Props> = ({
     }
 
     if (!aiSessionId) {
-      // ❗ 조용히 return 하지 말고 사용자한테 알려주기
       setMsgs((prev) => [
         ...prev,
         {
@@ -303,8 +352,7 @@ const ChatWindowSection: React.FC<Props> = ({
         time: fmtTime(),
       };
 
-      const donePhrase = '필수 정보가 충족되었습니다. 고소장을 작성해드릴게요.';
-      const isDoneReply = reply.includes(donePhrase);
+      const isDoneReply = reply.includes(DONE_PHRASE);
 
       setMsgs((prev) => {
         const nextMsgs = [...prev, botMsg];
@@ -339,7 +387,7 @@ const ChatWindowSection: React.FC<Props> = ({
     } finally {
       setIsBotTyping(false);
     }
-  }, [mode, phase, aiSessionId, input, complaintId, isCompleted, onComplete, onInitMeta]);
+  }, [mode, phase, aiSessionId, input, complaintId, isCompleted, onComplete, onReady, onInitMeta]);
 
   const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -358,35 +406,41 @@ const ChatWindowSection: React.FC<Props> = ({
         'bg-neutral-0 pt-6 pb-6',
       ].join(' ')}
     >
-      <div
-        ref={listRef}
-        className={[
-          'flex min-h-0 w-full flex-1 flex-col',
-          'max-w-[720px]',
-          'rounded-200 bg-neutral-0 overflow-y-auto border border-gray-300',
-          'px-6 py-3',
-        ].join(' ')}
-        role="list"
-        aria-label="채팅 메시지"
-      >
-        {msgs.map((m) => (
-          <ChatBubble
-            key={m.id}
-            side={m.side}
-            text={m.text}
-            time={m.time}
-            srLabel={`${m.side === 'left' ? '바로' : '사용자'} 메시지`}
-          />
-        ))}
-        {isBotTyping && (
-          <ChatBubble
-            side="left"
-            text="..."
-            time={fmtTime()}
-            srLabel="바로가 입력 중입니다."
-            isTyping
-          />
-        )}
+      <div className="flex min-h-0 w-full flex-1 justify-center">
+        <div
+          className={[
+            'flex min-h-0 w-full max-w-[720px] flex-1 flex-col',
+            'rounded-200 bg-neutral-0 border border-gray-300',
+            'px-6 py-3',
+          ].join(' ')}
+        >
+          {/* 🔹 실제로 스크롤 되는 영역 (padding / border 없음) */}
+          <div
+            ref={listRef}
+            className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+            role="list"
+            aria-label="채팅 메시지"
+          >
+            {msgs.map((m) => (
+              <ChatBubble
+                key={m.id}
+                side={m.side}
+                text={m.text}
+                time={m.time}
+                srLabel={`${m.side === 'left' ? '바로' : '사용자'} 메시지`}
+              />
+            ))}
+            {isBotTyping && (
+              <ChatBubble
+                side="left"
+                text="..."
+                time={fmtTime()}
+                srLabel="바로가 입력 중입니다."
+                isTyping
+              />
+            )}
+          </div>
+        </div>
       </div>
 
       <div
