@@ -1,4 +1,5 @@
 import { deleteComplaint, getMyComplaints } from '@/apis/complaints';
+import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import IntroHeader from '@/components/IntroHeader';
@@ -20,8 +21,8 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const STATUS_CHIP_CLASS: Record<string, string> = {
-  in_progress: 'bg-primary-50 text-primary-500 border border-primary-100',
-  completed: 'bg-neutral-50 text-neutral-600 border border-neutral-200',
+  in_progress: 'bg-primary-0 text-primary-400 border border-primary-100',
+  completed: 'bg-neutral-0 text-neutral-600 border border-neutral-200',
 };
 
 const MyComplaintsPage: React.FC = () => {
@@ -30,6 +31,7 @@ const MyComplaintsPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<MyComplaintItem | null>(null);
 
   const resetWizard = useComplaintWizard((s) => s.reset);
 
@@ -91,13 +93,19 @@ const MyComplaintsPage: React.FC = () => {
     });
   };
 
-  const handleDelete = async (c: MyComplaintItem) => {
-    if (!window.confirm('해당 고소장을 삭제하시겠어요?\n삭제 후에는 되돌릴 수 없습니다.')) return;
+  // 삭제 모달 오픈용
+  const handleDelete = (c: MyComplaintItem) => {
+    setDeleteTarget(c);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
 
     try {
-      setDeletingId(c.id);
-      await deleteComplaint(c.id);
+      setDeletingId(deleteTarget.id);
+      await deleteComplaint(deleteTarget.id);
       await fetchList();
+      setDeleteTarget(null);
     } catch (e) {
       console.error('failed to delete complaint', e);
       window.alert('고소장을 삭제하지 못했어요. 잠시 후 다시 시도해 주세요.');
@@ -116,7 +124,7 @@ const MyComplaintsPage: React.FC = () => {
           <IntroHeader
             title="내 고소장 관리"
             lines={[
-              '작성 중인 고소장과 완료된 고소장을 한 곳에서 확인할 수 있어요.',
+              '내 고소장을 한 곳에서 확인할 수 있어요.',
               '이어 작성하거나 내용을 확인하고, 필요 없는 고소장은 삭제할 수 있어요.',
             ]}
             center
@@ -124,7 +132,7 @@ const MyComplaintsPage: React.FC = () => {
           />
         </div>
 
-        {/* 🔹 오른쪽 상단 CTA 버튼 */}
+        {/* 오른쪽 상단 CTA 버튼 */}
         <div className="mb-4 flex justify-end">
           <button
             type="button"
@@ -145,14 +153,14 @@ const MyComplaintsPage: React.FC = () => {
           </button>
         </div>
 
-        {/* 🔹 에러 메시지 */}
+        {/* 에러 메시지 */}
         {error && (
           <div className="rounded-200 border-warning-100 bg-warning-25 text-body-3-regular text-warning-200 mb-4 border px-4 py-3">
             {error}
           </div>
         )}
 
-        {/* 🔹 목록 카드 전체 래퍼 */}
+        {/* 목록 카드 전체 래퍼 */}
         <section
           className={[
             'rounded-300 bg-neutral-0 flex-1 border border-neutral-100',
@@ -225,6 +233,16 @@ const MyComplaintsPage: React.FC = () => {
                             {c.crime_type}
                           </span>
                         )}
+                        {/* 상태 뱃지 */}
+                        <span
+                          className={[
+                            'rounded-400 inline-flex items-center px-2 py-1',
+                            'text-detail-regular',
+                            statusClass,
+                          ].join(' ')}
+                        >
+                          {statusLabel}
+                        </span>
                       </div>
                       <p className="text-caption-regular text-neutral-500">
                         생성일시&nbsp;&nbsp;{formatDate(c.created_at)}
@@ -233,16 +251,6 @@ const MyComplaintsPage: React.FC = () => {
 
                     {/* 오른쪽: 상태 + 액션들 */}
                     <div className="flex flex-wrap items-center gap-2 md:justify-end">
-                      {/* 상태 뱃지 */}
-                      <span
-                        className={[
-                          'rounded-300 text-caption-regular inline-flex h-7 items-center px-3',
-                          statusClass,
-                        ].join(' ')}
-                      >
-                        {statusLabel}
-                      </span>
-
                       {/* 액션 버튼들 */}
                       {c.status === 'in_progress' ? (
                         <button
@@ -250,15 +258,18 @@ const MyComplaintsPage: React.FC = () => {
                           onClick={() => handleResume(c)}
                           className={[
                             'rounded-300 inline-flex items-center gap-1 border px-3 py-1.5',
-                            'border-primary-300 bg-primary-25 text-caption-regular text-primary-600 font-semibold',
-                            'hover:bg-primary-50 hover:border-primary-400',
+                            'border-primary-100 bg-primary-25 text-detail-regular text-primary-600 font-semibold',
+                            'hover:bg-primary-0/50 hover:border-primary-100',
                             'transition-colors duration-200',
                           ].join(' ')}
                         >
-                          <span className="material-symbols-outlined text-primary-500">
+                          <span
+                            className="material-symbols-outlined text-primary-500"
+                            style={{ fontSize: '16px' }}
+                          >
                             play_arrow
                           </span>
-                          이어서 작성
+                          이어 쓰기
                         </button>
                       ) : (
                         <button
@@ -266,12 +277,15 @@ const MyComplaintsPage: React.FC = () => {
                           onClick={() => handleView(c)}
                           className={[
                             'rounded-300 inline-flex items-center gap-1 border px-3 py-1.5',
-                            'bg-neutral-0 text-caption-regular border-neutral-300 font-semibold text-neutral-700',
+                            'bg-neutral-0 text-detail-regular border-neutral-300 font-semibold text-neutral-700',
                             'hover:border-neutral-500',
                             'transition-colors duration-200',
                           ].join(' ')}
                         >
-                          <span className="material-symbols-outlined text-neutral-600">
+                          <span
+                            className="material-symbols-outlined text-neutral-600"
+                            style={{ fontSize: '16px' }}
+                          >
                             visibility
                           </span>
                           내용 보기
@@ -283,14 +297,19 @@ const MyComplaintsPage: React.FC = () => {
                         onClick={() => handleDelete(c)}
                         disabled={deletingId === c.id}
                         className={[
-                          'rounded-300 text-caption-regular inline-flex items-center gap-1 border px-3 py-1.5',
+                          'rounded-300 text-detail-regular inline-flex items-center gap-1 border px-3 py-1.5',
                           'bg-neutral-0 border-neutral-200 text-neutral-500',
-                          'hover:border-warning-200 hover:text-warning-200',
+                          'hover:border-warning-100 hover:bg-warning-0/50 hover:text-warning-200',
                           'disabled:opacity-50 disabled:hover:border-neutral-200 disabled:hover:text-neutral-500',
                           'transition-colors duration-200',
                         ].join(' ')}
                       >
-                        <span className="material-symbols-outlined text-inherit">delete</span>
+                        <span
+                          className="material-symbols-outlined text-inherit"
+                          style={{ fontSize: '16px' }}
+                        >
+                          delete
+                        </span>
                         삭제
                       </button>
                     </div>
@@ -302,6 +321,15 @@ const MyComplaintsPage: React.FC = () => {
         </section>
       </main>
 
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
+          <CharacterModal
+            variant="delete"
+            onCancel={() => setDeleteTarget(null)}
+            onConfirm={confirmDelete}
+          />
+        </div>
+      )}
       <Footer />
     </div>
   );

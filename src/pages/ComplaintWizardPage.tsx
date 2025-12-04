@@ -329,6 +329,7 @@ const ComplaintWizardPage: React.FC = () => {
             complaintId > 0 &&
             step === 7 && <EvidenceInfoSection ref={evidenceRef} />}
         </div>
+
         {/* 8: 실제 채팅창 + 오른쪽 메타 패널 */}
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
@@ -378,7 +379,7 @@ const ComplaintWizardPage: React.FC = () => {
                   </p>
                 ) : (
                   <ul className="flex flex-col gap-3">
-                    {ragCases.map((c, idx) => (
+                    {[...ragCases].reverse().map((c, idx) => (
                       <li
                         key={c.case_no || idx}
                         className="rounded-200 h-48 overflow-y-auto border border-neutral-200 bg-neutral-50 px-3 py-2"
@@ -430,7 +431,7 @@ const ComplaintWizardPage: React.FC = () => {
           onPrev={prev}
           onNext={handleNext}
           isNextDisabled={isGenerating || (step === 8 && !isChatCompleted)}
-          disablePrev={step === 0 || step === 4}
+          disablePrev={step === 0 || step === 8 || step === 9}
           nextLabel={
             step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
           }
