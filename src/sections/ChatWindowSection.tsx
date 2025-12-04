@@ -144,6 +144,19 @@ const ChatWindowSection: React.FC<Props> = ({
 
           setMsgs(restored);
 
+          // 히스토리 안에 DONE_PHRASE가 있으면 완료 상태로 취급
+          const hasDone = history.some(
+            (msg) =>
+              msg.role === 'assistant' &&
+              typeof msg.content === 'string' &&
+              msg.content.includes(DONE_PHRASE),
+          );
+
+          if (hasDone) {
+            setIsCompleted(true);
+            onComplete?.(); // 부모(ComplaintWizardPage)의 isChatCompleted = true
+          }
+
           if (lastMeta) {
             onInitMeta?.({
               offense: lastMeta.offense ?? '',
