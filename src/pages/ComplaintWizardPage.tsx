@@ -431,7 +431,7 @@ const ComplaintWizardPage: React.FC = () => {
           onPrev={prev}
           onNext={handleNext}
           isNextDisabled={isGenerating || (step === 8 && !isChatCompleted)}
-          disablePrev={step === 0 || step === 8}
+          disablePrev={step === 0 || step === 8 || step === 9}
           nextLabel={
             step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
           }
