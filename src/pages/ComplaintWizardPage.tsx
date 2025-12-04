@@ -379,7 +379,7 @@ const ComplaintWizardPage: React.FC = () => {
                   </p>
                 ) : (
                   <ul className="flex flex-col gap-3">
-                    {ragCases.map((c, idx) => (
+                    {[...ragCases].reverse().map((c, idx) => (
                       <li
                         key={c.case_no || idx}
                         className="rounded-200 h-48 overflow-y-auto border border-neutral-200 bg-neutral-50 px-3 py-2"
