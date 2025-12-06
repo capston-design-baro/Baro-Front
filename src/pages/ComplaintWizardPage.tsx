@@ -206,6 +206,7 @@ const ComplaintWizardPage: React.FC = () => {
           accused_phone: accusedBasicInfo.phone,
           accused_job: extra.occupation,
           accused_office_address: extra.officeAddress,
+          accused_etc: extra.etc,
         };
 
         await registerAccused(complaintId, payload);
