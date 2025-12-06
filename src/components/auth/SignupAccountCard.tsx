@@ -22,7 +22,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
   const [emailCheckStatus, setEmailCheckStatus] = useState<
     'idle' | 'checking' | 'success' | 'error'
   >('idle');
-
+  
   // UI 상태 관리
   const [error, setError] = useState<string | null>(null); // 에러 메시지
 
@@ -55,6 +55,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
   const handleEmailCheck = async () => {
     setError(null);
 
+
     const trimmed = email.trim();
     if (!trimmed) {
       setError('이메일을 먼저 입력해주세요.');
@@ -75,15 +76,18 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
       if (res.available) {
         // 사용 가능한 이메일 -> 인풋 아래에 초록색 안내 문구
         setEmailCheckStatus('success');
+
         setError(null);
       } else {
         // 이미 사용 중인 이메일 -> FormErrorMessage로 경고 출력
         setEmailCheckStatus('error');
+
         setError(res.message);
       }
     } catch (e) {
       console.error('failed to check email', e);
       setEmailCheckStatus('error');
+
       setError('이메일 중복 확인 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
     }
   };
@@ -147,6 +151,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                   setEmail(e.target.value);
                   // 이메일이 변경되면 이전 중복 확인 결과는 무효화
                   setEmailCheckStatus('idle');
+
                 }}
                 autoComplete="email"
               />
@@ -163,13 +168,19 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                     : 'border-primary-400 text-primary-400 hover:bg-primary-0/50',
                 ].join(' ')}
               >
+
                 {emailCheckStatus === 'checking'
                   ? '확인 중...'
                   : emailCheckStatus === 'success'
                     ? '확인 완료'
                     : '중복 확인'}
+
               </button>
             </div>
+
+            {emailCheckMessage && emailCheckStatus === 'success' && (
+              <p className="text-caption-regular text-positive-200 mt-1">{emailCheckMessage}</p>
+            )}
           </div>
         </div>
 
