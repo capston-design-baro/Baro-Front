@@ -9,6 +9,7 @@ import {
 import type { ComplainantInfoCreate } from '@/apis/complaints';
 import { createComplaint } from '@/apis/complaints';
 import type { RagCase } from '@/apis/complaints';
+import CaseDetailModal from '@/components/CaseDetailModal';
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -86,6 +87,8 @@ const ComplaintWizardPage: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const [showExitModal, setShowExitModal] = useState(false);
+
+  const [selectedCase, setSelectedCase] = useState<RagCase | null>(null);
 
   /** 나가기 버튼 */
   const handleExit = () => {
@@ -381,30 +384,41 @@ const ComplaintWizardPage: React.FC = () => {
                 ) : (
                   <ul className="flex flex-col gap-3">
                     {[...ragCases].reverse().map((c, idx) => (
-                      <li
-                        key={c.case_no || idx}
-                        className="rounded-200 h-48 overflow-y-auto border border-neutral-200 bg-neutral-50 px-3 py-2"
-                      >
-                        <p className="text-body-4-bold text-neutral-800">{c.label}</p>
-                        <p className="text-caption-regular mt-0.5 text-neutral-600">
-                          사건번호: {c.case_no}
-                        </p>
-                        <div className="text-caption-regular mt-2 flex flex-col gap-1 whitespace-pre-line text-neutral-700">
-                          <p>
-                            <span className="font-semibold text-neutral-800">사건 개요</span>{' '}
-                            {c.summary}
-                          </p>
-                          <p>
-                            <span className="font-semibold text-neutral-800">판결 요지</span>{' '}
-                            {c.result}
-                          </p>
-                          <p>
-                            <span className="font-semibold text-neutral-800">
-                              내 사건과의 유사점
-                            </span>{' '}
-                            {c.similarity}
-                          </p>
-                        </div>
+                      <li key={c.case_no || idx}>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCase(c)}
+                          className={[
+                            'rounded-200 bg-neutral-0 w-full border border-neutral-200 px-3 py-2',
+                            'flex items-center justify-between gap-3',
+                            'hover:border-primary-100 hover:bg-primary-25/40',
+                            'transition-colors duration-200',
+                          ].join(' ')}
+                        >
+                          <div className="flex flex-col text-left">
+                            <span className="text-caption-regular text-neutral-500">사건 번호</span>
+                            <span className="text-body-4-bold text-neutral-900">{c.case_no}</span>
+                            {c.label && (
+                              <span className="text-caption-regular mt-0.5 text-neutral-600">
+                                {c.label}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex flex-col items-end gap-1">
+                            {c.similarity && (
+                              <span className="rounded-200 bg-primary-0 text-caption-regular text-primary-600 px-2 py-0.5">
+                                유사도 {c.similarity}
+                              </span>
+                            )}
+                            <span className="text-detail-regular text-primary-600 mt-1 inline-flex items-center gap-1">
+                              자세히 보기
+                              <span className="material-symbols-outlined text-[16px]">
+                                open_in_new
+                              </span>
+                            </span>
+                          </div>
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -439,6 +453,16 @@ const ComplaintWizardPage: React.FC = () => {
         />
       </main>
       <Footer />
+
+      {/* 판례 상세 모달 */}
+      {selectedCase && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
+          <CaseDetailModal
+            ragCase={selectedCase}
+            onClose={() => setSelectedCase(null)}
+          />
+        </div>
+      )}
 
       {showExitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
