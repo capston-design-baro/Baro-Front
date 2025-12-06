@@ -159,7 +159,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                 onClick={handleEmailCheck}
                 disabled={!email} // 이메일 입력 안 했으면 비활성화
                 className={[
-                  'rounded-200 text-detail-regular h-10 border px-3 transition-colors',
+                  'rounded-200 text-detail-regular h-10 border px-2 whitespace-nowrap transition-colors',
                   !email
                     ? 'cursor-not-allowed border-neutral-300 bg-neutral-100 text-neutral-400'
                     : 'border-primary-400 text-primary-400 hover:bg-primary-0/50',
