@@ -78,6 +78,7 @@ const ComplaintWizardPage: React.FC = () => {
   // AI 메타 정보 (이 페이지에서만 관리)
   const [ragKeyword, setRagKeyword] = useState<string | null>(null);
   const [ragCases, setRagCases] = useState<RagCase[]>([]);
+  const [ragSearchStarted, setRagSearchStarted] = useState(false);
 
   const [complaintId, setComplaintId] = useState<number | null>(initialComplaintIdFromState);
   const [complainantBasicInfo, setComplainantBasicInfo] = useState<ComplaintBasicInfo | null>(null);
@@ -345,6 +346,7 @@ const ComplaintWizardPage: React.FC = () => {
                   complaintId={complaintId}
                   mode={chatMode}
                   initialAiSessionId={initialAiSessionIdFromState ?? null}
+                  onInitStart={() => setRagSearchStarted(true)}
                   onComplete={() => setIsChatCompleted(true)}
                   onInitMeta={({ offense, rag_keyword, rag_cases }) => {
                     console.log('📌 onInitMeta in Wizard:', {
@@ -379,7 +381,9 @@ const ComplaintWizardPage: React.FC = () => {
 
                 {ragCases.length === 0 ? (
                   <p className="text-caption-regular text-neutral-500">
-                    아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.
+                    {ragSearchStarted
+                      ? '유사 판례를 찾고 있어요.'
+                      : '아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.'}
                   </p>
                 ) : (
                   <ul className="flex flex-col gap-3">
