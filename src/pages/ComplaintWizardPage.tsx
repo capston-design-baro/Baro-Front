@@ -268,7 +268,7 @@ const ComplaintWizardPage: React.FC = () => {
   const chatMode: 'new' | 'resume' = resumeMode ? 'resume' : 'new';
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-white">
+    <div className="bg-neutral-0 flex min-h-screen w-full flex-col">
       <Header />
       <main className="mx-auto flex min-h-0 w-full max-w-[1200px] flex-1 flex-col overflow-y-auto px-6 py-4">
         <WizardProgress onExit={handleExit} />
