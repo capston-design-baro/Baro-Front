@@ -380,11 +380,13 @@ const ComplaintWizardPage: React.FC = () => {
                 <h3 className="text-body-3-bold mb-2">유사 판례</h3>
 
                 {ragCases.length === 0 ? (
-                  <p className="text-caption-regular text-neutral-500">
-                    {ragSearchStarted
-                      ? '유사 판례를 찾고 있어요.'
-                      : '아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.'}
-                  </p>
+                  ragSearchStarted ? (
+                    <p className="animate-wave-fill inline-block">유사 판례를 찾고 있어요...</p>
+                  ) : (
+                    <p className="text-caption-regular text-neutral-500">
+                      아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.
+                    </p>
+                  )
                 ) : (
                   <ul className="flex flex-col gap-3">
                     {[...ragCases].reverse().map((c, idx) => (
