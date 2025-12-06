@@ -399,7 +399,6 @@ const ComplaintWizardPage: React.FC = () => {
                             <span className="text-caption-regular text-neutral-500">사건 번호</span>
                             <span className="text-body-4-bold text-neutral-900">{c.case_no}</span>
                           </div>
-
                           <div className="flex flex-col items-end gap-1">
                             <span className="text-detail-regular text-primary-600 mt-1 inline-flex items-center gap-1">
                               자세히 보기
