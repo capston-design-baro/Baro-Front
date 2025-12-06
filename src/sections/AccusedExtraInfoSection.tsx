@@ -6,12 +6,9 @@ import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } fro
 export type AccusedExtraInfo = {
   occupation: string;
   officeAddress: string;
-  officePhone: string;
-  homePhone: string;
+  etc: string;
   unknownOccupation: boolean;
-  unknownOfficePhone: boolean;
   unknownOfficeAddress: boolean;
-  unknownHomePhone: boolean;
 };
 
 export type AccusedExtraInfoSectionHandle = {
@@ -32,19 +29,11 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
   const [officeAddr2, setOfficeAddr2] = useState('');
   const [officeAddr3, setOfficeAddr3] = useState('');
 
-  const [officeP1, setOfficeP1] = useState('');
-  const [officeP2, setOfficeP2] = useState('');
-  const [officeP3, setOfficeP3] = useState('');
-
-  const [homeP1, setHomeP1] = useState('');
-  const [homeP2, setHomeP2] = useState('');
-  const [homeP3, setHomeP3] = useState('');
+  const [etc, setEtc] = useState('');
 
   // 모름 토글
   const [unknownOccupation, setUnknownOccupation] = useState(false);
-  const [unknownOfficePhone, setUnknownOfficePhone] = useState(false);
   const [unknownOfficeAddress, setUnknownOfficeAddress] = useState(false);
-  const [unknownHomePhone, setUnknownHomePhone] = useState(false);
 
   // 에러
   const [err, setErr] = useState<string | null>(null);
@@ -74,20 +63,6 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
     return [officeAddr1, officeAddr2, officeAddr3].filter(Boolean).join(' ').trim();
   }, [officeAddr1, officeAddr2, officeAddr3, unknownOfficeAddress]);
 
-  // 사무실 번호 문자열
-  const officePhone = useMemo(() => {
-    if (unknownOfficePhone) return '';
-    if (!officeP1 && !officeP2 && !officeP3) return '';
-    return [officeP1, officeP2, officeP3].join('-').replace(/--+/g, '-');
-  }, [officeP1, officeP2, officeP3, unknownOfficePhone]);
-
-  // 집 전화번호 문자열
-  const homePhone = useMemo(() => {
-    if (unknownHomePhone) return '';
-    if (!homeP1 && !homeP2 && !homeP3) return '';
-    return [homeP1, homeP2, homeP3].join('-').replace(/--+/g, '-');
-  }, [homeP1, homeP2, homeP3, unknownHomePhone]);
-
   // 최종 객체 만들기 (유효성 검사는 안 하고 그대로 넘김)
   const buildExtraInfo = (): AccusedExtraInfo => {
     if (!unknownOccupation && !occupation.trim()) {
@@ -100,28 +75,15 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
       setErr(msg);
       throw new Error(msg);
     }
-    if (!unknownOfficePhone && !officePhone) {
-      const msg = '사무실 전화번호를 입력하거나 "모름"을 선택해주세요.';
-      setErr(msg);
-      throw new Error(msg);
-    }
-    if (!unknownHomePhone && !homePhone) {
-      const msg = '자택 전화번호를 입력하거나 "모름"을 선택해주세요.';
-      setErr(msg);
-      throw new Error(msg);
-    }
 
     setErr(null);
 
     return {
       occupation: unknownOccupation ? '' : occupation.trim(),
       officeAddress: unknownOfficeAddress ? '' : officeAddress.trim(),
-      officePhone: unknownOfficePhone ? '' : officePhone,
-      homePhone: unknownHomePhone ? '' : homePhone,
+      etc: etc.trim(),
       unknownOccupation,
       unknownOfficeAddress,
-      unknownOfficePhone,
-      unknownHomePhone,
     };
   };
 
@@ -300,159 +262,28 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
             </div>
           </div>
 
-          {/* 사무실 전화번호 */}
+          {/* 기타 정보 */}
           <div className="flex flex-col gap-2">
-            {renderLabel('사무실 전화번호', true)}
-            <div className="flex items-center gap-3">
+            {renderLabel('기타 정보', false)}
+            <div className="flex items-start gap-3">
               <span
-                className="material-symbols-outlined text-primary-600/50"
+                className="material-symbols-outlined text-primary-600/50 mt-1"
                 style={{ fontSize: '24px' }}
               >
-                call
+                info
               </span>
 
-              <div className="grid w-full grid-cols-3 gap-2">
-                <input
-                  disabled={unknownOfficePhone}
-                  value={officeP1}
-                  onChange={(e) => setOfficeP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownOfficePhone ? '모름' : '010'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownOfficePhone}
-                  value={officeP2}
-                  onChange={(e) => setOfficeP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownOfficePhone ? '모름' : '1234'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownOfficePhone}
-                  value={officeP3}
-                  onChange={(e) => setOfficeP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownOfficePhone ? '모름' : '5678'}
-                  inputMode="numeric"
-                />
-              </div>
-
-              <label
+              <textarea
+                value={etc}
+                onChange={(e) => setEtc(e.target.value)}
                 className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
+                  'rounded-200 flex-1 px-3 py-2',
+                  'border border-neutral-300',
+                  'min-h-[80px] resize-y',
+                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownOfficePhone}
-                  onChange={(e) =>
-                    handleCheckboxChange(
-                      e.target.checked,
-                      setUnknownOfficePhone,
-                      setOfficeP1,
-                      setOfficeP2,
-                      setOfficeP3,
-                    )
-                  }
-                />
-                모름
-              </label>
-            </div>
-          </div>
-
-          {/* 집 전화번호 */}
-          <div className="flex flex-col gap-2">
-            {renderLabel('자택 전화번호', true)}
-            <div className="flex items-center gap-3">
-              <span
-                className="material-symbols-outlined text-primary-600/50"
-                style={{ fontSize: '24px' }}
-              >
-                home
-              </span>
-
-              <div className="grid w-full grid-cols-3 gap-2">
-                <input
-                  disabled={unknownHomePhone}
-                  value={homeP1}
-                  onChange={(e) => setHomeP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownHomePhone ? '모름' : '010'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownHomePhone}
-                  value={homeP2}
-                  onChange={(e) => setHomeP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownHomePhone ? '모름' : '1234'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownHomePhone}
-                  value={homeP3}
-                  onChange={(e) => setHomeP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownHomePhone ? '모름' : '5678'}
-                  inputMode="numeric"
-                />
-              </div>
-
-              <label
-                className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
-                ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownHomePhone}
-                  onChange={(e) =>
-                    handleCheckboxChange(
-                      e.target.checked,
-                      setUnknownHomePhone,
-                      setHomeP1,
-                      setHomeP2,
-                      setHomeP3,
-                    )
-                  }
-                />
-                모름
-              </label>
+                placeholder="피고소인의 계좌 번호, 피고소인과의 관계 등 피고소인을 특정할 수 있는 정보를 알려주세요."
+              />
             </div>
           </div>
         </div>
