@@ -434,7 +434,7 @@ const ChatWindowSection: React.FC<Props> = ({
           {/* 🔹 실제로 스크롤 되는 영역 (padding / border 없음) */}
           <div
             ref={listRef}
-            className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+            className="balaw-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto px-2"
             role="list"
             aria-label="채팅 메시지"
           >
