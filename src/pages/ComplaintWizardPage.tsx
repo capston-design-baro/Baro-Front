@@ -398,19 +398,8 @@ const ComplaintWizardPage: React.FC = () => {
                           <div className="flex flex-col text-left">
                             <span className="text-caption-regular text-neutral-500">사건 번호</span>
                             <span className="text-body-4-bold text-neutral-900">{c.case_no}</span>
-                            {c.label && (
-                              <span className="text-caption-regular mt-0.5 text-neutral-600">
-                                {c.label}
-                              </span>
-                            )}
                           </div>
-
                           <div className="flex flex-col items-end gap-1">
-                            {c.similarity && (
-                              <span className="rounded-200 bg-primary-0 text-caption-regular text-primary-600 px-2 py-0.5">
-                                유사도 {c.similarity}
-                              </span>
-                            )}
                             <span className="text-detail-regular text-primary-600 mt-1 inline-flex items-center gap-1">
                               자세히 보기
                               <span className="material-symbols-outlined text-[16px]">
