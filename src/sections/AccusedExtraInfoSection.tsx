@@ -199,7 +199,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                   'disabled:bg-neutral-100 disabled:text-neutral-400',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
-                placeholder={unknownOccupation ? '' : '이름 입력'}
+                placeholder={unknownOccupation ? '모름' : '이름 입력'}
                 type="text"
               />
 
@@ -244,7 +244,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownOfficeAddress ? '' : '시/도'}
+                  placeholder={unknownOfficeAddress ? '모름' : '시/도'}
                   type="text"
                 />
                 <input
@@ -257,7 +257,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownOfficeAddress ? '' : '시/군/구'}
+                  placeholder={unknownOfficeAddress ? '모름' : '시/군/구'}
                   type="text"
                 />
                 <input
@@ -270,7 +270,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownOfficeAddress ? '' : '읍/면/동'}
+                  placeholder={unknownOfficeAddress ? '모름' : '읍/면/동'}
                   type="text"
                 />
               </div>
@@ -322,7 +322,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownOfficePhone ? '' : '010'}
+                  placeholder={unknownOfficePhone ? '모름' : '010'}
                   inputMode="numeric"
                 />
                 <input
@@ -335,7 +335,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownOfficePhone ? '' : '1234'}
+                  placeholder={unknownOfficePhone ? '모름' : '1234'}
                   inputMode="numeric"
                 />
                 <input
@@ -348,7 +348,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownOfficePhone ? '' : '5678'}
+                  placeholder={unknownOfficePhone ? '모름' : '5678'}
                   inputMode="numeric"
                 />
               </div>
@@ -400,7 +400,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownHomePhone ? '' : '010'}
+                  placeholder={unknownHomePhone ? '모름' : '010'}
                   inputMode="numeric"
                 />
                 <input
@@ -413,7 +413,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownHomePhone ? '' : '1234'}
+                  placeholder={unknownHomePhone ? '모름' : '1234'}
                   inputMode="numeric"
                 />
                 <input
@@ -426,7 +426,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownHomePhone ? '' : '5678'}
+                  placeholder={unknownHomePhone ? '모름' : '5678'}
                   inputMode="numeric"
                 />
               </div>
