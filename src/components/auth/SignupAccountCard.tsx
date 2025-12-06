@@ -1,3 +1,4 @@
+import { checkEmailAvailability } from '@/apis/auth';
 import FormErrorMessage from '@/components/FormErrorMessage';
 import React, { useState } from 'react';
 
@@ -18,6 +19,11 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
   const [showPw, setShowPw] = useState(false);
   const [showPwCheck, setShowPwCheck] = useState(false);
 
+  const [emailCheckStatus, setEmailCheckStatus] = useState<
+    'idle' | 'checking' | 'success' | 'error'
+  >('idle');
+  const [emailCheckMessage, setEmailCheckMessage] = useState<string | null>(null);
+
   // UI 상태 관리
   const [error, setError] = useState<string | null>(null); // 에러 메시지
 
@@ -25,6 +31,12 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // 이메일 중복 확인 여부 검증 추가
+    if (emailCheckStatus !== 'success') {
+      setError('이메일 중복 확인을 먼저 진행해주세요.');
+      return;
+    }
 
     // 필수값 검증
     if (!email || !pw || !pwCheck) {
@@ -39,6 +51,47 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
     }
 
     onNext({ email, password: pw });
+  };
+
+  const handleEmailCheck = async () => {
+    setError(null);
+    setEmailCheckMessage(null);
+
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setError('이메일을 먼저 입력해주세요.');
+      return;
+    }
+
+    // 간단한 이메일 형식 체크 (프론트 유효성용)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmed)) {
+      setError('올바른 이메일 형식을 입력해주세요.');
+      return;
+    }
+
+    try {
+      setEmailCheckStatus('checking');
+      const res = await checkEmailAvailability(trimmed);
+      setEmailCheckMessage(res.message);
+
+      if (res.available) {
+        // 사용 가능한 이메일 -> 인풋 아래에 초록색 안내 문구
+        setEmailCheckStatus('success');
+        setEmailCheckMessage(res.message);
+        setError(null);
+      } else {
+        // 이미 사용 중인 이메일 -> FormErrorMessage로 경고 출력
+        setEmailCheckStatus('error');
+        setEmailCheckMessage(null);
+        setError(res.message);
+      }
+    } catch (e) {
+      console.error('failed to check email', e);
+      setEmailCheckStatus('error');
+      setEmailCheckMessage(null);
+      setError('이메일 중복 확인 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   const renderLabel = (text: string, required: boolean) => {
@@ -58,6 +111,8 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
       </label>
     );
   };
+
+  const isNextDisabled = !email || !pw || !pwCheck || emailCheckStatus !== 'success';
 
   return (
     <form
@@ -94,16 +149,19 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  // 이메일이 변경되면 이전 중복 확인 결과는 무효화
+                  setEmailCheckStatus('idle');
+                  setEmailCheckMessage(null);
+                }}
                 autoComplete="email"
               />
 
               {/* 중복 확인 버튼 */}
               <button
                 type="button"
-                onClick={() => {
-                  // 여기에 이메일 중복 확인 로직 추가 예정임
-                }}
+                onClick={handleEmailCheck}
                 disabled={!email} // 이메일 입력 안 했으면 비활성화
                 className={[
                   'rounded-200 text-detail-regular h-10 border px-3 transition-colors',
@@ -112,9 +170,13 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                     : 'border-primary-400 text-primary-400 hover:bg-primary-0/50',
                 ].join(' ')}
               >
-                중복 확인
+                {emailCheckStatus === 'checking' ? '확인 중...' : '중복 확인'}
               </button>
             </div>
+
+            {emailCheckMessage && emailCheckStatus === 'success' && (
+              <p className="text-caption-regular text-positive-200 mt-1">{emailCheckMessage}</p>
+            )}
           </div>
         </div>
 
@@ -208,6 +270,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
       {/* 다음 단계 버튼 */}
       <button
         type="submit"
+        disabled={isNextDisabled}
         className={[
           'h-12 w-full items-center justify-center px-5',
           'rounded-200 text-body-3-bold text-neutral-0 transition-colors',
