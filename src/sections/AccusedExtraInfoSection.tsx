@@ -79,8 +79,8 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
     setErr(null);
 
     return {
-      occupation: unknownOccupation ? '' : occupation.trim(),
-      officeAddress: unknownOfficeAddress ? '' : officeAddress.trim(),
+      occupation: unknownOccupation ? ' ' : occupation.trim(),
+      officeAddress: unknownOfficeAddress ? ' ' : officeAddress.trim(),
       etc: etc.trim(),
       unknownOccupation,
       unknownOfficeAddress,
