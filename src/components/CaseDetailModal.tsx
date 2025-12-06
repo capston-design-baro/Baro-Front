@@ -62,11 +62,11 @@ const CaseDetailModal: React.FC<Props> = ({ ragCase, onClose }) => {
           </p>
         </div>
 
-        {/* 판결 / 결과 */}
+        {/* 판결 결과 */}
         <div>
           <div className="mb-2 flex items-center gap-2">
             <span className="rounded-200 bg-primary-0 text-body-2-regular text-primary-600 px-3 py-1">
-              판결 / 결과
+              판결 결과
             </span>
           </div>
           <p className="text-body-4-regular whitespace-pre-line text-neutral-700">
