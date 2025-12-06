@@ -24,6 +24,7 @@ type Phase = 'askSummary' | 'initializing' | 'chatting';
 type Props = {
   complaintId: number;
   onReady?: (aiSessionId: string) => void;
+  onInitStart?: () => void;
   onComplete?: () => void;
   onInitMeta?: (meta: {
     offense: string;
@@ -58,6 +59,7 @@ const DONE_PHRASE = '필수 정보가 충족되었습니다. 고소장을 작성
 const ChatWindowSection: React.FC<Props> = ({
   complaintId,
   onReady,
+  onInitStart,
   onComplete,
   onInitMeta,
   mode = 'new',
@@ -106,7 +108,7 @@ const ChatWindowSection: React.FC<Props> = ({
             {
               id: `resume-${Date.now()}`,
               side: 'left',
-              text: '이전에 작성하시던 고소장 상담을 이어서 도와드릴게요.',
+              text: '사건 개요를 입력해주세요.',
               time: fmtTime(),
             },
           ]);
@@ -230,6 +232,8 @@ const ChatWindowSection: React.FC<Props> = ({
       setIsBotTyping(true);
 
       try {
+        onInitStart?.();
+
         const { session_id, offense, rag_keyword, rag_cases } = await initChatSession(
           complaintId,
           text,
@@ -430,7 +434,7 @@ const ChatWindowSection: React.FC<Props> = ({
           {/* 🔹 실제로 스크롤 되는 영역 (padding / border 없음) */}
           <div
             ref={listRef}
-            className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+            className="balaw-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto px-2"
             role="list"
             aria-label="채팅 메시지"
           >

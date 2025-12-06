@@ -37,12 +37,36 @@
     background-size: 0% 100%;
 
     /* 2.5초 동안 천천히 멈추는 느낌으로 실행하고, 애니메이션 종료 후 마지막 상태 유지 */
-    animation: wave-fill 2.5s ease-out forwards;
+    animation: wave-fill 2.5s ease-in-out infinite alternate both;
 
     /* 글자 형태로 배경 자르고, 글자 내부를 투명하게 */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* 🧵 BaLaw 커스텀 스크롤바 */
+  .balaw-scrollbar {
+    /* Firefox용 */
+    scrollbar-width: thin;
+    scrollbar-color: #bfdbfe transparent; /* thumb, track */
+  }
+
+  .balaw-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .balaw-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .balaw-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #bfdbfe; /* 연한 파랑 (primary-100 느낌) */
+    border-radius: 999px;
+  }
+
+  .balaw-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #93c5fd; /* hover 시 살짝 더 진하게 */
   }
 
   /*
