@@ -289,9 +289,9 @@ const MyComplaintsPage: React.FC = () => {
                           className={[
                             'rounded-300 inline-flex items-center gap-1 border px-3 py-1.5',
                             canDownload
-                              ? 'bg-neutral-0 border-primary-300 text-primary-600 font-semibold'
-                              : 'border-neutral-200 bg-neutral-50 font-semibold text-neutral-400',
-                            'hover:bg-primary-25 hover:border-primary-400',
+                              ? 'border-primary-100 bg-primary-25 text-detail-regular text-primary-600 font-semibold'
+                              : 'text-detail-regular border-neutral-200 bg-neutral-50 font-semibold text-neutral-400',
+                            'hover:bg-primary-0/50 hover:border-primary-100',
                             'disabled:cursor-not-allowed disabled:opacity-60',
                             'transition-colors duration-200',
                           ].join(' ')}
