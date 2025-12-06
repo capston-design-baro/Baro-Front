@@ -1,70 +1,133 @@
+import IntroHeader from '@/components/IntroHeader';
 import React from 'react';
 
 type ComplaintEntrySectionProps = {
   /** 새 고소장 처음부터 작성 */
   onNew: () => void;
-  /** 임시 저장된 고소장 이어쓰기 (목록으로 보내서 선택하게 할 용도) */
+  /** 임시 저장된 고소장 이어쓰기 */
   onResumeDrafts: () => void;
-  /** 내 고소장 전체 목록 보기 */
-  onList: () => void;
+  /** 현재 선택된 모드 ('new' | 'resume' | null) */
+  activeMode: 'new' | 'resume' | null;
 };
 
 const ComplaintEntrySection: React.FC<ComplaintEntrySectionProps> = ({
   onNew,
   onResumeDrafts,
-  onList,
+  activeMode,
 }) => {
-  return (
-    <section className="mt-10 flex flex-col gap-4">
-      <h1 className="text-heading-3-bold mb-2 text-neutral-900">어떻게 고소장을 작성할까요?</h1>
-      <p className="text-body-3-regular mb-4 text-neutral-600">
-        새로 고소장을 작성하거나, 이전에 작성하던 고소장을 이어서 작성할 수 있어요.
-      </p>
+  const isNewActive = activeMode === 'new';
+  const isResumeActive = activeMode === 'resume';
 
-      <div className="flex flex-col gap-3">
-        {/* 새 고소장 작성 */}
+  return (
+    <section
+      className={[
+        'flex flex-col items-center justify-between',
+        'h-[680px] w-full max-w-[1000px]',
+        'pb-6',
+        'bg-neutral-0',
+      ].join(' ')}
+    >
+      <IntroHeader
+        title="고소장 작성하기"
+        lines={[
+          '고소장 작성을 시작할 방법을 선택해주세요.',
+          '새로 작성하거나 임시 저장한 고소장을 이어 작성할 수 있어요.',
+        ]}
+        center
+        showArrow
+      />
+
+      {/* 카드 2개 가로/세로 반응형 배치 + 가운데 정렬 */}
+      <div className="flex w-full flex-1 flex-col items-center justify-center gap-6 px-4 md:flex-row">
+        {/* ─────────────────────
+            새 고소장 작성하기 카드
+        ───────────────────── */}
         <button
           type="button"
           onClick={onNew}
-          className="rounded-200 border-primary-300 bg-primary-25 hover:border-primary-500 flex items-center justify-between border px-4 py-3 text-left"
+          className={[
+            'group flex flex-col items-center justify-center',
+            'h-[200px] w-[260px]',
+            'rounded-300 p-6',
+            // ghost base
+            'to-neutral-0/10 bg-radial from-neutral-200/40 via-neutral-100/10',
+            'border',
+            'shadow-[inset_0_1px_2px_rgba(255,255,255,0.12)]',
+            'backdrop-blur-md',
+            'transition-all duration-300 ease-out',
+            // active vs default
+            isNewActive
+              ? 'border-primary-300 ring-primary-200 ring-2'
+              : 'hover:ring-primary-50/40 border-white/50 hover:border-white/70 hover:ring-2',
+          ].join(' ')}
         >
-          <div>
-            <p className="text-body-2-bold text-neutral-900">새 고소장 작성하기</p>
-            <p className="text-caption-regular text-neutral-600">
-              처음부터 차근차근 안내를 받아 고소장을 작성합니다.
-            </p>
-          </div>
-          <span className="material-symbols-outlined text-primary-400">arrow_forward</span>
+          {/* 아이콘 */}
+          <span
+            className={[
+              'material-symbols-outlined',
+              'text-[60px]',
+              isNewActive ? 'text-primary-500' : 'text-neutral-600',
+              'group-hover:text-primary-400 transition-colors',
+            ].join(' ')}
+          >
+            note_add
+          </span>
+
+          {/* 제목 */}
+          <p
+            className={[
+              'text-body-2-bold mt-4',
+              isNewActive ? 'text-primary-500' : 'text-neutral-900',
+              'group-hover:text-primary-400 transition-colors',
+            ].join(' ')}
+          >
+            새 고소장 작성하기
+          </p>
         </button>
 
-        {/* 임시 저장 이어쓰기 */}
+        {/* ─────────────────────
+            이어 작성하기 카드
+        ───────────────────── */}
         <button
           type="button"
           onClick={onResumeDrafts}
-          className="rounded-200 bg-neutral-0 hover:border-primary-300 flex items-center justify-between border border-neutral-200 px-4 py-3 text-left"
+          className={[
+            'group flex flex-col items-center justify-center',
+            'h-[200px] w-[260px]',
+            'rounded-300 p-6',
+            // ghost base
+            'to-neutral-0/10 bg-radial from-neutral-200/40 via-neutral-100/10',
+            'border',
+            'shadow-[inset_0_1px_2px_rgba(255,255,255,0.12)]',
+            'backdrop-blur-md',
+            'transition-all duration-300 ease-out',
+            // active vs default
+            isResumeActive
+              ? 'border-primary-300 ring-primary-200 ring-2'
+              : 'hover:ring-primary-50/40 border-white/50 hover:border-white/70 hover:ring-2',
+          ].join(' ')}
         >
-          <div>
-            <p className="text-body-2-bold text-neutral-900">임시 저장된 고소장 이어 작성하기</p>
-            <p className="text-caption-regular text-neutral-600">
-              작성 중이던 고소장을 선택해서, 이어서 AI 상담을 진행합니다.
-            </p>
-          </div>
-          <span className="material-symbols-outlined text-neutral-500">arrow_forward</span>
-        </button>
+          {/* 아이콘 */}
+          <span
+            className={[
+              'material-symbols-outlined',
+              'text-[60px]',
+              isResumeActive ? 'text-primary-500' : 'text-neutral-600',
+              'group-hover:text-primary-400 transition-colors',
+            ].join(' ')}
+          >
+            history
+          </span>
 
-        {/* 내 고소장 목록 */}
-        <button
-          type="button"
-          onClick={onList}
-          className="rounded-200 bg-neutral-0 flex items-center justify-between border border-neutral-200 px-4 py-3 text-left hover:border-neutral-400"
-        >
-          <div>
-            <p className="text-body-2-bold text-neutral-900">내 고소장 목록 보기</p>
-            <p className="text-caption-regular text-neutral-600">
-              지금까지 작성한 고소장 전체를 확인하고, 상태를 관리합니다.
-            </p>
-          </div>
-          <span className="material-symbols-outlined text-neutral-500">list</span>
+          <p
+            className={[
+              'text-body-2-bold mt-4',
+              isResumeActive ? 'text-primary-500' : 'text-neutral-900',
+              'group-hover:text-primary-400 transition-colors',
+            ].join(' ')}
+          >
+            이어 작성하기
+          </p>
         </button>
       </div>
     </section>

@@ -1,7 +1,7 @@
 import LogoUrl from '@/assets/BaLawCharacter-large.svg';
 import React from 'react';
 
-type Variant = 'login' | 'exit';
+type Variant = 'login' | 'exit' | 'delete';
 
 type Props = {
   variant?: Variant; // 기본: 'login'
@@ -12,25 +12,46 @@ type Props = {
 const CharacterModal: React.FC<Props> = ({ variant = 'login', onCancel, onConfirm }) => {
   const isLogin = variant === 'login';
 
-  const title = isLogin ? '로그인이 필요한 서비스예요.' : '정말 나가시겠어요?';
+  let title: string;
+  let description: React.ReactNode;
+  let leftButtonText: string;
+  let rightButtonText: string;
 
-  const description = isLogin ? (
-    <>
-      로그인 버튼을 클릭하면
-      <br />
-      로그인 페이지로 이동해줄게요.
-    </>
-  ) : (
-    <>
-      지금 나가면 작성 중인 내용은
-      <br />
-      다시 복구할 수 없어요.
-    </>
-  );
-
-  const leftButtonText = isLogin ? '다음에 할게요' : '계속 작성하기';
-  const rightButtonText = isLogin ? '로그인' : '나가기';
-
+  if (variant === 'login') {
+    title = '로그인이 필요한 서비스예요.';
+    description = (
+      <>
+        로그인 버튼을 클릭하면
+        <br />
+        로그인 페이지로 이동해줄게요.
+      </>
+    );
+    leftButtonText = '다음에 할게요';
+    rightButtonText = '로그인';
+  } else if (variant === 'exit') {
+    title = '정말 나가시겠어요?';
+    description = (
+      <>
+        지금 나가면 작성 중인 내용은
+        <br />
+        다시 복구할 수 없어요.
+      </>
+    );
+    leftButtonText = '계속 작성하기';
+    rightButtonText = '나가기';
+  } else {
+    // delete
+    title = '이 고소장을 삭제할까요?';
+    description = (
+      <>
+        삭제한 고소장은
+        <br />
+        다시 복구할 수 없어요.
+      </>
+    );
+    leftButtonText = '취소';
+    rightButtonText = '삭제할게요';
+  }
   const rightButtonClasses = isLogin
     ? [
         'h-10 w-20 sm:h-12 sm:w-28',

@@ -66,6 +66,8 @@ const ComplaintWizardPage: React.FC = () => {
 
   const [isChatCompleted, setIsChatCompleted] = useState(false);
 
+  const [entryMode, setEntryMode] = useState<'new' | 'resume' | null>(null);
+
   const complainantRef = useRef<ComplainantInfoSectionHandle>(null);
   const complainantExtraRef = useRef<ComplainantExtraInfoSectionHandle>(null);
   const accusedRef = useRef<AccusedInfoSectionHandle>(null);
@@ -101,7 +103,17 @@ const ComplaintWizardPage: React.FC = () => {
   const handleNext = async () => {
     // 0: 엔트리 → 그냥 다음 단계로
     if (step === 0) {
-      nextRaw();
+      // 아직 아무 것도 안 골랐으면 그냥 리턴 (혹은 여기서 토스트 띄워도 됨)
+      if (!entryMode) return;
+
+      if (entryMode === 'new') {
+        // 새 고소장 → 인트로(step 1)로
+        nextRaw(); // 0 -> 1
+      } else if (entryMode === 'resume') {
+        // 이어 작성 → /complaints로
+        navigate('/complaints');
+      }
+
       return;
     }
 
@@ -243,6 +255,12 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
+    if (step === 10) {
+      resetWizard(); // 위자드 상태 초기화
+      navigate('/'); // 홈으로 이동
+      return;
+    }
+
     // 나머지 단계는 그냥 +1
     nextRaw();
   };
@@ -252,26 +270,16 @@ const ComplaintWizardPage: React.FC = () => {
   return (
     <div className="bg-neutral-0 flex min-h-screen w-full flex-col">
       <Header />
-      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col overflow-hidden px-6 py-4">
+      <main className="mx-auto flex min-h-0 w-full max-w-[1200px] flex-1 flex-col overflow-y-auto px-6 py-4">
         <WizardProgress onExit={handleExit} />
-
         {/* 위자드 본문: 0~7단계 (420px 카드) */}
         <div className="mx-auto w-full max-w-[420px]">
           {/* 0: 시작 선택 (새로 작성 / 이어쓰기 / 목록 보기) */}
           {step === 0 && (
             <ComplaintEntrySection
-              onNew={() => {
-                // 새로 작성하기 → 인트로로
-                useComplaintWizard.getState().next();
-              }}
-              onResumeDrafts={() => {
-                // 임시 저장 목록 페이지로
-                navigate('/complaints');
-              }}
-              onList={() => {
-                // 전체 목록 보기
-                navigate('/complaints');
-              }}
+              activeMode={entryMode}
+              onNew={() => setEntryMode('new')}
+              onResumeDrafts={() => setEntryMode('resume')}
             />
           )}
 
@@ -327,8 +335,8 @@ const ComplaintWizardPage: React.FC = () => {
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 8 && (
-            <div className="mt-6 flex flex-1 gap-2 overflow-hidden">
-              <div className="flex flex-1 justify-center">
+            <div className="mt-6 flex min-h-0 flex-1 gap-2 overflow-hidden">
+              <div className="flex min-h-0 flex-1 justify-center">
                 <ChatWindowSection
                   complaintId={complaintId}
                   mode={chatMode}
@@ -371,7 +379,7 @@ const ComplaintWizardPage: React.FC = () => {
                   </p>
                 ) : (
                   <ul className="flex flex-col gap-3">
-                    {ragCases.map((c, idx) => (
+                    {[...ragCases].reverse().map((c, idx) => (
                       <li
                         key={c.case_no || idx}
                         className="rounded-200 h-48 overflow-y-auto border border-neutral-200 bg-neutral-50 px-3 py-2"
@@ -403,7 +411,6 @@ const ComplaintWizardPage: React.FC = () => {
               </aside>
             </div>
           )}
-
         {/* 9: 완성된 고소장 미리보기 */}
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
@@ -415,19 +422,19 @@ const ComplaintWizardPage: React.FC = () => {
               content={generatedComplaint}
             />
           )}
-
         {/* 10: DOCX 다운로드 섹션 */}
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 10 && <ComplaintDownloadSection complaintId={complaintId} />}
-
         <WizardNavButtons
           onPrev={prev}
           onNext={handleNext}
-          // 🔁 채팅 단계(step 8)에서만 채팅 완료 여부에 따라 Next 비활성
           isNextDisabled={isGenerating || (step === 8 && !isChatCompleted)}
-          disablePrev={step === 0 || step === 4}
+          disablePrev={step === 0 || step === 8 || step === 9}
+          nextLabel={
+            step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
+          }
         />
       </main>
       <Footer />
