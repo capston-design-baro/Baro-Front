@@ -37,7 +37,7 @@
     background-size: 0% 100%;
 
     /* 2.5초 동안 천천히 멈추는 느낌으로 실행하고, 애니메이션 종료 후 마지막 상태 유지 */
-    animation: wave-fill 2.5s ease-out forwards;
+    animation: wave-fill 2.5s ease-in-out infinite alternate;
 
     /* 글자 형태로 배경 자르고, 글자 내부를 투명하게 */
     -webkit-background-clip: text;
