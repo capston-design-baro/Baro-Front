@@ -26,7 +26,7 @@ const ComplaintIntroSection: React.FC = () => {
         title="고소장 작성하기"
         lines={[
           '고소장 작성 전에 확인해야 할 것들이 있어요.',
-          '고소장 접수가 불가능할 수도 있으니',
+          '원활한 고소장 접수를 위해서',
           '솔직하게 체크해주세요.',
         ]}
         center

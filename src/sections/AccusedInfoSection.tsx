@@ -108,10 +108,10 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
     setErr(null);
 
     return {
-      name: unknownName ? '모름' : name.trim(),
-      email: unknownEmail ? '모름' : email.trim(),
-      address: unknownAddr ? '모름' : address,
-      phone: unknownPhone ? '모름' : phone,
+      name: unknownName ? '' : name.trim(),
+      email: unknownEmail ? '' : email.trim(),
+      address: unknownAddr ? '' : address,
+      phone: unknownPhone ? '' : phone,
       unknownName,
       unknownEmail,
       unknownAddr,
@@ -194,7 +194,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                   'disabled:bg-neutral-100 disabled:text-neutral-400',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
-                placeholder={unknownName ? '모름' : '이름 입력'}
+                placeholder={unknownName ? '' : '이름 입력'}
                 type="text"
               />
 
@@ -236,7 +236,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                   'disabled:bg-neutral-100 disabled:text-neutral-400',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
-                placeholder={unknownEmail ? '모름' : '이메일 입력'}
+                placeholder={unknownEmail ? '' : '이메일 입력'}
                 type="text"
               />
 
@@ -281,7 +281,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownAddr ? '모름' : '시/도'}
+                  placeholder={unknownAddr ? '' : '시/도'}
                   type="text"
                 />
                 <input
@@ -294,7 +294,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownAddr ? '모름' : '시/군/구'}
+                  placeholder={unknownAddr ? '' : '시/군/구'}
                   type="text"
                 />
                 <input
@@ -307,7 +307,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownAddr ? '모름' : '읍/면/동'}
+                  placeholder={unknownAddr ? '' : '읍/면/동'}
                   type="text"
                 />
               </div>
@@ -359,7 +359,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownPhone ? '모름' : '010'}
+                  placeholder={unknownPhone ? '' : '010'}
                   inputMode="numeric"
                 />
                 <input
@@ -372,7 +372,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownPhone ? '모름' : '1234'}
+                  placeholder={unknownPhone ? '' : '1234'}
                   inputMode="numeric"
                 />
                 <input
@@ -385,7 +385,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                     'disabled:bg-neutral-100 disabled:text-neutral-400',
                     'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                   ].join(' ')}
-                  placeholder={unknownPhone ? '모름' : '5678'}
+                  placeholder={unknownPhone ? '' : '5678'}
                   inputMode="numeric"
                 />
               </div>
