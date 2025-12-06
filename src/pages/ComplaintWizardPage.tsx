@@ -12,6 +12,7 @@ import type { RagCase } from '@/apis/complaints';
 import CaseDetailModal from '@/components/CaseDetailModal';
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
+import GeneratingModal from '@/components/GeneratingModal';
 import Header from '@/components/Header';
 import WizardNavButtons from '@/components/WizardNavButtons';
 import WizardProgress from '@/components/WizardProgress';
@@ -90,6 +91,8 @@ const ComplaintWizardPage: React.FC = () => {
   const [showExitModal, setShowExitModal] = useState(false);
 
   const [selectedCase, setSelectedCase] = useState<RagCase | null>(null);
+
+  const [showGeneratingModal, setShowGeneratingModal] = useState(false);
 
   /** 나가기 버튼 */
   const handleExit = () => {
@@ -246,13 +249,24 @@ const ComplaintWizardPage: React.FC = () => {
     if (step === 8) {
       if (!complaintId) return;
 
+      // 버튼 누르는 즉시 모달 띄우기
+      setShowGeneratingModal(true);
+      setIsGenerating(true);
+
       try {
-        setIsGenerating(true);
         const res = await generateFinal(complaintId);
         setGeneratedComplaint(res.generated_complaint);
+
+        // 응답 오면 모달 닫고 다음 단계로 이동
+        setShowGeneratingModal(false);
+        setIsGenerating(false);
+
         nextRaw(); // → step 9 (ComplaintPreviewSection)
       } catch (e) {
         console.error('failed to generate complaint', e);
+        // 실패 시에도 모달은 닫아줌
+        setShowGeneratingModal(false);
+        setIsGenerating(false);
       } finally {
         setIsGenerating(false);
       }
@@ -408,7 +422,10 @@ const ComplaintWizardPage: React.FC = () => {
                           <div className="flex flex-col items-end gap-1">
                             <span className="text-detail-regular text-primary-600 mt-1 inline-flex items-center gap-1">
                               자세히 보기
-                              <span className="material-symbols-outlined text-[16px]">
+                              <span
+                                className="material-symbols-outlined"
+                                style={{ fontSize: '16px' }}
+                              >
                                 open_in_new
                               </span>
                             </span>
@@ -446,6 +463,7 @@ const ComplaintWizardPage: React.FC = () => {
             step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
           }
         />
+        <GeneratingModal open={showGeneratingModal} />
       </main>
       <Footer />
 
