@@ -1,4 +1,4 @@
-import { deleteComplaint, getMyComplaints } from '@/apis/complaints';
+import { deleteComplaint, downloadComplaintDocx, getMyComplaints } from '@/apis/complaints';
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -32,6 +32,7 @@ const MyComplaintsPage: React.FC = () => {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<MyComplaintItem | null>(null);
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   const resetWizard = useComplaintWizard((s) => s.reset);
 
@@ -83,14 +84,18 @@ const MyComplaintsPage: React.FC = () => {
       },
     });
   };
-  // 4) 내용 보기
-  const handleView = (c: MyComplaintItem) => {
-    navigate('/complaint', {
-      state: {
-        complaintId: Number(c.id),
-        status: c.status,
-      },
-    });
+
+  // 4) DOCX 다운로드
+  const handleDownload = async (c: MyComplaintItem) => {
+    try {
+      setDownloadingId(c.id);
+      await downloadComplaintDocx(c.id);
+    } catch (e) {
+      console.error('failed to download complaint docx', e);
+      window.alert('고소장 DOCX 파일을 다운로드하지 못했어요. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setDownloadingId(null);
+    }
   };
 
   // 삭제 모달 오픈용
@@ -213,6 +218,11 @@ const MyComplaintsPage: React.FC = () => {
                 const statusLabel = STATUS_LABEL[c.status] ?? c.status;
                 const statusClass = STATUS_CHIP_CLASS[c.status] ?? 'bg-neutral-50 text-neutral-600';
 
+                const createdTime = new Date(c.created_at).getTime();
+                const now = Date.now();
+                const ONE_DAY = 24 * 60 * 60 * 1000;
+                const canDownload = c.status === 'completed' && now - createdTime <= ONE_DAY;
+
                 return (
                   <li
                     key={c.id}
@@ -274,21 +284,29 @@ const MyComplaintsPage: React.FC = () => {
                       ) : (
                         <button
                           type="button"
-                          onClick={() => handleView(c)}
+                          onClick={() => canDownload && handleDownload(c)}
+                          disabled={!canDownload || downloadingId === c.id}
                           className={[
                             'rounded-300 inline-flex items-center gap-1 border px-3 py-1.5',
-                            'bg-neutral-0 text-detail-regular border-neutral-300 font-semibold text-neutral-700',
-                            'hover:border-neutral-500',
+                            canDownload
+                              ? 'bg-neutral-0 border-primary-300 text-primary-600 font-semibold'
+                              : 'border-neutral-200 bg-neutral-50 font-semibold text-neutral-400',
+                            'hover:bg-primary-25 hover:border-primary-400',
+                            'disabled:cursor-not-allowed disabled:opacity-60',
                             'transition-colors duration-200',
                           ].join(' ')}
                         >
                           <span
-                            className="material-symbols-outlined text-neutral-600"
+                            className="material-symbols-outlined"
                             style={{ fontSize: '16px' }}
                           >
-                            visibility
+                            download
                           </span>
-                          내용 보기
+                          {canDownload
+                            ? downloadingId === c.id
+                              ? '다운로드 중...'
+                              : '고소장 다운로드'
+                            : '다운로드 기간 만료'}
                         </button>
                       )}
 
