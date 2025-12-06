@@ -73,7 +73,7 @@ const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
     <section
       aria-label={`고소장 미리보기 (ID: ${complaintId})`}
       className={[
-        'flex flex-col items-center justify-between',
+        'balaw-scrollbar flex flex-col items-center justify-between',
         'mx-auto h-[680px] w-full max-w-[600px]',
         'bg-neutral-0 gap-5 pt-6 pb-6',
       ].join(' ')}
