@@ -124,6 +124,12 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
+    if (step === 1) {
+      const { attemptNext } = useComplaintWizard.getState();
+      attemptNext();
+      return;
+    }
+
     // 2: 고소인 기본정보 → 로컬 상태만 저장
     if (step === 2) {
       if (!complainantRef.current) return;
