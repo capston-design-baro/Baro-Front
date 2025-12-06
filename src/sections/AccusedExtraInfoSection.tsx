@@ -279,7 +279,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                 className={[
                   'rounded-200 flex-1 px-3 py-2',
                   'border border-neutral-300',
-                  'min-h-[80px] resize-y',
+                  'min-h-[120px] resize-y',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
                 placeholder="피고소인의 계좌 번호, 피고소인과의 관계 등 피고소인을 특정할 수 있는 정보를 알려주세요."
