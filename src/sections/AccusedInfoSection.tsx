@@ -108,10 +108,10 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
     setErr(null);
 
     return {
-      name: unknownName ? '' : name.trim(),
-      email: unknownEmail ? '' : email.trim(),
-      address: unknownAddr ? '' : address,
-      phone: unknownPhone ? '' : phone,
+      name: unknownName ? ' ' : name.trim(),
+      email: unknownEmail ? ' ' : email.trim(),
+      address: unknownAddr ? ' ' : address,
+      phone: unknownPhone ? ' ' : phone,
       unknownName,
       unknownEmail,
       unknownAddr,
