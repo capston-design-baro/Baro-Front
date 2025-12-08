@@ -431,8 +431,8 @@ const ChatWindowSection: React.FC<Props> = ({
     <section
       className={[
         'flex flex-col items-center justify-between',
-        'mx-auto h-[680px] w-full max-w-[1000px]',
-        'bg-neutral-0 pt-6 pb-6',
+        'mx-auto h-[654px] w-full max-w-[1000px]',
+        'bg-neutral-0 pb-6',
       ].join(' ')}
     >
       <div className="flex min-h-0 w-full flex-1 justify-center">
@@ -494,7 +494,7 @@ const ChatWindowSection: React.FC<Props> = ({
           disabled={inputDisabled}
           className={[
             'flex-1 resize-none text-left',
-            'text-detail-regular leading-9',
+            'text-detail-regular leading-4',
             'text-neutral-700 placeholder:text-neutral-500',
             'focus:outline-none disabled:opacity-50',
           ].join(' ')}

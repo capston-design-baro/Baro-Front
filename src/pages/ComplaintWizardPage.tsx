@@ -380,7 +380,7 @@ const ComplaintWizardPage: React.FC = () => {
                 />
               </div>
 
-              <aside className="rounded-200 bg-neutral-0 mt-6 h-[630px] w-[340px] border border-neutral-200 p-4">
+              <aside className="rounded-200 bg-neutral-0 h-[566px] w-[340px] border border-neutral-200 p-4">
                 <h2 className="text-body-2-bold mb-2">AI가 찾은 핵심 키워드</h2>
                 <p className="text-body-3-regular mb-4 text-neutral-700">
                   {ragKeyword
