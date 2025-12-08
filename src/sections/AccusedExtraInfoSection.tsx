@@ -1,5 +1,8 @@
+import DaumPostcodeButton from '@/components/DaumPostcodeButton';
+import type { DaumPostcodeResult } from '@/components/DaumPostcodeButton';
 import FormErrorMessage from '@/components/FormErrorMessage';
 import IntroHeader from '@/components/IntroHeader';
+import { splitAddressTo3FromString } from '@/utils/krContact';
 import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 // 피고소인 추가 정보 타입
@@ -37,6 +40,31 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
 
   // 에러
   const [err, setErr] = useState<string | null>(null);
+
+  // 주소가 주소 찾기로 한 번이라도 세팅된 적 있는지
+  const [hasAddress, setHasAddress] = useState(false);
+
+  // 주소 필드 클릭 시: 아직 검색 안했으면 에러만 보여주기
+  const handleAddressFieldClick = () => {
+    // "모름"이면 그냥 아무것도 하지 않음
+    if (unknownOfficeAddress) return;
+
+    // 주소가 비어 있고, 주소 찾기도 안 한 상태면 에러
+    if (!hasAddress && !officeAddr1 && !officeAddr2 && !officeAddr3) {
+      setErr('주소 찾기 버튼을 눌러 주소를 검색해주세요.');
+    }
+  };
+
+  // 주소 선택 콜백 (다음 API에서 선택되면 호출)
+  const handleAddressSelect = (data: DaumPostcodeResult) => {
+    const { a1, a2, a3 } = splitAddressTo3FromString(data.roadAddress);
+    setOfficeAddr1(a1);
+    setOfficeAddr2(a2);
+    setOfficeAddr3(a3);
+    setHasAddress(true);
+    setUnknownOfficeAddress(false);
+    setErr(null);
+  };
 
   // 공통 라벨 렌더러 (고소인 섹션과 동일 스타일)
   const renderLabel = (text: string, required: boolean) => {
@@ -118,7 +146,7 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
     <section
       className={[
         'flex flex-col items-center justify-between',
-        'h-[680px] w-full max-w-[1000px]',
+        'h-[600px] w-full max-w-[1000px]',
         'pb-6',
         'bg-neutral-0',
       ].join(' ')}
@@ -137,9 +165,9 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="mt-6 flex w-[420px] flex-col gap-6"
+        className="mt-6 flex w-[420px] flex-col gap-5"
       >
-        <div className="flex flex-1 flex-col justify-center gap-6 px-5">
+        <div className="flex flex-1 flex-col justify-center gap-5 px-5">
           {/* 직업 */}
           <div className="flex flex-col gap-2">
             {renderLabel('직업', true)}
@@ -186,7 +214,13 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
 
           {/* 사무실 주소 */}
           <div className="flex flex-col gap-2">
-            {renderLabel('사무실 주소', true)}
+            <div className="flex items-center justify-between">
+              {/* 주소 라벨 */}
+              {renderLabel('주소', true)}
+
+              {/* 주소 검색 버튼 */}
+              <DaumPostcodeButton onSelect={handleAddressSelect} />
+            </div>
             <div className="flex items-center gap-3">
               <span
                 className="material-symbols-outlined text-primary-600/50"
@@ -199,7 +233,9 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                 <input
                   disabled={unknownOfficeAddress}
                   value={officeAddr1}
-                  onChange={(e) => setOfficeAddr1(e.target.value)}
+                  readOnly
+                  onClick={handleAddressFieldClick}
+                  onFocus={handleAddressFieldClick}
                   className={[
                     'rounded-200 h-10 flex-1 px-3 text-center',
                     'border border-neutral-300',
@@ -212,7 +248,9 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                 <input
                   disabled={unknownOfficeAddress}
                   value={officeAddr2}
-                  onChange={(e) => setOfficeAddr2(e.target.value)}
+                  readOnly
+                  onClick={handleAddressFieldClick}
+                  onFocus={handleAddressFieldClick}
                   className={[
                     'rounded-200 h-10 flex-1 px-3 text-center',
                     'border border-neutral-300',
@@ -225,7 +263,9 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                 <input
                   disabled={unknownOfficeAddress}
                   value={officeAddr3}
-                  onChange={(e) => setOfficeAddr3(e.target.value)}
+                  readOnly
+                  onClick={handleAddressFieldClick}
+                  onFocus={handleAddressFieldClick}
                   className={[
                     'rounded-200 h-10 flex-1 px-3 text-center',
                     'border border-neutral-300',
@@ -247,15 +287,23 @@ const AccusedExtraInfoSection = forwardRef<AccusedExtraInfoSectionHandle, Props>
                   type="checkbox"
                   className="h-4 w-4 cursor-pointer"
                   checked={unknownOfficeAddress}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+
                     handleCheckboxChange(
-                      e.target.checked,
+                      checked,
                       setUnknownOfficeAddress,
                       setOfficeAddr1,
                       setOfficeAddr2,
                       setOfficeAddr3,
-                    )
-                  }
+                    );
+
+                    if (checked) {
+                      // "주소 모름"으로 바꾸면 주소 관련 에러는 지워준다
+                      setErr(null);
+                      setHasAddress(false); // 선택사항: 모름이면 hasAddress도 false로
+                    }
+                  }}
                 />
                 모름
               </label>

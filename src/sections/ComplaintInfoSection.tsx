@@ -166,7 +166,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
       <section
         className={[
           'flex flex-col items-center justify-between',
-          'h-[680px] w-full max-w-[1000px]',
+          'h-[600px] w-full max-w-[1000px]',
           'pb-6',
           'bg-neutral-0',
         ].join(' ')}
@@ -185,7 +185,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className="mt-6 flex w-[420px] flex-col gap-6"
+          className="mt-2 flex w-[420px] flex-col gap-5"
         >
           {/* 내 정보 불러오기 버튼 */}
           <div className="flex w-full justify-end">
@@ -193,7 +193,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
               type="button"
               onClick={handleLoadFromProfile}
               className={[
-                'rounded-200 inline-flex items-center border px-3 py-[9px]',
+                'rounded-200 inline-flex items-center border px-3 py-[8px]',
                 'border-primary-400 bg-primary-0/50 hover:bg-primary-50/50',
                 'text-detail-regular text-neutral-800',
               ].join(' ')}
@@ -203,7 +203,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
           </div>
 
           {/* 입력 필드들 */}
-          <div className="flex flex-1 flex-col justify-center gap-6 px-5">
+          <div className="flex flex-1 flex-col justify-center gap-5 px-5">
             {/* 이름 */}
             <div className="flex flex-col gap-2">
               {renderLabel('이름', true)}

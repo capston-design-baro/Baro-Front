@@ -27,10 +27,10 @@ const IntroHeader: React.FC<{
   );
 
   return (
-    <div className={`flex w-full flex-col justify-start gap-2 ${align} ${className}`}>
+    <div className={`flex w-full flex-col justify-start ${align} ${className}`}>
       <h2 className="text-heading-1-bold text-primary-400 w-full max-w-[500px]">{title}</h2>
 
-      {lines.length > 0 && <div className="flex flex-col gap-2">{renderedLines}</div>}
+      {lines.length > 0 && <div className="flex flex-col pt-2">{renderedLines}</div>}
 
       {showArrow && (
         <div
@@ -39,7 +39,7 @@ const IntroHeader: React.FC<{
           style={{ width: 24, height: 24 }}
         >
           <span
-            className="material-symbols-outlined bg-clip-text leading-none text-transparent"
+            className="material-symbols-outlined bg-clip-text pt-3 leading-none text-transparent"
             style={{
               fontSize: 24,
               opacity: 0.5,

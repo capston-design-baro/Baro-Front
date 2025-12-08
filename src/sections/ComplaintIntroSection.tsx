@@ -17,7 +17,7 @@ const ComplaintIntroSection: React.FC = () => {
     <section
       className={[
         'flex flex-col items-center justify-between',
-        'h-[680px] w-full max-w-[1000px]',
+        'h-[600px] w-full max-w-[1000px]',
         'pb-6',
         'bg-neutral-0 rounded-400',
       ].join(' ')}
@@ -33,7 +33,7 @@ const ComplaintIntroSection: React.FC = () => {
         showArrow
       />
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 pt-6">
         {prechecks.map((q) => (
           <Question
             key={q.id}

@@ -52,9 +52,8 @@ const DaumPostcodeButton: React.FC<Props> = ({ onSelect }) => {
         onClick={handleOpen}
         className={[
           'rounded-200 text-detail-regular h-8 border px-3',
-          'bg-primary-0 border-primary-200 text-primary-500',
-          'hover:bg-primary-100 hover:border-primary-300 hover:text-primary-600',
-          'active:bg-primary-200 active:border-primary-400 active:text-primary-700',
+          'border-primary-400 bg-primary-0/50 hover:bg-primary-50/50',
+          'active:bg-primary-100 active:border-primary-200 active:text-primary-700',
           'transition-all active:scale-95',
         ].join(' ')}
       >

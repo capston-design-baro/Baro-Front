@@ -7,7 +7,7 @@ const ChatInfoSection: React.FC = () => {
     <section
       className={[
         'flex flex-col items-center justify-between',
-        'h-[680px] w-full max-w-[1000px]',
+        'h-[600px] w-full max-w-[1000px]',
         'pb-6',
         'bg-neutral-0',
       ].join(' ')}
