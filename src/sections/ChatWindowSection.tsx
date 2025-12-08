@@ -430,9 +430,10 @@ const ChatWindowSection: React.FC<Props> = ({
   return (
     <section
       className={[
-        'flex flex-col items-center justify-between',
-        'mx-auto h-[654px] w-full max-w-[1000px]',
-        'bg-neutral-0 pb-6',
+        'flex min-h-0 flex-1 flex-col items-center justify-between',
+        'h-[600px] w-full',
+        'pt-2 pb-6',
+        'bg-neutral-0',
       ].join(' ')}
     >
       <div className="flex min-h-0 w-full flex-1 justify-center">
@@ -474,7 +475,7 @@ const ChatWindowSection: React.FC<Props> = ({
 
       <div
         className={[
-          'mt-4 flex h-12 w-full max-w-[720px] items-center justify-between',
+          'mt-2 flex w-full max-w-[720px] items-center justify-between',
           'rounded-200 bg-neutral-0 border border-blue-400',
           'px-5 py-2.5',
         ].join(' ')}
@@ -489,12 +490,12 @@ const ChatWindowSection: React.FC<Props> = ({
               ? '사건의 경위를 자유롭게 입력해 주세요.'
               : '여기에 입력하고 Enter로 전송하세요. (줄바꿈은 Shift+Enter)'
           }
-          rows={1}
+          rows={2}
           aria-label="메시지 입력"
           disabled={inputDisabled}
           className={[
             'flex-1 resize-none text-left',
-            'text-detail-regular leading-4',
+            'text-body-3-regular leading-5',
             'text-neutral-700 placeholder:text-neutral-500',
             'focus:outline-none disabled:opacity-50',
           ].join(' ')}
