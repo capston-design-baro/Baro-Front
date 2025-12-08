@@ -7,6 +7,7 @@
  */
 import { logout } from '@/apis/auth';
 import logoUrl from '@/assets/BaLawLogo.svg';
+import { useComplaintWizard } from '@/stores/useComplaintWizard';
 import { useUserStore } from '@/stores/useUserStore';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +18,9 @@ const Header: React.FC = () => {
   // zustand 스토어에서 현재 로그인한 사용자 정보 가져오기
   const user = useUserStore((state) => state.user);
 
+  // 고소장 위자드 reset 함수
+  const resetWizard = useComplaintWizard((s) => s.reset);
+
   // 로그인 버튼 클릭 → /login 페이지 이동
   const handleLoginClick = () => {
     navigate('/login');
@@ -24,12 +28,14 @@ const Header: React.FC = () => {
 
   // 로고 클릭 → 홈('/') 이동
   const handleLogoClick = () => {
+    resetWizard();
     navigate('/');
   };
 
   // 로그아웃 버튼 클릭
   const handleLogoutClick = async () => {
     await logout(); // 토큰/쿠키 삭제 + store 초기화
+    resetWizard();
     navigate('/'); // 로그아웃 후 홈('/')으로 이동
   };
 
