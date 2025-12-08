@@ -297,7 +297,7 @@ const ChatWindowSection: React.FC<Props> = ({
             const guideMsg: Msg = {
               id: `done-guide-${Date.now()}`,
               side: 'left',
-              text: '필수 정보가 모두 확인되었어요. 이제 화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
+              text: '화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 확인해 주세요.',
               time: fmtTime(),
             };
             nextMsgs.push(guideMsg);
