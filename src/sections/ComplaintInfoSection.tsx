@@ -1,4 +1,6 @@
 import { getMe } from '@/apis/auth';
+import DaumPostcodeButton from '@/components/DaumPostcodeButton';
+import type { DaumPostcodeResult } from '@/components/DaumPostcodeButton';
 import FormErrorMessage from '@/components/FormErrorMessage';
 import IntroHeader from '@/components/IntroHeader';
 import { splitAddressTo3FromString, splitPhoneKR } from '@/utils/krContact';
@@ -41,6 +43,25 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
     // UI 상태 관리
     const [err, setErr] = useState<string | null>(null); // 에러 메시지만 유지
 
+    const [hasAddress, setHasAddress] = useState(false);
+
+    // 주소 필드 클릭 시 에러 띄우기
+    const handleAddressFieldClick = () => {
+      if (!hasAddress) {
+        setErr('주소 찾기 버튼을 눌러 주소를 선택해주세요.');
+      }
+    };
+
+    // 주소 선택 콜백 (다음 API에서 선택되면 호출)
+    const handleAddressSelect = (data: DaumPostcodeResult) => {
+      const { a1, a2, a3 } = splitAddressTo3FromString(data.roadAddress);
+      setAddr1(a1);
+      setAddr2(a2);
+      setAddr3(a3);
+      setHasAddress(true);
+      setErr(null);
+    };
+
     const renderLabel = (text: string, required: boolean) => {
       const labelText = required ? '(필수)' : '(선택)';
       return (
@@ -73,6 +94,8 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
         setAddr1(a1);
         setAddr2(a2);
         setAddr3(a3);
+
+        setHasAddress(Boolean(a1));
 
         const { p1: _1, p2: _2, p3: _3 } = splitPhoneKR(me.phone_number);
         setP1(_1);
@@ -235,7 +258,13 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
             {/* 주소 */}
             <div className="flex flex-col gap-2">
-              {renderLabel('주소', false)}
+              <div className="flex items-center justify-between">
+                {/* 주소 라벨 */}
+                {renderLabel('주소', true)}
+
+                {/* 주소 검색 버튼 */}
+                <DaumPostcodeButton onSelect={handleAddressSelect} />
+              </div>
               <div className="flex items-center gap-4">
                 <span
                   className="material-symbols-outlined text-primary-600/50"
@@ -247,6 +276,9 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
                   <input
                     id="addr1"
                     value={addr1}
+                    readOnly
+                    onClick={handleAddressFieldClick}
+                    onFocus={handleAddressFieldClick}
                     onChange={(e) => setAddr1(e.target.value)}
                     className={[
                       'rounded-200 h-10 flex-1 px-3 text-center',
@@ -258,6 +290,9 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
                   <input
                     id="addr2"
                     value={addr2}
+                    readOnly
+                    onClick={handleAddressFieldClick}
+                    onFocus={handleAddressFieldClick}
                     onChange={(e) => setAddr2(e.target.value)}
                     className={[
                       'rounded-200 h-10 flex-1 px-3 text-center',
@@ -269,6 +304,9 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
                   <input
                     id="addr3"
                     value={addr3}
+                    readOnly
+                    onClick={handleAddressFieldClick}
+                    onFocus={handleAddressFieldClick}
                     onChange={(e) => setAddr3(e.target.value)}
                     className={[
                       'rounded-200 h-10 flex-1 px-3 text-center',
@@ -283,7 +321,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
             {/* 연락처 */}
             <div className="flex flex-col gap-2">
-              {renderLabel('전화번호', false)}
+              {renderLabel('전화번호', true)}
               <div className="flex items-center gap-4">
                 <span
                   className="material-symbols-outlined text-primary-600/50"

@@ -1,5 +1,8 @@
+import DaumPostcodeButton from '@/components/DaumPostcodeButton';
+import type { DaumPostcodeResult } from '@/components/DaumPostcodeButton';
 import FormErrorMessage from '@/components/FormErrorMessage';
 import IntroHeader from '@/components/IntroHeader';
+import { splitAddressTo3FromString } from '@/utils/krContact';
 import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 // 부모에서 사용할 타입
@@ -44,6 +47,31 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
   const [err, setErr] = useState<string | null>(null);
 
   const formRef = useRef<HTMLFormElement>(null);
+
+  // 주소가 주소 찾기로 한 번이라도 세팅된 적 있는지
+  const [hasAddress, setHasAddress] = useState(false);
+
+  // 주소 필드 클릭 시: 아직 검색 안했으면 에러만 보여주기
+  const handleAddressFieldClick = () => {
+    // "모름"이면 그냥 아무것도 하지 않음
+    if (unknownAddr) return;
+
+    // 주소가 비어 있고, 주소 찾기도 안 한 상태면 에러
+    if (!hasAddress && !addr1 && !addr2 && !addr3) {
+      setErr('주소 찾기 버튼을 눌러 주소를 검색해주세요.');
+    }
+  };
+
+  // 주소 선택 콜백 (다음 API에서 선택되면 호출)
+  const handleAddressSelect = (data: DaumPostcodeResult) => {
+    const { a1, a2, a3 } = splitAddressTo3FromString(data.roadAddress);
+    setAddr1(a1);
+    setAddr2(a2);
+    setAddr3(a3);
+    setHasAddress(true);
+    setUnknownAddr(false); // 검색하면 모름 자동 해제
+    setErr(null);
+  };
 
   // 공통 라벨 렌더러 (고소인 섹션과 동일 스타일)
   const renderLabel = (text: string, required: boolean) => {
@@ -261,7 +289,13 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
 
           {/* 주소 */}
           <div className="flex flex-col gap-2">
-            {renderLabel('주소', true)}
+            <div className="flex items-center justify-between">
+              {/* 주소 라벨 */}
+              {renderLabel('주소', true)}
+
+              {/* 주소 검색 버튼 */}
+              <DaumPostcodeButton onSelect={handleAddressSelect} />
+            </div>
             <div className="flex items-center gap-3">
               <span
                 className="material-symbols-outlined text-primary-600/50"
@@ -274,7 +308,9 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                 <input
                   disabled={unknownAddr}
                   value={addr1}
-                  onChange={(e) => setAddr1(e.target.value)}
+                  readOnly
+                  onClick={handleAddressFieldClick}
+                  onFocus={handleAddressFieldClick}
                   className={[
                     'rounded-200 h-10 flex-1 px-3 text-center',
                     'border border-neutral-300',
@@ -287,7 +323,9 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                 <input
                   disabled={unknownAddr}
                   value={addr2}
-                  onChange={(e) => setAddr2(e.target.value)}
+                  readOnly
+                  onClick={handleAddressFieldClick}
+                  onFocus={handleAddressFieldClick}
                   className={[
                     'rounded-200 h-10 flex-1 px-3 text-center',
                     'border border-neutral-300',
@@ -300,7 +338,9 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                 <input
                   disabled={unknownAddr}
                   value={addr3}
-                  onChange={(e) => setAddr3(e.target.value)}
+                  readOnly
+                  onClick={handleAddressFieldClick}
+                  onFocus={handleAddressFieldClick}
                   className={[
                     'rounded-200 h-10 flex-1 px-3 text-center',
                     'border border-neutral-300',
@@ -322,15 +362,17 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                   type="checkbox"
                   className="h-4 w-4 cursor-pointer"
                   checked={unknownAddr}
-                  onChange={(e) =>
-                    handleCheckboxChange(
-                      e.target.checked,
-                      setUnknownAddr,
-                      setAddr1,
-                      setAddr2,
-                      setAddr3,
-                    )
-                  }
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+
+                    handleCheckboxChange(checked, setUnknownAddr, setAddr1, setAddr2, setAddr3);
+
+                    if (checked) {
+                      // "주소 모름"으로 바꾸면 주소 관련 에러는 지워준다
+                      setErr(null);
+                      setHasAddress(false); // 선택사항: 모름이면 hasAddress도 false로
+                    }
+                  }}
                 />
                 모름
               </label>
