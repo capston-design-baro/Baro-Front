@@ -295,7 +295,7 @@ const ComplaintWizardPage: React.FC = () => {
   return (
     <div className="bg-neutral-0 flex min-h-screen w-full flex-col">
       <Header />
-      <main className="mx-auto flex min-h-0 w-full max-w-[1200px] flex-1 flex-col overflow-y-auto px-6 py-4">
+      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4">
         <WizardProgress onExit={handleExit} />
         {/* 위자드 본문: 0~7단계 (420px 카드) */}
         <div className="mx-auto w-full max-w-[420px]">
@@ -354,14 +354,13 @@ const ComplaintWizardPage: React.FC = () => {
             complaintId > 0 &&
             step === 7 && <EvidenceInfoSection ref={evidenceRef} />}
         </div>
-
         {/* 8: 실제 채팅창 + 오른쪽 메타 패널 */}
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 8 && (
-            <div className="mt-6 flex min-h-0 flex-1 gap-2 overflow-hidden">
-              <div className="flex min-h-0 flex-1 justify-center">
+            <div className="flex flex-1 gap-2">
+              <div className="flex flex-1">
                 <ChatWindowSection
                   complaintId={complaintId}
                   mode={chatMode}
@@ -380,8 +379,8 @@ const ComplaintWizardPage: React.FC = () => {
                 />
               </div>
 
-              <aside className="rounded-200 bg-neutral-0 mt-6 h-[630px] w-[340px] border border-neutral-200 p-4">
-                <h2 className="text-body-2-bold mb-2">AI가 찾은 핵심 키워드</h2>
+              <aside className="rounded-200 bg-neutral-0 mt-2 h-[498px] w-[340px] border border-neutral-200 p-4">
+                <h2 className="text-body-1-bold mb-2">AI가 찾은 핵심 키워드</h2>
                 <p className="text-body-3-regular mb-4 text-neutral-700">
                   {ragKeyword
                     ? `"${ragKeyword}"`
@@ -390,14 +389,14 @@ const ComplaintWizardPage: React.FC = () => {
 
                 {ragKeyword && (
                   <>
-                    <h3 className="text-body-3-bold mb-1">검색 기준</h3>
-                    <p className="text-caption-regular mb-3 text-neutral-600">
+                    <h3 className="text-body-2-bold mb-1">검색 기준</h3>
+                    <p className="text-body-3-regular mb-3 text-neutral-600">
                       유사 판례는 "{ragKeyword}"를 중심으로 검색했어요.
                     </p>
                   </>
                 )}
 
-                <h3 className="text-body-3-bold mb-2">유사 판례</h3>
+                <h3 className="text-body-2-bold mb-2">유사 판례</h3>
 
                 {ragCases.length === 0 ? (
                   ragSearchStarted ? (

@@ -29,11 +29,14 @@ const EvidenceInfoSection = forwardRef<EvidenceInfoSectionHandle>((_props, ref) 
     },
   }));
 
+  const isYesActive = selection === 'yes';
+  const isNoActive = selection === 'no';
+
   return (
     <section
       className={[
         'flex flex-col items-center justify-between',
-        'h-[680px] w-full max-w-[1000px]',
+        'h-[600px] w-full max-w-[1000px]',
         'pb-6',
         'bg-neutral-0',
       ].join(' ')}
@@ -54,9 +57,16 @@ const EvidenceInfoSection = forwardRef<EvidenceInfoSectionHandle>((_props, ref) 
           onClick={() => setSelection('yes')}
           className={[
             'rounded-300 flex w-full items-center gap-2 border px-4 py-3 text-left',
-            selection === 'yes'
-              ? 'border-primary-500 bg-primary-50'
-              : 'bg-neutral-0 border-neutral-200',
+            // ghost base
+            'to-neutral-0/10 bg-radial from-neutral-200/40 via-neutral-100/10',
+            'border',
+            'shadow-[inset_0_1px_2px_rgba(255,255,255,0.12)]',
+            'backdrop-blur-md',
+            'transition-all duration-300 ease-out',
+            // active vs default
+            isYesActive
+              ? 'border-primary-300 ring-primary-200 ring-2'
+              : 'hover:ring-primary-50/40 border-white/50 hover:border-white/70 hover:ring-2',
           ].join(' ')}
         >
           <span
@@ -85,9 +95,16 @@ const EvidenceInfoSection = forwardRef<EvidenceInfoSectionHandle>((_props, ref) 
           onClick={() => setSelection('no')}
           className={[
             'rounded-300 flex w-full items-center gap-2 border px-4 py-3 text-left',
-            selection === 'no'
-              ? 'border-primary-500 bg-primary-50'
-              : 'bg-neutral-0 border-neutral-200',
+            // ghost base
+            'to-neutral-0/10 bg-radial from-neutral-200/40 via-neutral-100/10',
+            'border',
+            'shadow-[inset_0_1px_2px_rgba(255,255,255,0.12)]',
+            'backdrop-blur-md',
+            'transition-all duration-300 ease-out',
+            // active vs default
+            isNoActive
+              ? 'border-primary-300 ring-primary-200 ring-2'
+              : 'hover:ring-primary-50/40 border-white/50 hover:border-white/70 hover:ring-2',
           ].join(' ')}
         >
           <span
@@ -115,9 +132,10 @@ const EvidenceInfoSection = forwardRef<EvidenceInfoSectionHandle>((_props, ref) 
       </div>
       {/* 경고 문구 */}
       <FormErrorMessage error={error} />
-      <p className="text-caption-regular mt-4 text-neutral-500">
-        * 증거가 없더라도 고소는 가능합니다. 다만 이후 수사 과정에서 추가 자료 제출이 필요할 수
-        있습니다.
+      <p className="text-body-3-regular mt-4 text-neutral-500">
+        * 증거가 없더라도 고소는 가능합니다.
+        <br />
+        &nbsp;&nbsp;다만 이후 수사 과정에서 추가 자료 제출이 필요할 수 있습니다.
       </p>
     </section>
   );

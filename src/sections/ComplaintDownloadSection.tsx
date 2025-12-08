@@ -28,7 +28,7 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
       aria-label={`고소장 DOCX 다운로드 (ID: ${complaintId})`}
       className={[
         'mx-auto flex flex-col items-center',
-        'h-[680px] w-full max-w-[1000px]',
+        'h-[600px] w-full max-w-[1000px]',
         'bg-neutral-0 pt-6 pb-6',
       ].join(' ')}
     >
