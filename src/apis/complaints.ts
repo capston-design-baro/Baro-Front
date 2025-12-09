@@ -167,7 +167,7 @@ export async function registerEvidence(complaintId: number, payload: EvidenceCre
 
 /** 내 고소장 목록 */
 export async function getMyComplaints() {
-  const res = await api.get(`${BASE_URL}/complaints`);
+  const res = await api.get(`${BASE_URL}/complaints/`);
   return res.data as Complaint[];
 }
 
