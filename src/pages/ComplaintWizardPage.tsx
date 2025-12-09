@@ -408,7 +408,7 @@ const ComplaintWizardPage: React.FC = () => {
                   )
                 ) : (
                   <ul className="flex flex-col gap-3">
-                    {[...ragCases].reverse().map((c, idx) => (
+                    {ragCases.map((c, idx) => (
                       <li key={c.case_no || idx}>
                         <button
                           type="button"
