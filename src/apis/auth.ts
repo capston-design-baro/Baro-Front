@@ -14,6 +14,11 @@ import { Cookies } from 'react-cookie';
 // 쿠키 관리 객체 생성
 const cookies = new Cookies();
 
+export type EmailCheckResponse = {
+  available: boolean;
+  message: string;
+};
+
 // 폼 값을 로그인 요청 dto로 변환
 function toLoginRequestDto(values: LoginFormValues): LoginRequestDto {
   return {
@@ -107,4 +112,19 @@ export function initAuthStatus() {
 
   // zustand user 상태 초기화
   useUserStore.getState().clearUser();
+}
+
+// 이메일 중복 확인
+export async function checkEmailAvailability(email: string): Promise<EmailCheckResponse> {
+  const trimmed = email.trim();
+
+  if (!trimmed) {
+    throw new Error('EMPTY_EMAIL');
+  }
+
+  const { data } = await axiosInstance.get<EmailCheckResponse>(
+    `/auth/check-email/${encodeURIComponent(trimmed)}`,
+  );
+
+  return data;
 }

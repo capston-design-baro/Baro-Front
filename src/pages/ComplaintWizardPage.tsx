@@ -9,8 +9,10 @@ import {
 import type { ComplainantInfoCreate } from '@/apis/complaints';
 import { createComplaint } from '@/apis/complaints';
 import type { RagCase } from '@/apis/complaints';
+import CaseDetailModal from '@/components/CaseDetailModal';
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
+import GeneratingModal from '@/components/GeneratingModal';
 import Header from '@/components/Header';
 import WizardNavButtons from '@/components/WizardNavButtons';
 import WizardProgress from '@/components/WizardProgress';
@@ -77,6 +79,7 @@ const ComplaintWizardPage: React.FC = () => {
   // AI 메타 정보 (이 페이지에서만 관리)
   const [ragKeyword, setRagKeyword] = useState<string | null>(null);
   const [ragCases, setRagCases] = useState<RagCase[]>([]);
+  const [ragSearchStarted, setRagSearchStarted] = useState(false);
 
   const [complaintId, setComplaintId] = useState<number | null>(initialComplaintIdFromState);
   const [complainantBasicInfo, setComplainantBasicInfo] = useState<ComplaintBasicInfo | null>(null);
@@ -86,6 +89,10 @@ const ComplaintWizardPage: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const [showExitModal, setShowExitModal] = useState(false);
+
+  const [selectedCase, setSelectedCase] = useState<RagCase | null>(null);
+
+  const [showGeneratingModal, setShowGeneratingModal] = useState(false);
 
   /** 나가기 버튼 */
   const handleExit = () => {
@@ -114,6 +121,12 @@ const ComplaintWizardPage: React.FC = () => {
         navigate('/complaints');
       }
 
+      return;
+    }
+
+    if (step === 1) {
+      const { attemptNext } = useComplaintWizard.getState();
+      attemptNext();
       return;
     }
 
@@ -206,6 +219,7 @@ const ComplaintWizardPage: React.FC = () => {
           accused_phone: accusedBasicInfo.phone,
           accused_job: extra.occupation,
           accused_office_address: extra.officeAddress,
+          accused_etc: extra.etc,
         };
 
         await registerAccused(complaintId, payload);
@@ -241,13 +255,24 @@ const ComplaintWizardPage: React.FC = () => {
     if (step === 8) {
       if (!complaintId) return;
 
+      // 버튼 누르는 즉시 모달 띄우기
+      setShowGeneratingModal(true);
+      setIsGenerating(true);
+
       try {
-        setIsGenerating(true);
         const res = await generateFinal(complaintId);
         setGeneratedComplaint(res.generated_complaint);
+
+        // 응답 오면 모달 닫고 다음 단계로 이동
+        setShowGeneratingModal(false);
+        setIsGenerating(false);
+
         nextRaw(); // → step 9 (ComplaintPreviewSection)
       } catch (e) {
         console.error('failed to generate complaint', e);
+        // 실패 시에도 모달은 닫아줌
+        setShowGeneratingModal(false);
+        setIsGenerating(false);
       } finally {
         setIsGenerating(false);
       }
@@ -268,9 +293,9 @@ const ComplaintWizardPage: React.FC = () => {
   const chatMode: 'new' | 'resume' = resumeMode ? 'resume' : 'new';
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-white">
+    <div className="bg-neutral-0 flex min-h-screen w-full flex-col">
       <Header />
-      <main className="mx-auto flex min-h-0 w-full max-w-[1200px] flex-1 flex-col overflow-y-auto px-6 py-4">
+      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4">
         <WizardProgress onExit={handleExit} />
         {/* 위자드 본문: 0~7단계 (420px 카드) */}
         <div className="mx-auto w-full max-w-[420px]">
@@ -329,18 +354,18 @@ const ComplaintWizardPage: React.FC = () => {
             complaintId > 0 &&
             step === 7 && <EvidenceInfoSection ref={evidenceRef} />}
         </div>
-
         {/* 8: 실제 채팅창 + 오른쪽 메타 패널 */}
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 8 && (
-            <div className="mt-6 flex min-h-0 flex-1 gap-2 overflow-hidden">
-              <div className="flex min-h-0 flex-1 justify-center">
+            <div className="flex flex-1 gap-2">
+              <div className="flex flex-1">
                 <ChatWindowSection
                   complaintId={complaintId}
                   mode={chatMode}
                   initialAiSessionId={initialAiSessionIdFromState ?? null}
+                  onInitStart={() => setRagSearchStarted(true)}
                   onComplete={() => setIsChatCompleted(true)}
                   onInitMeta={({ offense, rag_keyword, rag_cases }) => {
                     console.log('📌 onInitMeta in Wizard:', {
@@ -354,8 +379,8 @@ const ComplaintWizardPage: React.FC = () => {
                 />
               </div>
 
-              <aside className="rounded-200 bg-neutral-0 mt-6 h-[630px] w-[340px] border border-neutral-200 p-4">
-                <h2 className="text-body-2-bold mb-2">AI가 찾은 핵심 키워드</h2>
+              <aside className="rounded-200 bg-neutral-0 mt-2 h-[498px] w-[340px] border border-neutral-200 p-4">
+                <h2 className="text-body-1-bold mb-2">AI가 찾은 핵심 키워드</h2>
                 <p className="text-body-3-regular mb-4 text-neutral-700">
                   {ragKeyword
                     ? `"${ragKeyword}"`
@@ -364,46 +389,53 @@ const ComplaintWizardPage: React.FC = () => {
 
                 {ragKeyword && (
                   <>
-                    <h3 className="text-body-3-bold mb-1">검색 기준</h3>
-                    <p className="text-caption-regular mb-3 text-neutral-600">
+                    <h3 className="text-body-2-bold mb-1">검색 기준</h3>
+                    <p className="text-body-3-regular mb-3 text-neutral-600">
                       유사 판례는 "{ragKeyword}"를 중심으로 검색했어요.
                     </p>
                   </>
                 )}
 
-                <h3 className="text-body-3-bold mb-2">유사 판례</h3>
+                <h3 className="text-body-2-bold mb-2">유사 판례</h3>
 
                 {ragCases.length === 0 ? (
-                  <p className="text-caption-regular text-neutral-500">
-                    아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.
-                  </p>
+                  ragSearchStarted ? (
+                    <p className="animate-wave-fill inline-block">유사 판례를 찾고 있어요...</p>
+                  ) : (
+                    <p className="text-caption-regular text-neutral-500">
+                      아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.
+                    </p>
+                  )
                 ) : (
                   <ul className="flex flex-col gap-3">
                     {[...ragCases].reverse().map((c, idx) => (
-                      <li
-                        key={c.case_no || idx}
-                        className="rounded-200 h-48 overflow-y-auto border border-neutral-200 bg-neutral-50 px-3 py-2"
-                      >
-                        <p className="text-body-4-bold text-neutral-800">{c.label}</p>
-                        <p className="text-caption-regular mt-0.5 text-neutral-600">
-                          사건번호: {c.case_no}
-                        </p>
-                        <div className="text-caption-regular mt-2 flex flex-col gap-1 whitespace-pre-line text-neutral-700">
-                          <p>
-                            <span className="font-semibold text-neutral-800">사건 개요</span>{' '}
-                            {c.summary}
-                          </p>
-                          <p>
-                            <span className="font-semibold text-neutral-800">판결 요지</span>{' '}
-                            {c.result}
-                          </p>
-                          <p>
-                            <span className="font-semibold text-neutral-800">
-                              내 사건과의 유사점
-                            </span>{' '}
-                            {c.similarity}
-                          </p>
-                        </div>
+                      <li key={c.case_no || idx}>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCase(c)}
+                          className={[
+                            'rounded-200 bg-neutral-0 w-full border border-neutral-200 px-3 py-2',
+                            'flex items-center justify-between gap-3',
+                            'hover:border-primary-100 hover:bg-primary-25/40',
+                            'transition-colors duration-200',
+                          ].join(' ')}
+                        >
+                          <div className="flex flex-col text-left">
+                            <span className="text-caption-regular text-neutral-500">사건 번호</span>
+                            <span className="text-body-4-bold text-neutral-900">{c.case_no}</span>
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            <span className="text-detail-regular text-primary-600 mt-1 inline-flex items-center gap-1">
+                              자세히 보기
+                              <span
+                                className="material-symbols-outlined"
+                                style={{ fontSize: '16px' }}
+                              >
+                                open_in_new
+                              </span>
+                            </span>
+                          </div>
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -436,8 +468,19 @@ const ComplaintWizardPage: React.FC = () => {
             step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
           }
         />
+        <GeneratingModal open={showGeneratingModal} />
       </main>
       <Footer />
+
+      {/* 판례 상세 모달 */}
+      {selectedCase && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
+          <CaseDetailModal
+            ragCase={selectedCase}
+            onClose={() => setSelectedCase(null)}
+          />
+        </div>
+      )}
 
       {showExitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">

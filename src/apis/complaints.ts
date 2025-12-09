@@ -62,6 +62,7 @@ export type AccusedInfoCreate = {
 
   accused_job: string;
   accused_office_address: string;
+  accused_etc?: string;
 };
 
 export type EvidenceCreate = {

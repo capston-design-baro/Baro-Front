@@ -3,23 +3,17 @@ export function splitAddressTo3FromString(addr: string | null | undefined) {
   const raw = (addr ?? '').trim();
   if (!raw) return { a1: '', a2: '', a3: '' };
 
+  // 콤마/여러 공백/슬래시 등은 전부 공백 하나로 정리
   const normalized = raw.replace(/[,\s/|\\-]+/g, ' ').trim();
   if (!normalized) return { a1: '', a2: '', a3: '' };
 
-  const sidoPattern = '(?:특별시|광역시|자치시|도|시)';
-  const sigunguPattern = '(?:시|군|구)';
-  const eupMyeonDongPattern = '(?:읍|면|동)';
+  const m = normalized.split(' ');
 
-  const pattern = new RegExp(
-    `^([\\w가-힣]+${sidoPattern})\\s+([\\w가-힣]+${sigunguPattern})\\s+([\\w가-힣]+${eupMyeonDongPattern})$`,
-  );
-
-  const m = normalized.match(pattern);
   if (m) {
     return {
-      a1: m[1]?.trim() ?? '',
-      a2: m[2]?.trim() ?? '',
-      a3: m[3]?.trim() ?? '',
+      a1: m[0]?.trim() ?? '',
+      a2: m[1]?.trim() ?? '',
+      a3: m[2]?.trim() ?? '',
     };
   }
 

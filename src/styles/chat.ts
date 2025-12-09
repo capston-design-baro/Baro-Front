@@ -20,7 +20,7 @@ export function buildSurface(side: Side) {
 
 /** 채팅 텍스트 스타일 */
 export function textBase() {
-  return ['text-body-3-regular', 'break-words', 'whitespace-pre-wrap'].join(' ');
+  return ['text-body-2-regular', 'break-words', 'whitespace-pre-wrap'].join(' ');
 }
 
 /** 타임 스탬프 스타일

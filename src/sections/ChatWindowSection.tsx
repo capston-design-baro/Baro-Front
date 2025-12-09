@@ -24,6 +24,7 @@ type Phase = 'askSummary' | 'initializing' | 'chatting';
 type Props = {
   complaintId: number;
   onReady?: (aiSessionId: string) => void;
+  onInitStart?: () => void;
   onComplete?: () => void;
   onInitMeta?: (meta: {
     offense: string;
@@ -58,6 +59,7 @@ const DONE_PHRASE = '필수 정보가 충족되었습니다. 고소장을 작성
 const ChatWindowSection: React.FC<Props> = ({
   complaintId,
   onReady,
+  onInitStart,
   onComplete,
   onInitMeta,
   mode = 'new',
@@ -106,7 +108,7 @@ const ChatWindowSection: React.FC<Props> = ({
             {
               id: `resume-${Date.now()}`,
               side: 'left',
-              text: '이전에 작성하시던 고소장 상담을 이어서 도와드릴게요.',
+              text: '사건 개요를 입력해주세요.',
               time: fmtTime(),
             },
           ]);
@@ -215,14 +217,22 @@ const ChatWindowSection: React.FC<Props> = ({
     if (!text) return;
     if (isCompleted) return;
 
-    /** 1) 새 세션: 사건 개요 입력 → initChatSession */
-    if (mode === 'new' && phase === 'askSummary') {
+    /**
+     * 🟢 공통 1단계: 세션이 아직 없는 경우 (new / resume 모두 공통)
+     *
+     *  - 새 작성(new) + 요약 단계
+     *  - 이어쓰기(resume)인데 DB에 ai_session_id가 없어서 처음으로 AI를 쓰는 경우
+     *
+     *  => 이 분기에서 initChatSession을 호출해서 "새 세션"을 만듦
+     */
+    if (!aiSessionId) {
       const userMsg: Msg = {
         id: `u-summary-${Date.now()}`,
         side: 'right',
         text,
         time: fmtTime(),
       };
+
       setMsgs((prev) => [...prev, userMsg]);
       setInput('');
 
@@ -230,20 +240,26 @@ const ChatWindowSection: React.FC<Props> = ({
       setIsBotTyping(true);
 
       try {
+        onInitStart?.();
+
+        // 사건 개요 기반 세션 초기화 (백엔드 /complaints/{id}/chat/init)
         const { session_id, offense, rag_keyword, rag_cases } = await initChatSession(
           complaintId,
           text,
         );
 
+        // 생성된 세션 ID를 로컬 상태에 저장
         setAiSessionId(session_id);
         onReady?.(session_id);
 
+        // 오른쪽 판례 패널 메타 정보 전달
         onInitMeta?.({
           offense: offense ?? '',
           rag_keyword: rag_keyword ?? null,
           rag_cases: rag_cases ?? [],
         });
 
+        // 키워드 안내 문구
         const keywordText = rag_keyword
           ? `입력해주신 내용으로 추정한 결과 "${rag_keyword}"죄로 추정됩니다. "${rag_keyword}"죄로 고소장 작성을 도와드릴게요.`
           : '입력해주신 내용을 바탕으로 사건을 분류했어요. 이어서 몇 가지 질문을 드릴게요.';
@@ -258,22 +274,21 @@ const ChatWindowSection: React.FC<Props> = ({
         let firstQuestionMsg: Msg | null = null;
         let isDoneReply = false;
 
-        if (mode === 'new') {
-          const { reply } = await sendChat(
-            complaintId,
-            session_id,
-            '위 사건 개요를 기반으로, 이어서 질문을 해 주세요.',
-          );
+        // 새 세션이 열렸으니, 첫 질문을 한 번 던져서 대화 흐름 시작
+        const { reply } = await sendChat(
+          complaintId,
+          session_id,
+          '위 사건 개요를 기반으로, 이어서 질문을 해 주세요.',
+        );
 
-          isDoneReply = reply.includes(DONE_PHRASE);
+        isDoneReply = reply.includes(DONE_PHRASE);
 
-          firstQuestionMsg = {
-            id: `q-first-${Date.now()}`,
-            side: 'left',
-            text: reply || '사건에 대해 조금 더 자세히 알려주세요.',
-            time: fmtTime(),
-          };
-        }
+        firstQuestionMsg = {
+          id: `q-first-${Date.now()}`,
+          side: 'left',
+          text: reply || '사건에 대해 조금 더 자세히 알려주세요.',
+          time: fmtTime(),
+        };
 
         setMsgs((prev) => {
           const nextMsgs = [...prev, keywordMsg, ...(firstQuestionMsg ? [firstQuestionMsg] : [])];
@@ -282,7 +297,7 @@ const ChatWindowSection: React.FC<Props> = ({
             const guideMsg: Msg = {
               id: `done-guide-${Date.now()}`,
               side: 'left',
-              text: '화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
+              text: '화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 확인해 주세요.',
               time: fmtTime(),
             };
             nextMsgs.push(guideMsg);
@@ -315,6 +330,7 @@ const ChatWindowSection: React.FC<Props> = ({
           },
         ]);
 
+        // 실패하면 다시 요약 입력 단계로
         setPhase('askSummary');
       } finally {
         setIsBotTyping(false);
@@ -323,24 +339,13 @@ const ChatWindowSection: React.FC<Props> = ({
       return;
     }
 
-    /** 2) 이어쓰기 / 일반 공통: 이미 세션 있는 상태에서 채팅 */
+    /**
+     * 🟣 공통 2단계: 이미 세션이 있는 상태에서의 일반 대화
+     *
+     *  - new 모드든 resume 모드든, aiSessionId가 존재하면 여기로 옴
+     */
     if (phase !== 'chatting') {
       console.warn('전송 불가: phase가 chatting이 아님', { phase, mode });
-      return;
-    }
-
-    if (!aiSessionId) {
-      setMsgs((prev) => [
-        ...prev,
-        {
-          id: `err-no-session-${Date.now()}`,
-          side: 'left',
-          text:
-            '이 고소장은 아직 AI 세션 정보가 없어, 이어서 채팅을 진행할 수 없어요.\n' +
-            '새 고소장 작성으로 다시 시작해 주세요.',
-          time: fmtTime(),
-        },
-      ]);
       return;
     }
 
@@ -400,7 +405,18 @@ const ChatWindowSection: React.FC<Props> = ({
     } finally {
       setIsBotTyping(false);
     }
-  }, [mode, phase, aiSessionId, input, complaintId, isCompleted, onComplete, onReady, onInitMeta]);
+  }, [
+    input,
+    isCompleted,
+    aiSessionId,
+    phase,
+    mode,
+    complaintId,
+    onInitStart,
+    onReady,
+    onInitMeta,
+    onComplete,
+  ]);
 
   const onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -414,9 +430,10 @@ const ChatWindowSection: React.FC<Props> = ({
   return (
     <section
       className={[
-        'flex flex-col items-center justify-between',
-        'mx-auto h-[680px] w-full max-w-[1000px]',
-        'bg-neutral-0 pt-6 pb-6',
+        'flex min-h-0 flex-1 flex-col items-center justify-between',
+        'h-[600px] w-full',
+        'pt-2 pb-6',
+        'bg-neutral-0',
       ].join(' ')}
     >
       <div className="flex min-h-0 w-full flex-1 justify-center">
@@ -430,7 +447,7 @@ const ChatWindowSection: React.FC<Props> = ({
           {/* 🔹 실제로 스크롤 되는 영역 (padding / border 없음) */}
           <div
             ref={listRef}
-            className="flex min-h-0 flex-1 flex-col overflow-y-auto"
+            className="balaw-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto px-2"
             role="list"
             aria-label="채팅 메시지"
           >
@@ -458,7 +475,7 @@ const ChatWindowSection: React.FC<Props> = ({
 
       <div
         className={[
-          'mt-4 flex h-12 w-full max-w-[720px] items-center justify-between',
+          'mt-2 flex w-full max-w-[720px] items-center justify-between',
           'rounded-200 bg-neutral-0 border border-blue-400',
           'px-5 py-2.5',
         ].join(' ')}
@@ -473,12 +490,12 @@ const ChatWindowSection: React.FC<Props> = ({
               ? '사건의 경위를 자유롭게 입력해 주세요.'
               : '여기에 입력하고 Enter로 전송하세요. (줄바꿈은 Shift+Enter)'
           }
-          rows={1}
+          rows={2}
           aria-label="메시지 입력"
           disabled={inputDisabled}
           className={[
             'flex-1 resize-none text-left',
-            'text-detail-regular leading-9',
+            'text-body-3-regular leading-5',
             'text-neutral-700 placeholder:text-neutral-500',
             'focus:outline-none disabled:opacity-50',
           ].join(' ')}
