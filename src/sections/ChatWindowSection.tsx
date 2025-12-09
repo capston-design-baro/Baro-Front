@@ -431,7 +431,7 @@ const ChatWindowSection: React.FC<Props> = ({
     <section
       className={[
         'flex min-h-0 flex-1 flex-col items-center justify-between',
-        'h-[600px] w-full',
+        'h-[600px] w-full xl:h-[680px]',
         'pt-2 pb-6',
         'bg-neutral-0',
       ].join(' ')}

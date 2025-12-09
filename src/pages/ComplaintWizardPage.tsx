@@ -379,7 +379,7 @@ const ComplaintWizardPage: React.FC = () => {
                 />
               </div>
 
-              <aside className="rounded-200 bg-neutral-0 mt-2 h-[498px] w-[340px] border border-neutral-200 p-4">
+              <aside className="rounded-200 bg-neutral-0 mt-2 h-[498px] w-[340px] border border-neutral-200 p-4 xl:h-[576px]">
                 <h2 className="text-body-1-bold mb-2">AI가 찾은 핵심 키워드</h2>
                 <p className="text-body-3-regular mb-4 text-neutral-700">
                   {ragKeyword
@@ -408,7 +408,7 @@ const ComplaintWizardPage: React.FC = () => {
                   )
                 ) : (
                   <ul className="flex flex-col gap-3">
-                    {[...ragCases].reverse().map((c, idx) => (
+                    {ragCases.map((c, idx) => (
                       <li key={c.case_no || idx}>
                         <button
                           type="button"
