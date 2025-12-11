@@ -240,7 +240,7 @@ const ComplainantExtraInfoSection = forwardRef<ComplainantExtraInfoSectionHandle
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               {/* 주소 라벨 */}
-              {renderLabel('주소', true)}
+              {renderLabel('사무실 주소', true)}
 
               {/* 주소 검색 버튼 */}
               <DaumPostcodeButton onSelect={handleAddressSelect} />
