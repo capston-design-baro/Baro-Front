@@ -57,7 +57,7 @@ export type ChatInitResponse = {
 export type AccusedInfoCreate = {
   accused_name: string;
   accused_email: string;
-  accused_address: string;
+  accused_address: string | null;
   accused_phone: string;
 
   accused_job: string;

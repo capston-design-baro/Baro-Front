@@ -39,7 +39,8 @@ const initialPrechecks: PrecheckQuestion[] = [
       label: '관련 안내를 확인했습니다.',
       checked: false,
     },
-    description: '사실이 아닌 내용을 고의로 신고할 경우 무고죄로 처벌될 수 있습니다.',
+    description:
+      '고의로 사실이 아닌 내용을 신고하거나 타인을 범죄자로 만들기 위한 허위 고소는 무고죄에 해당할 수 있으며, 법적 처벌 대상이 될 수 있습니다.',
   },
 ];
 
