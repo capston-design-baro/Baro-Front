@@ -9,7 +9,7 @@ import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } fro
 export type AccusedBasicInfo = {
   name: string;
   email: string;
-  address: string;
+  address: string | null;
   phone: string;
   unknownName: boolean;
   unknownEmail: boolean;
@@ -138,7 +138,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
     return {
       name: unknownName ? ' ' : name.trim(),
       email: unknownEmail ? ' ' : email.trim(),
-      address: unknownAddr ? ' ' : address,
+      address: unknownAddr ? null : address,
       phone: unknownPhone ? ' ' : phone,
       unknownName,
       unknownEmail,
