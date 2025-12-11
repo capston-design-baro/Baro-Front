@@ -55,10 +55,10 @@ export type ChatInitResponse = {
 
 /** 피고소인 정보 등록 */
 export type AccusedInfoCreate = {
-  name: string;
-  email: string;
-  address: string | null;
-  phone: string;
+  accused_name: string;
+  accused_email: string;
+  accused_address: string | null;
+  accused_phone: string;
 
   accused_job: string;
   accused_office_address: string;
