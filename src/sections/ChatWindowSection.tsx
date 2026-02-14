@@ -7,6 +7,7 @@ import {
 } from '@/apis/complaints';
 import type { ChatMetaPayload, RagCase } from '@/apis/complaints';
 import { ChatBubble } from '@/components/ChatBubble';
+import Button from '@/components/common/Button';
 import type { Side } from '@/types/side';
 import type { AxiosError } from 'axios';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -500,19 +501,15 @@ const ChatWindowSection: React.FC<Props> = ({
             'focus:outline-none disabled:opacity-50',
           ].join(' ')}
         />
-        <button
-          type="button"
+        <Button
+          variant="primary"
+          size="sm"
+          className="w-16"
           onClick={handleSend}
           disabled={inputDisabled || !input.trim()}
-          className={[
-            'flex h-9 items-center justify-center',
-            'rounded-400 border-primary-400 bg-primary-50 border-2',
-            'text-body-3-bold text-primary-400',
-            'px-3 disabled:opacity-40',
-          ].join(' ')}
         >
           전송
-        </button>
+        </Button>
       </div>
     </section>
   );
