@@ -1,6 +1,7 @@
 import { downloadComplaintDocx } from '@/apis/complaints';
 import DocxIcon from '@/assets/Docs.svg';
 import IntroHeader from '@/components/IntroHeader';
+import Button from '@/components/common/Button';
 import React, { useState } from 'react';
 
 type ComplaintDownloadSectionProps = {
@@ -80,18 +81,12 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
 
         {/* 버튼 영역 */}
         <div className="mt-auto flex flex-col items-center gap-3">
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="md"
+            fullWidth
             onClick={handleDownload}
             disabled={isDownloading}
-            className={[
-              'flex h-12 w-full items-center justify-center gap-2',
-              'rounded-400 bg-primary-500 px-6',
-              'text-body-3-bold text-neutral-0',
-              'transition-colors',
-              'hover:bg-primary-600 disabled:hover:bg-primary-500',
-              'disabled:cursor-not-allowed disabled:opacity-50',
-            ].join(' ')}
           >
             {/* DOCX 아이콘 */}
             <span className="bg-primary-400/15 flex h-9 w-9 items-center justify-center rounded-[12px]">
@@ -103,7 +98,7 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
             </span>
 
             {isDownloading ? '다운로드 준비 중...' : 'DOCX 파일 다운로드'}
-          </button>
+          </Button>
 
           <p className="text-detail-regular text-neutral-500">
             * 브라우저의 팝업 차단 설정에 따라 다운로드 창이 보이지 않을 수 있어요.
