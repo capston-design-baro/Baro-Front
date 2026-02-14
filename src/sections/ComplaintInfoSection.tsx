@@ -3,6 +3,7 @@ import DaumPostcodeButton from '@/components/DaumPostcodeButton';
 import type { DaumPostcodeResult } from '@/components/DaumPostcodeButton';
 import FormErrorMessage from '@/components/FormErrorMessage';
 import IntroHeader from '@/components/IntroHeader';
+import Button from '@/components/common/Button';
 import { splitAddressTo3FromString, splitPhoneKR } from '@/utils/krContact';
 import type { AxiosError } from 'axios';
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
@@ -188,18 +189,14 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
           className="mt-2 flex w-[420px] flex-col gap-5"
         >
           {/* 내 정보 불러오기 버튼 */}
-          <div className="flex w-full justify-end">
-            <button
-              type="button"
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleLoadFromProfile}
-              className={[
-                'rounded-200 inline-flex items-center border px-3 py-[8px]',
-                'border-primary-400 bg-primary-0/50 hover:bg-primary-50/50',
-                'text-detail-regular text-neutral-800',
-              ].join(' ')}
             >
               내 정보 불러오기
-            </button>
+            </Button>
           </div>
 
           {/* 입력 필드들 */}
