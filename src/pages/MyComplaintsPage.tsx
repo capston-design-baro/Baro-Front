@@ -186,18 +186,14 @@ const MyComplaintsPage: React.FC = () => {
               </p>
             </div>
           ) : items.length === 0 ? (
-            <div className="flex h-52 flex-col items-center justify-center gap-3">
-              <span className="material-symbols-outlined text-[40px] text-neutral-300">drafts</span>
-              <p className="text-body-3-regular text-neutral-600">아직 작성한 고소장이 없어요.</p>
-              <Button
-                onClick={() => {
-                  resetWizard();
-                  navigate('/complaint');
-                }}
+            <div className="flex h-96 flex-col items-center justify-center gap-6">
+              <span
+                className="material-symbols-outlined text-neutral-200"
+                style={{ fontSize: '40px' }}
               >
-                <span className="material-symbols-outlined text-primary-500">add</span>새 고소장
-                작성하러 가기
-              </Button>
+                drafts
+              </span>
+              <p className="text-heading-3 text-neutral-400">아직 작성한 고소장이 없어요.</p>
             </div>
           ) : (
             <ul className="flex flex-col gap-3">
