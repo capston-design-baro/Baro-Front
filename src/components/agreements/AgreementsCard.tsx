@@ -1,3 +1,4 @@
+import Button from '@/components/common/Button';
 import type { Agreement } from '@/types/agreement';
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -89,19 +90,16 @@ const AgreementsCard: React.FC<Props> = ({ initial }) => {
       </div>
 
       {/* 버튼 */}
-      <button
+      <Button
+        variant="primary"
+        size="md"
+        fullWidth
         type="submit"
+        disabled={!requiredAllChecked}
         aria-disabled={!requiredAllChecked}
-        className={[
-          'h-12 w-full items-center justify-center px-5',
-          'rounded-200 text-body-3-bold text-neutral-0 transition-colors',
-          requiredAllChecked
-            ? 'bg-primary-400 hover:bg-primary-600'
-            : 'bg-primary-400 cursor-not-allowed opacity-60',
-        ].join(' ')}
       >
         회원가입 진행하기
-      </button>
+      </Button>
     </form>
   );
 };
