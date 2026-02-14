@@ -1,6 +1,6 @@
 import React from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'error' | 'outline';
+type ButtonVariant = 'primary' | 'secondary' | 'error' | 'outline' | 'outline-secondary';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -44,6 +44,11 @@ const Button: React.FC<ButtonProps> = ({
       'border border-primary-400 text-primary-400 bg-white',
       'hover:bg-primary-0/50 hover:border-primary-500',
       'active:bg-primary-50/70 active:border-primary-600',
+    ].join(' '),
+    'outline-secondary': [
+      'border border-neutral-200 text-neutral-700',
+      'hover:border-neutral-300',
+      'active:border-neutral-350',
     ].join(' '),
   };
 
