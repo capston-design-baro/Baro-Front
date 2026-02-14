@@ -1,6 +1,6 @@
 import React from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'error';
+type ButtonVariant = 'primary' | 'secondary' | 'error' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
     'whitespace-nowrap',
   ].join(' ');
 
-  // 색상 (primary, error, secondary)
+  // 색상 (primary, error, secondary, outline)
   const variantStyles = {
     primary: [
       'bg-primary-400 text-neutral-0',
@@ -39,6 +39,11 @@ const Button: React.FC<ButtonProps> = ({
       'bg-neutral-200 text-neutral-700',
       'hover:bg-neutral-300',
       'active:bg-neutral-350',
+    ].join(' '),
+    outline: [
+      'border border-primary-400 text-primary-400 bg-white',
+      'hover:bg-primary-0/50 hover:border-primary-500',
+      'active:bg-primary-50/70 active:border-primary-600',
     ].join(' '),
   };
 
