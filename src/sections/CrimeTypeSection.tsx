@@ -1,4 +1,5 @@
 import IntroHeader from '@/components/IntroHeader';
+import Button from '@/components/common/Button';
 import type { CrimeCategory, CrimeDomain } from '@/constants/crimeTypes';
 import { CRIME_TYPES } from '@/constants/crimeTypes';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -46,19 +47,15 @@ const CrimeTypeSection: React.FC = () => {
           {CRIME_TYPES.map((domain) => {
             const isActive = domain.id === domainId;
             return (
-              <button
+              <Button
                 key={domain.id}
-                type="button"
+                variant={isActive ? 'primary' : 'secondary'}
+                size="md"
                 onClick={() => setDomainId(domain.id)}
-                className={[
-                  'text-body-3 rounded-400 flex min-w-[120px] items-center justify-center px-4 py-2 transition-colors',
-                  isActive
-                    ? 'bg-primary-400 text-neutral-0'
-                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200',
-                ].join(' ')}
+                className="min-w-[120px]"
               >
                 {domain.name}
-              </button>
+              </Button>
             );
           })}
         </div>

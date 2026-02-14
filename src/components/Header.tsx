@@ -7,6 +7,7 @@
  */
 import { logout } from '@/apis/auth';
 import logoUrl from '@/assets/BaLawLogo.svg';
+import Button from '@/components/common/Button';
 import { useComplaintWizard } from '@/stores/useComplaintWizard';
 import { useUserStore } from '@/stores/useUserStore';
 import React from 'react';
@@ -21,12 +22,12 @@ const Header: React.FC = () => {
   // 고소장 위자드 reset 함수
   const resetWizard = useComplaintWizard((s) => s.reset);
 
-  // 로그인 버튼 클릭 → /login 페이지 이동
+  // 로그인 버튼 클릭 -> /login 페이지 이동
   const handleLoginClick = () => {
     navigate('/login');
   };
 
-  // 로고 클릭 → 홈('/') 이동
+  // 로고 클릭 -> 홈('/') 이동
   const handleLogoClick = () => {
     resetWizard();
     navigate('/');
@@ -42,9 +43,7 @@ const Header: React.FC = () => {
   const isLogin = Boolean(user);
   const buttonText = isLogin ? '로그아웃' : '로그인';
   const buttonAction = isLogin ? handleLogoutClick : handleLoginClick;
-
-  const buttonClass =
-    'flex h-11 w-20 items-center justify-center gap-2.5 rounded-300 bg-primary-900 px-2 py-2 transition hover:bg-primary-800';
+  const buttonVariant = isLogin ? 'outline-secondary' : 'outline';
 
   return (
     /**
@@ -63,12 +62,14 @@ const Header: React.FC = () => {
       />
 
       {/* 로그인 여부(user 존재 여부)에 따라 버튼 분기 */}
-      <button
+      <Button
+        variant={buttonVariant}
+        size="sm"
+        className="w-20"
         onClick={buttonAction}
-        className={buttonClass}
       >
-        <span className="text-body-3-regular text-neutral-0 font-medium">{buttonText}</span>{' '}
-      </button>
+        {buttonText}
+      </Button>
     </header>
   );
 };

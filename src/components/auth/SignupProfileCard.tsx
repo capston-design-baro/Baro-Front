@@ -1,5 +1,6 @@
 import DaumPostcodeButton from '@/components/DaumPostcodeButton';
 import FormErrorMessage from '@/components/FormErrorMessage';
+import Button from '@/components/common/Button';
 import React, { useState } from 'react';
 
 type SignupProfileData = {
@@ -60,7 +61,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
     setError(null);
 
     // 필수값 검증
-    if (!name) {
+    if (!name || !city || !district || !town || !phone1 || !phone2 || !phone3) {
       setError('필수 항목들을 모두 입력해주세요.');
       return;
     }
@@ -103,8 +104,24 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
         'flex flex-col',
       ].join(' ')}
     >
-      {/* 제목 */}
-      <h2 className="text-heading-1-bold text-primary-400 text-center">회원가입</h2>
+      {/* 제목 + 이전 버튼 */}
+      <div className="relative flex items-center justify-center">
+        <button
+          type="button"
+          onClick={() =>
+            onBack({ name, city, district, town, phone: [phone1, phone2, phone3].join('').trim() })
+          }
+          className="absolute left-0 flex items-center text-neutral-400 hover:text-neutral-600"
+        >
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: '28px' }}
+          >
+            chevron_left
+          </span>
+        </button>
+        <h2 className="text-heading-1-bold text-primary-400 text-center">회원가입</h2>
+      </div>
 
       {/* 입력 폼 */}
       <div className="mt-15 flex flex-1 flex-col justify-center gap-6 px-5">
@@ -123,7 +140,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
               placeholder="홍길동"
               type="name"
               className={[
-                'rounded-200 w- h-10 flex-1 px-3',
+                'rounded-200 w- h-12 flex-1 px-3',
                 'border border-neutral-300',
                 'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
               ].join(' ')}
@@ -164,7 +181,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 onClick={handleAddressFieldClick}
                 onFocus={handleAddressFieldClick}
                 className={[
-                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'rounded-200 w- h-12 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   hasAddress ? 'bg-neutral-0' : 'cursor-not-allowed bg-neutral-50',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
@@ -179,7 +196,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 onClick={handleAddressFieldClick}
                 onFocus={handleAddressFieldClick}
                 className={[
-                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'rounded-200 w- h-12 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   hasAddress ? 'bg-neutral-0' : 'cursor-not-allowed bg-neutral-50',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
@@ -194,7 +211,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 onClick={handleAddressFieldClick}
                 onFocus={handleAddressFieldClick}
                 className={[
-                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'rounded-200 w- h-12 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   hasAddress ? 'bg-neutral-0' : 'cursor-not-allowed bg-neutral-50',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
@@ -228,7 +245,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 value={phone1}
                 onChange={(e) => setPhone1(e.target.value)}
                 className={[
-                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'rounded-200 w- h-12 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -241,7 +258,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 value={phone2}
                 onChange={(e) => setPhone2(e.target.value)}
                 className={[
-                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'rounded-200 w- h-12 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -254,7 +271,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 value={phone3}
                 onChange={(e) => setPhone3(e.target.value)}
                 className={[
-                  'rounded-200 w- h-10 flex-1 px-3 text-center',
+                  'rounded-200 w- h-12 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -267,33 +284,16 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
       {/* 경고 문구 */}
       <FormErrorMessage error={error} />
 
-      <div className="flex gap-4">
-        <button
-          type="button"
-          onClick={() =>
-            onBack({ name, city, district, town, phone: [phone1, phone2, phone3].join('').trim() })
-          }
-          className={[
-            'h-12 flex-1 items-center justify-center',
-            'rounded-200 border-primary-400 border',
-            'text-body-3-bold text-primary-400 transition-colors',
-          ].join(' ')}
-        >
-          이전
-        </button>
-        <button
-          type="submit"
-          className={[
-            'h-12 flex-1 items-center justify-center',
-            'rounded-200 text-body-3-bold text-neutral-0 transition-colors',
-            !name
-              ? 'bg-primary-400 cursor-not-allowed opacity-60'
-              : 'bg-primary-400 hover:bg-primary-600',
-          ].join(' ')}
-        >
-          {isSubmitting ? '회원가입 진행중...' : '회원가입'}
-        </button>
-      </div>
+      <Button
+        variant="primary"
+        size="md"
+        fullWidth
+        disabled={
+          isSubmitting || !name || !city || !district || !town || !phone1 || !phone2 || !phone3
+        }
+      >
+        {isSubmitting ? '회원가입 진행중...' : '회원가입'}
+      </Button>
     </form>
   );
 };

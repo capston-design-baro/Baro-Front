@@ -1,3 +1,4 @@
+import Button from '@/components/common/Button';
 import React, { useState } from 'react';
 
 declare global {
@@ -47,18 +48,13 @@ const DaumPostcodeButton: React.FC<Props> = ({ onSelect }) => {
 
   return (
     <>
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="sm"
         onClick={handleOpen}
-        className={[
-          'rounded-200 text-detail-regular h-8 border px-3',
-          'border-primary-400 bg-primary-0/50 hover:bg-primary-50/50',
-          'active:bg-primary-100 active:border-primary-200 active:text-primary-700',
-          'transition-all active:scale-95',
-        ].join(' ')}
       >
         주소 찾기
-      </button>
+      </Button>
 
       {/* open=true일 때 모달/오버레이로 띄우고 싶으면 여기서 다룸 */}
       {open && (

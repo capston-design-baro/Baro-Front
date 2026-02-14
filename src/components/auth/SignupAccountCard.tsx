@@ -1,5 +1,6 @@
 import { checkEmailAvailability } from '@/apis/auth';
 import FormErrorMessage from '@/components/FormErrorMessage';
+import Button from '@/components/common/Button';
 import React, { useState } from 'react';
 
 type Props = {
@@ -140,7 +141,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                 id="email"
                 type="email"
                 className={[
-                  'rounded-200 h-10 flex-1 px-3',
+                  'rounded-200 h-12 flex-1 px-3',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -154,23 +155,18 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
               />
 
               {/* 중복 확인 버튼 */}
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="md"
+                disabled={emailCheckStatus !== 'idle'}
                 onClick={handleEmailCheck}
-                disabled={!email} // 이메일 입력 안 했으면 비활성화
-                className={[
-                  'rounded-200 text-detail-regular h-10 border px-2 whitespace-nowrap transition-colors',
-                  !email
-                    ? 'cursor-not-allowed border-neutral-300 bg-neutral-100 text-neutral-400'
-                    : 'border-primary-400 text-primary-400 hover:bg-primary-0/50',
-                ].join(' ')}
               >
                 {emailCheckStatus === 'checking'
                   ? '확인 중...'
                   : emailCheckStatus === 'success'
                     ? '확인 완료'
                     : '중복 확인'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -190,7 +186,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                 id="password"
                 type={showPw ? 'text' : 'password'}
                 className={[
-                  'rounded-200 h-10 w-full px-3 pr-10',
+                  'rounded-200 h-12 w-full px-3 pr-10',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -232,7 +228,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                 id="password2"
                 type={showPwCheck ? 'text' : 'password'}
                 className={[
-                  'rounded-200 h-10 w-full px-3 pr-10',
+                  'rounded-200 h-12 w-full px-3 pr-10',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -263,19 +259,16 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
       <FormErrorMessage error={error} />
 
       {/* 다음 단계 버튼 */}
-      <button
-        type="submit"
+      <Button
+        variant="primary"
+        size="md"
+        fullWidth
         disabled={isNextDisabled}
-        className={[
-          'h-12 w-full items-center justify-center px-5',
-          'rounded-200 text-body-3-bold text-neutral-0 transition-colors',
-          !email || !pw || !pwCheck
-            ? 'bg-primary-400 cursor-not-allowed opacity-60'
-            : 'bg-primary-400 hover:bg-primary-600',
-        ].join(' ')}
+        type="submit"
+        aria-disabled={isNextDisabled}
       >
         다음
-      </button>
+      </Button>
     </form>
   );
 };

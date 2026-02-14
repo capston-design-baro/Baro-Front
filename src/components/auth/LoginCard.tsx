@@ -1,4 +1,5 @@
 import FormErrorMessage from '@/components/FormErrorMessage';
+import Button from '@/components/common/Button';
 import type { LoginCardProps, LoginFormValues } from '@/types/auth';
 import React, { useState } from 'react';
 
@@ -66,7 +67,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
               type="email"
               placeholder="이메일 주소"
               className={[
-                'rounded-200 h-10 flex-1 px-3',
+                'rounded-200 h-12 flex-1 px-3',
                 'border border-neutral-300',
                 'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
               ].join(' ')}
@@ -92,7 +93,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
               type="password"
               placeholder="비밀번호"
               className={[
-                'rounded-200 h-10 flex-1 px-3',
+                'rounded-200 h-12 flex-1 px-3',
                 'border border-neutral-300',
                 'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
               ].join(' ')}
@@ -109,20 +110,15 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
       <FormErrorMessage error={error} />
 
       {/* 로그인 버튼 */}
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        size="md"
+        fullWidth
         disabled={loading}
-        onClick={() => handleSubmit()}
-        className={[
-          'h-12 w-full items-center justify-center px-5',
-          'rounded-200 text-body-3-bold text-neutral-0 transition-colors',
-          loading
-            ? 'bg-primary-400 cursor-not-allowed opacity-60'
-            : 'bg-primary-400 hover:bg-primary-600',
-        ].join(' ')}
+        onClick={handleSubmit}
       >
         {loading ? '로그인 중...' : '로그인'}
-      </button>
+      </Button>
 
       {/* 회원가입 안내 */}
       <div className="mt-10 flex flex-col items-center gap-2">
