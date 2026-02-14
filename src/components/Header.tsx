@@ -43,6 +43,7 @@ const Header: React.FC = () => {
   const isLogin = Boolean(user);
   const buttonText = isLogin ? '로그아웃' : '로그인';
   const buttonAction = isLogin ? handleLogoutClick : handleLoginClick;
+  const buttonVariant = isLogin ? 'outline-secondary' : 'outline';
 
   return (
     /**
@@ -62,7 +63,7 @@ const Header: React.FC = () => {
 
       {/* 로그인 여부(user 존재 여부)에 따라 버튼 분기 */}
       <Button
-        variant="outline"
+        variant={buttonVariant}
         size="sm"
         className="w-20"
         onClick={buttonAction}
