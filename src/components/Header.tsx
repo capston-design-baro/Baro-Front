@@ -63,7 +63,7 @@ const Header: React.FC = () => {
       {/* 로그인 여부(user 존재 여부)에 따라 버튼 분기 */}
       <Button
         variant="outline"
-        size="md"
+        size="sm"
         className="w-20"
         onClick={buttonAction}
       >
