@@ -1,4 +1,5 @@
 import LogoUrl from '@/assets/BaLawCharacter-large.svg';
+import Button from '@/components/common/Button';
 import React from 'react';
 
 type Variant = 'login' | 'exit' | 'delete';
@@ -52,33 +53,6 @@ const CharacterModal: React.FC<Props> = ({ variant = 'login', onCancel, onConfir
     leftButtonText = '취소';
     rightButtonText = '삭제할게요';
   }
-  const rightButtonClasses = isLogin
-    ? [
-        'h-10 w-20 sm:h-12 sm:w-28',
-        'rounded-200 bg-positive-0 hover:bg-positive-100 text-neutral-900',
-        'text-detail-bold sm:text-body-3-bold',
-        'transition-colors duration-200',
-      ].join(' ')
-    : [
-        'h-10 w-20 sm:h-12 sm:w-28',
-        'rounded-200 bg-warning-200 hover:bg-warning-300 text-neutral-100',
-        'text-detail-regular sm:text-body-3-regular',
-        'transition-colors duration-200',
-      ].join(' ');
-
-  const leftButtonClasses = isLogin
-    ? [
-        'h-10 w-20 sm:h-12 sm:w-28',
-        'rounded-200 bg-warning-200 hover:bg-warning-300 text-neutral-100',
-        'text-detail-regular sm:text-body-3-regular',
-        'transition-colors duration-200',
-      ].join(' ')
-    : [
-        'h-10 w-20 sm:h-12 sm:w-28',
-        'rounded-200 bg-positive-0 hover:bg-positive-100 text-neutral-900',
-        'text-detail-bold sm:text-body-3-bold',
-        'transition-colors duration-200',
-      ].join(' ');
 
   return (
     <div
@@ -115,19 +89,23 @@ const CharacterModal: React.FC<Props> = ({ variant = 'login', onCancel, onConfir
           className="h-52 w-52 object-contain"
         />
 
-        <div className="flex gap-6 sm:gap-10">
-          <button
+        <div className="flex w-full items-center justify-center gap-4">
+          <Button
+            variant="secondary"
+            size="md"
+            fullWidth
             onClick={onCancel}
-            className={leftButtonClasses}
           >
             {leftButtonText}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="error"
+            size="md"
+            fullWidth
             onClick={onConfirm}
-            className={rightButtonClasses}
           >
             {rightButtonText}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
