@@ -3,6 +3,7 @@ import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import IntroHeader from '@/components/IntroHeader';
+import Button from '@/components/common/Button';
 import { useComplaintWizard } from '@/stores/useComplaintWizard';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -139,23 +140,17 @@ const MyComplaintsPage: React.FC = () => {
 
         {/* 오른쪽 상단 CTA 버튼 */}
         <div className="mb-4 flex justify-end">
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="md"
             onClick={() => {
               resetWizard();
               navigate('/complaint');
             }}
-            className={[
-              'inline-flex items-center gap-1',
-              'rounded-300 border px-4 py-2',
-              'border-primary-300 bg-primary-25 text-body-3-bold text-primary-600',
-              'hover:bg-primary-50 hover:border-primary-400',
-              'transition-colors duration-200',
-            ].join(' ')}
           >
-            <span className="material-symbols-outlined text-primary-500">edit_document</span>새
+            <span className="material-symbols-outlined text-primary-500 mr-2">edit_document</span>새
             고소장 작성
-          </button>
+          </Button>
         </div>
 
         {/* 에러 메시지 */}
@@ -194,23 +189,15 @@ const MyComplaintsPage: React.FC = () => {
             <div className="flex h-52 flex-col items-center justify-center gap-3">
               <span className="material-symbols-outlined text-[40px] text-neutral-300">drafts</span>
               <p className="text-body-3-regular text-neutral-600">아직 작성한 고소장이 없어요.</p>
-              <button
-                type="button"
+              <Button
                 onClick={() => {
                   resetWizard();
                   navigate('/complaint');
                 }}
-                className={[
-                  'inline-flex items-center gap-1',
-                  'rounded-300 border px-4 py-2',
-                  'border-primary-300 bg-primary-25 text-body-3-bold text-primary-600',
-                  'hover:bg-primary-50 hover:border-primary-400',
-                  'transition-colors duration-200',
-                ].join(' ')}
               >
                 <span className="material-symbols-outlined text-primary-500">add</span>새 고소장
                 작성하러 가기
-              </button>
+              </Button>
             </div>
           ) : (
             <ul className="flex flex-col gap-3">
@@ -263,15 +250,10 @@ const MyComplaintsPage: React.FC = () => {
                     <div className="flex flex-wrap items-center gap-2 md:justify-end">
                       {/* 액션 버튼들 */}
                       {c.status === 'in_progress' ? (
-                        <button
-                          type="button"
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleResume(c)}
-                          className={[
-                            'rounded-300 inline-flex items-center gap-1 border px-3 py-1.5',
-                            'border-primary-100 bg-primary-25 text-detail-regular text-primary-600 font-semibold',
-                            'hover:bg-primary-0/50 hover:border-primary-100',
-                            'transition-colors duration-200',
-                          ].join(' ')}
                         >
                           <span
                             className="material-symbols-outlined text-primary-500"
@@ -280,21 +262,13 @@ const MyComplaintsPage: React.FC = () => {
                             play_arrow
                           </span>
                           이어 쓰기
-                        </button>
+                        </Button>
                       ) : (
-                        <button
-                          type="button"
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => canDownload && handleDownload(c)}
                           disabled={!canDownload || downloadingId === c.id}
-                          className={[
-                            'rounded-300 inline-flex items-center gap-1 border px-3 py-1.5',
-                            canDownload
-                              ? 'border-primary-100 bg-primary-25 text-detail-regular text-primary-600 font-semibold'
-                              : 'text-detail-regular border-neutral-200 bg-neutral-50 font-semibold text-neutral-400',
-                            'hover:bg-primary-0/50 hover:border-primary-100',
-                            'disabled:cursor-not-allowed disabled:opacity-60',
-                            'transition-colors duration-200',
-                          ].join(' ')}
                         >
                           <span
                             className="material-symbols-outlined"
@@ -307,20 +281,14 @@ const MyComplaintsPage: React.FC = () => {
                               ? '다운로드 중...'
                               : '고소장 다운로드'
                             : '다운로드 기간 만료'}
-                        </button>
+                        </Button>
                       )}
 
-                      <button
-                        type="button"
+                      <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={() => handleDelete(c)}
                         disabled={deletingId === c.id}
-                        className={[
-                          'rounded-300 text-detail-regular inline-flex items-center gap-1 border px-3 py-1.5',
-                          'bg-neutral-0 border-neutral-200 text-neutral-500',
-                          'hover:border-warning-100 hover:bg-warning-0/50 hover:text-warning-200',
-                          'disabled:opacity-50 disabled:hover:border-neutral-200 disabled:hover:text-neutral-500',
-                          'transition-colors duration-200',
-                        ].join(' ')}
                       >
                         <span
                           className="material-symbols-outlined text-inherit"
@@ -329,7 +297,7 @@ const MyComplaintsPage: React.FC = () => {
                           delete
                         </span>
                         삭제
-                      </button>
+                      </Button>
                     </div>
                   </li>
                 );
