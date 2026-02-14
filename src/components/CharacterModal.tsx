@@ -91,7 +91,7 @@ const CharacterModal: React.FC<Props> = ({ variant = 'login', onCancel, onConfir
 
         <div className="flex w-full items-center justify-center gap-4">
           <Button
-            variant="secondary"
+            variant={isLogin ? 'error' : 'secondary'}
             size="md"
             fullWidth
             onClick={onCancel}
@@ -99,7 +99,7 @@ const CharacterModal: React.FC<Props> = ({ variant = 'login', onCancel, onConfir
             {leftButtonText}
           </Button>
           <Button
-            variant="error"
+            variant={isLogin ? 'secondary' : 'error'}
             size="md"
             fullWidth
             onClick={onConfirm}
