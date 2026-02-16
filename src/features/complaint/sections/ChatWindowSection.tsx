@@ -1,13 +1,13 @@
+import { ChatBubble } from '@/components/ChatBubble';
+import Button from '@/components/common/Button';
 import {
   type ChatMessageHistoryItem,
   getChatHistory,
   getMyComplaints,
   initChatSession,
   sendChat,
-} from '@/apis/complaints';
-import type { ChatMetaPayload, RagCase } from '@/apis/complaints';
-import { ChatBubble } from '@/components/ChatBubble';
-import Button from '@/components/common/Button';
+} from '@/features/complaint/apis/complaints';
+import type { ChatMetaPayload, RagCase } from '@/features/complaint/apis/complaints';
 import type { Side } from '@/types/side';
 import type { AxiosError } from 'axios';
 import React, { useCallback, useEffect, useRef, useState } from 'react';

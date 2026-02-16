@@ -1,3 +1,11 @@
+import CaseDetailModal from '@/components/CaseDetailModal';
+import CharacterModal from '@/components/CharacterModal';
+import Footer from '@/components/Footer';
+import GeneratingModal from '@/components/GeneratingModal';
+import Header from '@/components/Header';
+import type { ComplainantInfoCreate } from '@/features/complaint/apis/complaints';
+import { createComplaint } from '@/features/complaint/apis/complaints';
+import type { RagCase } from '@/features/complaint/apis/complaints';
 import {
   type AccusedInfoCreate,
   type EvidenceCreate,
@@ -5,41 +13,33 @@ import {
   registerAccused,
   registerEvidence,
   registerRelatedCases,
-} from '@/apis/complaints';
-import type { ComplainantInfoCreate } from '@/apis/complaints';
-import { createComplaint } from '@/apis/complaints';
-import type { RagCase } from '@/apis/complaints';
-import CaseDetailModal from '@/components/CaseDetailModal';
-import CharacterModal from '@/components/CharacterModal';
-import Footer from '@/components/Footer';
-import GeneratingModal from '@/components/GeneratingModal';
-import Header from '@/components/Header';
-import WizardNavButtons from '@/components/WizardNavButtons';
-import WizardProgress from '@/components/WizardProgress';
+} from '@/features/complaint/apis/complaints';
+import WizardNavButtons from '@/features/complaint/components/WizardNavButtons';
+import WizardProgress from '@/features/complaint/components/WizardProgress';
 import AccusedExtraInfoSection, {
   type AccusedExtraInfo,
   type AccusedExtraInfoSectionHandle,
-} from '@/sections/AccusedExtraInfoSection';
+} from '@/features/complaint/sections/AccusedExtraInfoSection';
 import AccusedInfoSection, {
   type AccusedBasicInfo,
   type AccusedInfoSectionHandle,
-} from '@/sections/AccusedInfoSection';
-import ChatInfoSection from '@/sections/ChatInfoSection';
-import ChatWindowSection from '@/sections/ChatWindowSection';
-import ComplaintDownloadSection from '@/sections/ComplaintDownloadSection';
-import ComplaintEntrySection from '@/sections/ComplaintEntrySection';
-import type { ComplainantExtraInfoSectionHandle } from '@/sections/ComplaintExtraInfoSection';
-import type { ComplainantExtraInfo } from '@/sections/ComplaintExtraInfoSection';
-import ComplainantExtraInfoSection from '@/sections/ComplaintExtraInfoSection';
-import ComplainantInfoSection from '@/sections/ComplaintInfoSection';
-import type { ComplainantInfoSectionHandle } from '@/sections/ComplaintInfoSection';
-import type { ComplaintBasicInfo } from '@/sections/ComplaintInfoSection';
-import ComplaintIntroSection from '@/sections/ComplaintIntroSection';
-import ComplaintPreviewSection from '@/sections/ComplaintPreviewSection';
+} from '@/features/complaint/sections/AccusedInfoSection';
+import ChatInfoSection from '@/features/complaint/sections/ChatInfoSection';
+import ChatWindowSection from '@/features/complaint/sections/ChatWindowSection';
+import ComplaintDownloadSection from '@/features/complaint/sections/ComplaintDownloadSection';
+import ComplaintEntrySection from '@/features/complaint/sections/ComplaintEntrySection';
+import type { ComplainantExtraInfoSectionHandle } from '@/features/complaint/sections/ComplaintExtraInfoSection';
+import type { ComplainantExtraInfo } from '@/features/complaint/sections/ComplaintExtraInfoSection';
+import ComplainantExtraInfoSection from '@/features/complaint/sections/ComplaintExtraInfoSection';
+import ComplainantInfoSection from '@/features/complaint/sections/ComplaintInfoSection';
+import type { ComplainantInfoSectionHandle } from '@/features/complaint/sections/ComplaintInfoSection';
+import type { ComplaintBasicInfo } from '@/features/complaint/sections/ComplaintInfoSection';
+import ComplaintIntroSection from '@/features/complaint/sections/ComplaintIntroSection';
+import ComplaintPreviewSection from '@/features/complaint/sections/ComplaintPreviewSection';
 import EvidenceInfoSection, {
   type EvidenceInfoSectionHandle,
-} from '@/sections/EvidenceInfoSection';
-import { useComplaintWizard } from '@/stores/useComplaintWizard';
+} from '@/features/complaint/sections/EvidenceInfoSection';
+import { useComplaintWizard } from '@/features/complaint/store/useComplaintWizard';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 

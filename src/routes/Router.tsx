@@ -1,10 +1,10 @@
 import AgreementsPage from '@/features/auth/pages/AgreementPage';
 import LoginPage from '@/features/auth/pages/LoginPage';
 import SignupPage from '@/features/auth/pages/SignupPage';
+import ComplaintWizardPage from '@/features/complaint/pages/ComplaintWizardPage';
 import CrimeTypePage from '@/features/crime-types/pages/CrimeTypeSection';
 import FaqPage from '@/features/faq/pages/FaqPage';
 import MyComplaintsPage from '@/features/my-complaints/pages/MyComplaintsPage';
-import ComplaintWizardPage from '@/pages/ComplaintWizardPage';
 import MainPage from '@/pages/MainPage';
 import { Route, Routes } from 'react-router-dom';
 

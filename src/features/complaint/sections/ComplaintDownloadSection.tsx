@@ -1,7 +1,7 @@
-import { downloadComplaintDocx } from '@/apis/complaints';
 import DocxIcon from '@/assets/Docs.svg';
 import IntroHeader from '@/components/IntroHeader';
 import Button from '@/components/common/Button';
+import { downloadComplaintDocx } from '@/features/complaint/apis/complaints';
 import React, { useState } from 'react';
 
 type ComplaintDownloadSectionProps = {

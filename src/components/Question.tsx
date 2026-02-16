@@ -1,5 +1,5 @@
 import Tooltip from '@/components/Tooltip';
-import type { BinaryAnswer, PrecheckQuestion } from '@/types/complaint';
+import type { BinaryAnswer, PrecheckQuestion } from '@/features/complaint/types/complaint';
 import React, { useEffect, useState } from 'react';
 
 import Chip from './Chip';

@@ -1,10 +1,14 @@
-import { deleteComplaint, downloadComplaintDocx, getMyComplaints } from '@/apis/complaints';
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import IntroHeader from '@/components/IntroHeader';
 import Button from '@/components/common/Button';
-import { useComplaintWizard } from '@/stores/useComplaintWizard';
+import {
+  deleteComplaint,
+  downloadComplaintDocx,
+  getMyComplaints,
+} from '@/features/complaint/apis/complaints';
+import { useComplaintWizard } from '@/features/complaint/store/useComplaintWizard';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
