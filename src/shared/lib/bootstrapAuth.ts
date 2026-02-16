@@ -1,18 +1,11 @@
-import { Cookies } from 'react-cookie';
-
-import axiosInstance from '@/shared/lib/axiosInstance';
+import { clearTokens, getAccessToken } from '@/shared/lib/tokenStorage';
 
 import { getMe } from '@/features/auth/apis/auth';
-import { ACCESS_COOKIE } from '@/features/auth/constants/auth';
 import { toUser } from '@/features/auth/mappers/user';
 import { useUserStore } from '@/features/auth/stores/useUserStore';
 
-// 애플리케이션 시작 시 실행해서 인증 상태를 "부트스트랩"하는 함수
-// -> 쿠키에서 토큰을 복원하고 /me API 호출로 사용자 정보를 가져옴
 export async function bootstrapAuth() {
-  // 쿠키에서 accessToken 가져오기
-  const cookies = new Cookies();
-  const token = cookies.get(ACCESS_COOKIE);
+  const token = getAccessToken();
 
   // 토큰 없으면 바로 초기화하고 끝
   if (!token) {
@@ -20,14 +13,12 @@ export async function bootstrapAuth() {
     return;
   }
 
-  axiosInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
-
   try {
-    const me = await getMe();
+    const meDto = await getMe();
     // 전역 상태에 사용자 정보 저장
-    useUserStore.getState().setUser(toUser(me));
+    useUserStore.getState().setUser(toUser(meDto));
   } catch {
-    // 토큰 없거나 401이면 사용자 상태 초기화
-    useUserStore.getState().clearUser();
+    clearTokens(); // 토큰 삭제
+    useUserStore.getState().clearUser(); // 사용자 정보 초기화
   }
 }
