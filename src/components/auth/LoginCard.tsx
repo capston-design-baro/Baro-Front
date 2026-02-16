@@ -1,9 +1,10 @@
 import FormErrorMessage from '@/components/FormErrorMessage';
 import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
 import type { LoginCardProps, LoginFormValues } from '@/types/auth';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
-const SIGNUP_HREF = './terms';
+const SIGNUP_HREF = '/terms';
 
 const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
   const [values, setValues] = useState<LoginFormValues>({
@@ -13,28 +14,26 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const runLogin = async () => {
+  const runLogin = useCallback(async () => {
     setError(null);
     setLoading(true);
 
     try {
-      if (onLogin) {
-        await onLogin(values);
-      } else {
-        // 기본 동작 (API 연결 전 임시): 실패 예시
-        throw new Error('NO_API');
-      }
+      await onLogin(values);
     } catch {
       setError('이메일 주소나 비밀번호를 다시 확인해주세요.');
     } finally {
       setLoading(false);
     }
+  }, [onLogin, values]);
+
+  const handleClickLogin = () => {
+    if (loading) return;
+    void runLogin();
   };
 
-  // form submit용 핸들러 (Enter용)
-  const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    await runLogin();
+  const blockEnterInInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') e.preventDefault();
   };
 
   return (
@@ -49,32 +48,31 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
     >
       <h2 className="text-heading-1-bold text-primary-400 text-center">로그인</h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className="mt-15 flex flex-1 flex-col justify-center gap-6 px-5"
-      >
+      <form className="mt-15 flex flex-1 flex-col justify-center gap-6 px-5">
         {/* 이메일 */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-4">
+            {/* 이메일 아이콘 */}
             <span
               className="material-symbols-outlined text-primary-600/50"
               style={{ fontSize: '24px' }}
             >
               mail
             </span>
-            <input
+
+            {/* 이메일 입력칸 */}
+            <Input
               id="email"
               type="email"
+              autoComplete="email"
+              required
+              fullWidth
+              textAlign="left"
               placeholder="이메일 주소"
-              className={[
-                'rounded-200 h-12 flex-1 px-3',
-                'border border-neutral-300',
-                'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-              ].join(' ')}
               value={values.email}
               onChange={(e) => setValues((prev) => ({ ...prev, email: e.target.value }))}
-              required
-              autoComplete="email"
+              disabled={loading}
+              onKeyDown={blockEnterInInput}
             />
           </div>
         </div>
@@ -82,25 +80,27 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
         {/* 비밀번호 */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-4">
+            {/* 비밀번호 아이콘 */}
             <span
               className="material-symbols-outlined text-primary-600/50"
               style={{ fontSize: '24px' }}
             >
               lock
             </span>
-            <input
+
+            {/* 비밀번호 입력칸 */}
+            <Input
               id="password"
               type="password"
+              autoComplete="current-password"
+              required
+              fullWidth
+              textAlign="left"
               placeholder="비밀번호"
-              className={[
-                'rounded-200 h-12 flex-1 px-3',
-                'border border-neutral-300',
-                'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-              ].join(' ')}
               value={values.password}
               onChange={(e) => setValues((prev) => ({ ...prev, password: e.target.value }))}
-              required
-              autoComplete="current-password"
+              disabled={loading}
+              onKeyDown={blockEnterInInput}
             />
           </div>
         </div>
@@ -111,11 +111,12 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
 
       {/* 로그인 버튼 */}
       <Button
+        type="button"
         variant="primary"
         size="md"
         fullWidth
         disabled={loading}
-        onClick={handleSubmit}
+        onClick={handleClickLogin}
       >
         {loading ? '로그인 중...' : '로그인'}
       </Button>

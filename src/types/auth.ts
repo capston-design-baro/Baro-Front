@@ -1,13 +1,13 @@
-// UI Props
-export type LoginCardProps = {
-  className?: string;
-  onLogin?: (values: LoginFormValues) => Promise<void> | void;
-};
-
 // 로그인 폼에서 사용하는 값
 export type LoginFormValues = {
   email: string;
   password: string;
+};
+
+// UI Props
+export type LoginCardProps = {
+  className?: string;
+  onLogin: (values: LoginFormValues) => Promise<void> | void;
 };
 
 // 로그인 api에 보낼 payload
@@ -25,9 +25,9 @@ export type TokenResponse = {
 
 // 회원가입 폼에서 사용할 주소 필드 값
 export type AddressFields = {
-  city?: string;
-  district?: string;
-  town?: string;
+  city: string;
+  district: string;
+  town: string;
 };
 
 // 회원가입 폼에서 사용하는 값
@@ -35,8 +35,8 @@ export type RegisterFormValues = {
   email: string;
   name: string;
   password: string;
-  address?: AddressFields;
-  phone_number?: string;
+  address: AddressFields;
+  phone_number: string;
 };
 
 // 회원가입 api에 보낼 payload
@@ -44,8 +44,8 @@ export type RegisterRequestDto = {
   email: string;
   name: string;
   password: string;
-  address: string | null;
-  phone_number: string | null;
+  address: string;
+  phone_number: string;
 };
 
 // 사용자 정보 응답

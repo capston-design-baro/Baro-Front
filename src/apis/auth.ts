@@ -19,6 +19,40 @@ export type EmailCheckResponse = {
   message: string;
 };
 
+export function mapRegisterError(error: unknown): string {
+  if (error instanceof Error) {
+    switch (error.message) {
+      case 'EMPTY_EMAIL':
+        return '이메일을 입력해주세요.';
+      case 'EMPTY_NAME':
+        return '이름을 입력해주세요.';
+      case 'EMPTY_PASSWORD':
+        return '비밀번호를 입력해주세요.';
+      case 'EMPTY_ADDRESS':
+        return '주소를 입력해주세요.';
+      case 'EMPTY_PHONE':
+        return '전화번호를 입력해주세요.';
+      default:
+        return '회원가입 중 오류가 발생했습니다.';
+    }
+  }
+
+  // axios 에러 처리
+  if (typeof error === 'object' && error !== null && 'response' in error) {
+    const err = error as { response?: { status: number; data?: { message?: string } } };
+
+    if (err.response?.status === 400) {
+      return err.response.data?.message || '회원가입 중 오류가 발생했습니다.';
+    }
+
+    if (err.response?.status === 422) {
+      return '입력값을 확인해주세요.';
+    }
+  }
+
+  return '회원가입 중 오류가 발생했습니다.';
+}
+
 // 폼 값을 로그인 요청 dto로 변환
 function toLoginRequestDto(values: LoginFormValues): LoginRequestDto {
   return {
@@ -29,27 +63,34 @@ function toLoginRequestDto(values: LoginFormValues): LoginRequestDto {
 
 // 폼 값을 회원가입 요청 dto로 변환
 function toRegisterRequestDto(values: RegisterFormValues): RegisterRequestDto {
-  const { email, name, password } = values;
-  const { address, phone_number } = values;
+  const email = values.email.trim();
+  const name = values.name.trim();
+  const password = values.password;
 
-  // 주소 합치기
-  const { city, district, town } = address ?? {};
-  const fullAddress = [city, district, town]
-    .filter((part) => !!part && part.trim().length > 0)
+  // 주소 객체를 문자열로 변환
+  const { city, district, town } = values.address;
+  const address = [city, district, town]
+    .map((v) => v.trim())
+    .filter((v) => v.length > 0)
     .join(' ')
     .trim();
 
-  const addressOrNull = fullAddress.length > 0 ? fullAddress : null;
-
   // 전화번호 처리
-  const phoneOrNull = phone_number && phone_number.trim().length > 0 ? phone_number.trim() : null;
+  const phone = values.phone_number.trim();
+
+  // 유효성 검사
+  if (!email) throw new Error('EMPTY_EMAIL');
+  if (!name) throw new Error('EMPTY_NAME');
+  if (!password) throw new Error('EMPTY_PASSWORD');
+  if (!address) throw new Error('EMPTY_ADDRESS');
+  if (!phone) throw new Error('EMPTY_PHONE');
 
   return {
-    email: email.trim(),
-    name: name.trim(),
+    email,
+    name,
     password,
-    address: addressOrNull,
-    phone_number: phoneOrNull,
+    address,
+    phone_number: phone,
   };
 }
 
