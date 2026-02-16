@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 
 import Button from '@/shared/ui/common/Button';
 
-import type { Agreement } from '@/features/auth/types/agreement';
+import type { Agreement } from '@/features/auth/types/model';
 
 import AgreementItem from './AgreementItem';
 
