@@ -1,10 +1,10 @@
-import { register } from '@/apis/auth';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import SignupCard from '@/components/auth/SignupCard';
-import WelcomeCard from '@/components/auth/WelcomeCard';
+import { register } from '@/features/auth/apis/auth';
+import SignupCard from '@/features/auth/components/SignupCard';
+import WelcomeCard from '@/features/auth/components/WelcomeCard';
+import type { RegisterFormValues } from '@/features/auth/types/auth';
 import useIsMdUp from '@/hooks/useIsMdUp';
-import type { RegisterFormValues } from '@/types/auth';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

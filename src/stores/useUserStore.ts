@@ -1,4 +1,4 @@
-import type { UserResponse } from '@/types/auth';
+import type { UserResponse } from '@/features/auth/types/auth';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 

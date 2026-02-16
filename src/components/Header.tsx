@@ -5,9 +5,9 @@
  * - 로그인 상태에 따라 로그인 or 로그아웃 버튼 노출
  * - 로그아웃 버튼 클릭 시 -> 토큰 및 상태 초기화 후 홈으로 리디렉트
  */
-import { logout } from '@/apis/auth';
 import logoUrl from '@/assets/BaLawLogo.svg';
 import Button from '@/components/common/Button';
+import { logout } from '@/features/auth/apis/auth';
 import { useComplaintWizard } from '@/stores/useComplaintWizard';
 import { useUserStore } from '@/stores/useUserStore';
 import React from 'react';

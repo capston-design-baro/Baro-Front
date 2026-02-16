@@ -1,9 +1,9 @@
-import { getMe } from '@/apis/auth';
 import DaumPostcodeButton from '@/components/DaumPostcodeButton';
 import type { DaumPostcodeResult } from '@/components/DaumPostcodeButton';
 import FormErrorMessage from '@/components/FormErrorMessage';
 import IntroHeader from '@/components/IntroHeader';
 import Button from '@/components/common/Button';
+import { getMe } from '@/features/auth/apis/auth';
 import { splitAddressTo3FromString, splitPhoneKR } from '@/utils/krContact';
 import type { AxiosError } from 'axios';
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';

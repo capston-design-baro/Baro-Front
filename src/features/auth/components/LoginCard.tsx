@@ -1,7 +1,7 @@
 import FormErrorMessage from '@/components/FormErrorMessage';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
-import type { LoginCardProps, LoginFormValues } from '@/types/auth';
+import type { LoginCardProps, LoginFormValues } from '@/features/auth/types/auth';
 import React, { useCallback, useState } from 'react';
 
 const SIGNUP_HREF = '/terms';

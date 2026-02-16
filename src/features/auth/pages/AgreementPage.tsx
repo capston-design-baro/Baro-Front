@@ -1,21 +1,13 @@
-import { login } from '@/apis/auth';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import LoginCard from '@/components/auth/LoginCard';
-import WelcomeCard from '@/components/auth/WelcomeCard';
+import AgreementsCard from '@/components/agreements/AgreementsCard';
+import { DEFAULT_AGREEMENTS } from '@/constants/agreement';
+import WelcomeCard from '@/features/auth/components/WelcomeCard';
 import useIsMdUp from '@/hooks/useIsMdUp';
-import type { LoginFormValues } from '@/types/auth';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
-const LoginPage: React.FC = () => {
-  const isMdUp = useIsMdUp(); // md 이상일 때만 true
-  const navigate = useNavigate();
-
-  const handleLogin = async (values: LoginFormValues) => {
-    await login(values);
-    navigate('/');
-  };
+const AgreementsPage: React.FC = () => {
+  const isMdUp = useIsMdUp();
 
   return (
     <div className="bg-neutral-0 flex min-h-screen flex-col">
@@ -27,13 +19,13 @@ const LoginPage: React.FC = () => {
             {/* md 이상에서만 WelcomeCard 렌더 */}
             {isMdUp && (
               <div className="h-[600px] w-full max-w-[460px] flex-1">
-                <WelcomeCard variant="login" />
+                <WelcomeCard variant="signup" />
               </div>
             )}
 
-            {/* 로그인 카드는 항상 표시 */}
+            {/* 약관 카드는 항상 표시 */}
             <div className="h-[600px] w-full max-w-[460px] flex-1">
-              <LoginCard onLogin={handleLogin} />
+              <AgreementsCard initial={DEFAULT_AGREEMENTS} />
             </div>
           </div>
         </div>
@@ -44,4 +36,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default AgreementsPage;
