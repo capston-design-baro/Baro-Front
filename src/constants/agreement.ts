@@ -1,4 +1,4 @@
-import type { Agreement } from '@/types/agreement';
+import type { Agreement } from '@/features/auth/types/agreement';
 import outdent from 'outdent';
 
 export const TOS = outdent`

@@ -1,5 +1,5 @@
 import Button from '@/components/common/Button';
-import type { Agreement } from '@/types/agreement';
+import type { Agreement } from '@/features/auth/types/agreement';
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
