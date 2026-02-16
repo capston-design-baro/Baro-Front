@@ -1,4 +1,4 @@
-import type { FaqItem } from '@/constants/faq';
+import type { FaqItem } from '@/features/faq/constants/faq';
 import React from 'react';
 
 type Props = {

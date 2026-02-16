@@ -1,6 +1,6 @@
-import FaqItemCard from '@/components/FaqItemCard';
 import IntroHeader from '@/components/IntroHeader';
-import { FAQ_ITEMS } from '@/constants/faq';
+import FaqItemCard from '@/features/faq/components/FaqItemCard';
+import { FAQ_ITEMS } from '@/features/faq/constants/faq';
 import React, { useMemo, useState } from 'react';
 
 const ITEMS_PER_PAGE = 3;
