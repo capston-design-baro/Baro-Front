@@ -1,8 +1,7 @@
-import { Cookies } from 'react-cookie';
+import axiosInstance from '@/shared/lib/axiosInstance';
+import { clearTokens, getRefreshToken, setTokens } from '@/shared/lib/tokenStorage';
 
-import axiosInstance, { applyTokens } from '@/shared/lib/axiosInstance';
-
-import { ACCESS_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE } from '@/features/auth/constants/auth';
+import { toUser } from '@/features/auth/mappers/user';
 import { useUserStore } from '@/features/auth/stores/useUserStore';
 import type {
   LoginRequestDto,
@@ -11,11 +10,6 @@ import type {
   UserResponseDto,
 } from '@/features/auth/types/dto';
 import type { LoginFormValues, RegisterFormValues } from '@/features/auth/types/form';
-
-import { toUser } from '../mappers/user';
-
-// 쿠키 관리 객체 생성
-const cookies = new Cookies();
 
 export type EmailCheckResponse = {
   available: boolean;
@@ -68,9 +62,12 @@ export async function login(values: LoginFormValues): Promise<LoginResponseDto> 
   const body = toLoginRequestDto(values);
   const { data } = await axiosInstance.post<LoginResponseDto>(`/auth/login`, body);
 
-  applyTokens(data);
+  setTokens({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+  });
 
-  // 로그인 직후 사용자 정보 조회 → zustand 저장
+  // 로그인 직후 사용자 정보 조회 후 zustand 저장
   const meDto = await getMe();
   const me = toUser(meDto);
   useUserStore.getState().setUser(me);
@@ -93,14 +90,17 @@ export async function register(values: RegisterFormValues): Promise<UserResponse
 
 // (수동) 토큰 갱신 -> refreshToken을 이용해 accessToken을 재발급
 export async function refreshAccessToken(refreshTokenArg?: string) {
-  const refreshToken = refreshTokenArg ?? cookies.get(REFRESH_COOKIE);
+  const refreshToken = refreshTokenArg ?? getRefreshToken();
   if (!refreshToken) throw new Error('NO_REFRESH_TOKEN');
 
   const { data } = await axiosInstance.post<LoginResponseDto>(`/auth/refresh`, {
     refresh_token: refreshToken,
   });
 
-  applyTokens(data);
+  setTokens({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+  });
 
   return data;
 }
@@ -117,18 +117,13 @@ export async function logout() {
 
 // 인증 상태 초기화
 export function initAuthStatus() {
-  // accessToken / refreshToken 쿠키 제거
-  cookies.remove(ACCESS_COOKIE, { path: COOKIE_OPTIONS.path });
-  cookies.remove(REFRESH_COOKIE, { path: COOKIE_OPTIONS.path });
-
-  // zustand user 상태 초기화
-  useUserStore.getState().clearUser();
+  clearTokens(); // 토큰 삭제
+  useUserStore.getState().clearUser(); // 사용자 정보 초기화
 }
 
 // 이메일 중복 확인
 export async function checkEmailAvailability(email: string): Promise<EmailCheckResponse> {
   const trimmed = email.trim();
-
   if (!trimmed) {
     throw new Error('EMPTY_EMAIL');
   }
