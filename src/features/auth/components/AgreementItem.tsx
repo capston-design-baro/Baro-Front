@@ -1,4 +1,4 @@
-import AgreementDetailModal from '@/components/agreements/AgreementDetailModal';
+import AgreementDetailModal from '@/features/auth/components/AgreementDetailModal';
 import type { Agreement } from '@/types/agreement';
 import React from 'react';
 

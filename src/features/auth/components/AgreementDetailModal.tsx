@@ -1,4 +1,3 @@
-// src/components/agreement/AgreementDetailModal.tsx
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
