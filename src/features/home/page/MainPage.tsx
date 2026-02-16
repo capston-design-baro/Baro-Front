@@ -1,7 +1,7 @@
 import CharacterModal from '@/components/CharacterModal';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import ServiceSection from '@/sections/ServiceSection';
+import ServiceSection from '@/features/home/section/ServiceSection';
 import { useUserStore } from '@/stores/useUserStore';
 import type { Service } from '@/types/service';
 import { useState } from 'react';
