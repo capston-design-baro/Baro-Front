@@ -9,10 +9,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    { className = '', fullWidth = false, error = false, textAlign = 'left', disabled, ...props },
-    ref,
-  ) => {
+  ({ className = '', fullWidth = false, error = false, textAlign = 'left', ...props }, ref) => {
     // 공통 스타일
     const baseStyles = [
       'h-12 px-3',
@@ -44,7 +41,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         ref={ref}
-        disabled={disabled}
         className={`${baseStyles} ${stateStyles} ${alignmentStyles[textAlign]} ${widthStyle} ${className}`}
         {...props}
       />
