@@ -1,6 +1,6 @@
-// 쿠키 키 이름 정의
-export const ACCESS_COOKIE = 'accessToken'; // Access Token 저장용 쿠키 키
-export const REFRESH_COOKIE = 'refreshToken'; // Refresh Token 저장용 쿠키 키
+// 토큰 및 쿠키 관련 상수 정의
+export const ACCESS_TOKEN_KEY = 'accessToken';
+export const REFRESH_TOKEN_KEY = 'refreshToken';
 
 export const ACCESS_MAX_AGE = 60 * 60; // 1시간
 export const REFRESH_MAX_AGE = 60 * 60 * 24; // 1일
