@@ -67,10 +67,9 @@ function toRegisterRequestDto(values: RegisterFormValues): RegisterRequestDto {
   const name = values.name.trim();
   const password = values.password;
 
+  // 주소 객체를 문자열로 변환
   const { city, district, town } = values.address;
-
-  // 주소 합치기
-  const fullAddress = [city, district, town]
+  const address = [city, district, town]
     .map((v) => v.trim())
     .filter((v) => v.length > 0)
     .join(' ')
@@ -83,14 +82,14 @@ function toRegisterRequestDto(values: RegisterFormValues): RegisterRequestDto {
   if (!email) throw new Error('EMPTY_EMAIL');
   if (!name) throw new Error('EMPTY_NAME');
   if (!password) throw new Error('EMPTY_PASSWORD');
-  if (!fullAddress) throw new Error('EMPTY_ADDRESS');
+  if (!address) throw new Error('EMPTY_ADDRESS');
   if (!phone) throw new Error('EMPTY_PHONE');
 
   return {
-    email: email.trim(),
-    name: name.trim(),
+    email,
+    name,
     password,
-    address: fullAddress,
+    address,
     phone_number: phone,
   };
 }

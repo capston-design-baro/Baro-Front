@@ -1,9 +1,8 @@
-import { mapRegisterError, register } from '@/apis/auth';
+import { mapRegisterError } from '@/apis/auth';
 import SignupAccountCard from '@/components/auth/SignupAccountCard';
 import SignupProfileCard from '@/components/auth/SignupProfileCard';
 import type { RegisterFormValues } from '@/types/auth';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 // 회원가입 단계 (1: 이메일 및 비밀번호, 2: 프로필 정보)
 type Step = 1 | 2;
@@ -19,7 +18,11 @@ type FormData = {
   phone: string;
 };
 
-const SignupCard: React.FC = () => {
+type SignupCardProps = {
+  onSignup: (values: RegisterFormValues) => Promise<void>;
+};
+
+const SignupCard: React.FC<SignupCardProps> = ({ onSignup }) => {
   // 상태 관리
   const [step, setStep] = useState<Step>(1);
   const [formData, setFormData] = useState<FormData>({
@@ -32,8 +35,6 @@ const SignupCard: React.FC = () => {
     phone: '',
   });
   const [, setError] = useState<string | null>(null);
-
-  const navigate = useNavigate();
 
   // 1단계에서 "다음"을 누르면 입력받은 이메일, 비밀번호를 저장하고 2단계로 이동
   const handleAccountNext = (partialData: { email: string; password: string }) => {
@@ -77,8 +78,7 @@ const SignupCard: React.FC = () => {
 
     try {
       // 회원가입 API 호출
-      await register(payload);
-      navigate('/login');
+      await onSignup(payload);
     } catch (error) {
       // 에러 처리
       setError(mapRegisterError(error));

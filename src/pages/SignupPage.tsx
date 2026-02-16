@@ -1,12 +1,21 @@
+import { register } from '@/apis/auth';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import SignupCard from '@/components/auth/SignupCard';
 import WelcomeCard from '@/components/auth/WelcomeCard';
 import useIsMdUp from '@/hooks/useIsMdUp';
+import type { RegisterFormValues } from '@/types/auth';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const AgreementsPage: React.FC = () => {
+const SignupPage: React.FC = () => {
   const isMdUp = useIsMdUp();
+  const navigate = useNavigate();
+
+  const handleSignup = async (values: RegisterFormValues) => {
+    await register(values);
+    navigate('/login');
+  };
 
   return (
     <div className="bg-neutral-0 flex min-h-screen flex-col">
@@ -22,9 +31,9 @@ const AgreementsPage: React.FC = () => {
               </div>
             )}
 
-            {/* 회원가입 카드는 항상 표시 */}
+            {/* 회원가입 카드 */}
             <div className="h-[600px] w-full max-w-[460px] flex-1">
-              <SignupCard />
+              <SignupCard onSignup={handleSignup} />
             </div>
           </div>
         </div>
@@ -35,4 +44,4 @@ const AgreementsPage: React.FC = () => {
   );
 };
 
-export default AgreementsPage;
+export default SignupPage;
