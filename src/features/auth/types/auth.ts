@@ -55,4 +55,5 @@ export type UserResponse = {
   name: string;
   address: string;
   phone_number: string;
+  created_at: string;
 };
