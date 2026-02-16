@@ -8,7 +8,7 @@ import {
   REFRESH_COOKIE,
   REFRESH_MAX_AGE,
 } from '@/features/auth/constants/auth';
-import type { TokenResponse } from '@/features/auth/types/auth';
+import type { LoginResponseDto } from '@/features/auth/types/dto';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const cookies = new Cookies();
@@ -19,7 +19,7 @@ type RetryableRequestConfig = InternalAxiosRequestConfig & {
 };
 
 // 토큰을 쿠키에 저장
-export function applyTokens(data: TokenResponse) {
+export function applyTokens(data: LoginResponseDto) {
   const { access_token, refresh_token } = data;
 
   cookies.set(ACCESS_COOKIE, access_token, {

@@ -1,12 +1,14 @@
-import type { UserResponse } from '@/features/auth/types/auth';
-import type { User } from '@/features/auth/types/user';
+import type { UserResponseDto } from '@/features/auth/types/dto';
+import type { User } from '@/features/auth/types/model';
 
-export function toUser(me: UserResponse): User {
+// DTO -> Model 변환 함수
+export function toUser(dto: UserResponseDto): User {
   return {
-    id: me.id,
-    email: me.email,
-    name: me.name,
-    address: me.address,
-    phone_number: me.phone_number,
+    id: dto.id,
+    email: dto.email,
+    name: dto.name,
+    address: dto.address,
+    phoneNumber: dto.phone_number,
+    createdAt: new Date(dto.created_at),
   };
 }

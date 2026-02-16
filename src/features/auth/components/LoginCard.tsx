@@ -4,7 +4,12 @@ import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import Button from '@/shared/ui/common/Button';
 import Input from '@/shared/ui/common/Input';
 
-import type { LoginCardProps, LoginFormValues } from '@/features/auth/types/auth';
+import type { LoginFormValues } from '@/features/auth/types/form';
+
+type LoginCardProps = {
+  className?: string;
+  onLogin: (values: LoginFormValues) => Promise<void> | void;
+};
 
 const SIGNUP_HREF = '/terms';
 

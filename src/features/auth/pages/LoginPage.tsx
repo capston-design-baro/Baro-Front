@@ -9,7 +9,7 @@ import Header from '@/shared/ui/Header';
 import { login } from '@/features/auth/apis/auth';
 import LoginCard from '@/features/auth/components/LoginCard';
 import WelcomeCard from '@/features/auth/components/WelcomeCard';
-import type { LoginFormValues } from '@/features/auth/types/auth';
+import type { LoginFormValues } from '@/features/auth/types/form';
 
 const LoginPage: React.FC = () => {
   const isMdUp = useIsMdUp(); // md 이상일 때만 true

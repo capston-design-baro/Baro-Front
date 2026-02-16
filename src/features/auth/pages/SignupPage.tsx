@@ -9,7 +9,7 @@ import Header from '@/shared/ui/Header';
 import { register } from '@/features/auth/apis/auth';
 import SignupCard from '@/features/auth/components/SignupCard';
 import WelcomeCard from '@/features/auth/components/WelcomeCard';
-import type { RegisterFormValues } from '@/features/auth/types/auth';
+import type { RegisterFormValues } from '@/features/auth/types/form';
 
 const SignupPage: React.FC = () => {
   const isMdUp = useIsMdUp();

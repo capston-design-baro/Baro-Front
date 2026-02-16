@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import type { User } from '@/features/auth/types/user';
+import type { User } from '@/features/auth/types/model';
 
 // Zustand에서 관리할 상태 타입 정의
 interface UserStore {
