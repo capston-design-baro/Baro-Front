@@ -53,10 +53,10 @@ export const TOS = outdent`
 4. 회사는 이용자가 서비스를 이용하여 타인에게 피해를 입힌 경우, 그에 대한 책임을 지지 않습니다. 이용자는 자신의 행위로 인해 발생하는 모든 법적 책임을 부담해야 합니다.
 5. 회사는 이용자가 서비스를 이용하여 생성된 문서의 법적 효력, 적합성, 완전성, 최신성에 대해 보증하지 않으며, 이용자는 필요한 경우 전문가의 자문을 받아야 합니다.
 `;
-export const PRIVACY = `
+export const PRIVACY = outdent`
 ## BaLaw 개인정보 수집/이용 안내
 
-BaLaw(이하 "회사")는 이용자의 개인정보를 중요하게 생각하며, 개인정보 보호법」 등 관련 법령을 준수합니다.
+BaLaw(이하 "회사")는 이용자의 개인정보를 중요하게 생각하며, 「개인정보 보호법」 등 관련 법령을 준수합니다.
 회사는 본 개인정보 처리방침을 통하여 이용자의 개인정보가 어떠한 용도와 방식으로 이용되고 있으며, 개인정보 보호를 위해 어떠한 조치가 취해지고 있는지 알려드립니다. 회사는 개인정보 처리방침을 개정하는 경우 웹사이트 공지사항(또는 개별공지)을 통하여 공지할 것입니다.
 
 ### 제1조 (개인정보 수집 및 이용 목적)
@@ -146,18 +146,18 @@ BaLaw(이하 "회사")는 이용자의 개인정보를 중요하게 생각하며
 export const DEFAULT_AGREEMENTS: Agreement[] = [
   {
     id: 1,
+    isChecked: false,
+    isExpanded: false,
     title: '서비스 이용약관',
     content: TOS,
-    isChecked: false,
-    isExpanded: true,
     required: true,
   },
   {
     id: 2,
+    isChecked: false,
+    isExpanded: false,
     title: '개인정보 처리방침',
     content: PRIVACY,
-    isChecked: false,
-    isExpanded: true,
     required: true,
   },
 ];
