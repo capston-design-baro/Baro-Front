@@ -1,5 +1,6 @@
-import BaLawCharacterLarge from '@/assets/BaLawCharacter-large.svg';
 import React from 'react';
+
+import BaLawCharacterLarge from '@/assets/BaLawCharacter-large.svg';
 
 type GeneratingModalProps = {
   open: boolean;

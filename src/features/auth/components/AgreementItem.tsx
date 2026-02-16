@@ -1,6 +1,7 @@
+import React from 'react';
+
 import AgreementDetailModal from '@/features/auth/components/AgreementDetailModal';
 import type { Agreement } from '@/features/auth/types/agreement';
-import React from 'react';
 
 type Props = {
   data: Agreement;

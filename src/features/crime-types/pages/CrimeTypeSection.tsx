@@ -1,8 +1,10 @@
-import type { CrimeCategory, CrimeDomain } from '@/features/crime-types/constants/crimeTypes';
-import { CRIME_TYPES } from '@/features/crime-types/constants/crimeTypes';
+import React, { useEffect, useMemo, useState } from 'react';
+
 import IntroHeader from '@/shared/ui/IntroHeader';
 import Button from '@/shared/ui/common/Button';
-import React, { useEffect, useMemo, useState } from 'react';
+
+import type { CrimeCategory, CrimeDomain } from '@/features/crime-types/constants/crimeTypes';
+import { CRIME_TYPES } from '@/features/crime-types/constants/crimeTypes';
 
 const CrimeTypeSection: React.FC = () => {
   const [domainId, setDomainId] = useState<CrimeDomain['id']>('criminal');

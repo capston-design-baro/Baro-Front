@@ -1,8 +1,9 @@
+import React, { useState } from 'react';
+
 import SignupAccountCard from '@/features/auth/components/SignupAccountCard';
 import SignupProfileCard from '@/features/auth/components/SignupProfileCard';
 import type { RegisterFormValues } from '@/features/auth/types/auth';
 import { mapRegisterError } from '@/features/auth/utils/mapRegisterError';
-import React, { useState } from 'react';
 
 // 회원가입 단계 (1: 이메일 및 비밀번호, 2: 프로필 정보)
 type Step = 1 | 2;

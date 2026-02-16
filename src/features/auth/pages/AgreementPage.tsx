@@ -1,10 +1,12 @@
-import AgreementsCard from '@/features/auth/components/AgreementsCard';
-import WelcomeCard from '@/features/auth/components/WelcomeCard';
-import { DEFAULT_AGREEMENTS } from '@/features/auth/constants/agreement';
+import React from 'react';
+
 import useIsMdUp from '@/shared/hooks/useIsMdUp';
 import Footer from '@/shared/ui/Footer';
 import Header from '@/shared/ui/Header';
-import React from 'react';
+
+import AgreementsCard from '@/features/auth/components/AgreementsCard';
+import WelcomeCard from '@/features/auth/components/WelcomeCard';
+import { DEFAULT_AGREEMENTS } from '@/features/auth/constants/agreement';
 
 const AgreementsPage: React.FC = () => {
   const isMdUp = useIsMdUp();

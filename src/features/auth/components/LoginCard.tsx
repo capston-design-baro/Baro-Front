@@ -1,8 +1,10 @@
-import type { LoginCardProps, LoginFormValues } from '@/features/auth/types/auth';
+import React, { useCallback, useState } from 'react';
+
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import Button from '@/shared/ui/common/Button';
 import Input from '@/shared/ui/common/Input';
-import React, { useCallback, useState } from 'react';
+
+import type { LoginCardProps, LoginFormValues } from '@/features/auth/types/auth';
 
 const SIGNUP_HREF = '/terms';
 
@@ -21,7 +23,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
     try {
       await onLogin(values);
     } catch {
-      setError('이메일 주소나 비밀번호를 다시 확인해주세요.');
+      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
     } finally {
       setLoading(false);
     }

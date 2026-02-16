@@ -1,3 +1,5 @@
+import { Route, Routes } from 'react-router-dom';
+
 import AgreementsPage from '@/features/auth/pages/AgreementPage';
 import LoginPage from '@/features/auth/pages/LoginPage';
 import SignupPage from '@/features/auth/pages/SignupPage';
@@ -6,7 +8,6 @@ import CrimeTypePage from '@/features/crime-types/pages/CrimeTypeSection';
 import FaqPage from '@/features/faq/pages/FaqPage';
 import MainPage from '@/features/home/pages/MainPage';
 import MyComplaintsPage from '@/features/my-complaints/pages/MyComplaintsPage';
-import { Route, Routes } from 'react-router-dom';
 
 const Router = () => {
   return (

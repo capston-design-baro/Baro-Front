@@ -1,16 +1,19 @@
+import { useNavigate } from 'react-router-dom';
+
+import React, { useEffect, useState } from 'react';
+
+import CharacterModal from '@/shared/ui/CharacterModal';
+import Footer from '@/shared/ui/Footer';
+import Header from '@/shared/ui/Header';
+import IntroHeader from '@/shared/ui/IntroHeader';
+import Button from '@/shared/ui/common/Button';
+
 import {
   deleteComplaint,
   downloadComplaintDocx,
   getMyComplaints,
 } from '@/features/complaint/apis/complaints';
 import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
-import CharacterModal from '@/shared/ui/CharacterModal';
-import Footer from '@/shared/ui/Footer';
-import Header from '@/shared/ui/Header';
-import IntroHeader from '@/shared/ui/IntroHeader';
-import Button from '@/shared/ui/common/Button';
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 type MyComplaintItem = {
   id: number;

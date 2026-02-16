@@ -1,7 +1,10 @@
-import type { Agreement } from '@/features/auth/types/agreement';
-import Button from '@/shared/ui/common/Button';
-import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import React, { useMemo, useState } from 'react';
+
+import Button from '@/shared/ui/common/Button';
+
+import type { Agreement } from '@/features/auth/types/agreement';
 
 import AgreementItem from './AgreementItem';
 

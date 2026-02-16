@@ -1,5 +1,6 @@
-import IntroHeader from '@/shared/ui/IntroHeader';
 import React, { useState } from 'react';
+
+import IntroHeader from '@/shared/ui/IntroHeader';
 
 type ComplaintPreviewSectionProps = {
   complaintId: number;

@@ -1,3 +1,6 @@
+import axios, { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import { Cookies } from 'react-cookie';
+
 import {
   ACCESS_COOKIE,
   ACCESS_MAX_AGE,
@@ -6,8 +9,6 @@ import {
   REFRESH_MAX_AGE,
 } from '@/features/auth/constants/auth';
 import type { TokenResponse } from '@/features/auth/types/auth';
-import axios, { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
-import { Cookies } from 'react-cookie';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const cookies = new Cookies();

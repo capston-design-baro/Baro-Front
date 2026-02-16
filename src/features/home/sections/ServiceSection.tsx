@@ -1,8 +1,11 @@
+import '@/styles/main.css';
+
+import React from 'react';
+
+import ServiceCard from '@/shared/ui/ServiceCard';
+
 import { SERVICES } from '@/features/home/constants/service';
 import type { ServiceClickHandler } from '@/features/home/types/service';
-import ServiceCard from '@/shared/ui/ServiceCard';
-import '@/styles/main.css';
-import React from 'react';
 
 interface ServiceSectionProps {
   onClickCard?: ServiceClickHandler;

@@ -1,5 +1,6 @@
-import type { Agreement } from '@/features/auth/types/agreement';
 import outdent from 'outdent';
+
+import type { Agreement } from '@/features/auth/types/agreement';
 
 export const TOS = outdent`
 ## BaLaw 서비스 이용약관

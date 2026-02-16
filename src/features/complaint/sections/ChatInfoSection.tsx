@@ -1,6 +1,8 @@
-import BaroCharacter from '@/assets/BaLawCharacter-large.svg';
-import IntroHeader from '@/shared/ui/IntroHeader';
 import React from 'react';
+
+import BaroCharacter from '@/assets/BaLawCharacter-large.svg';
+
+import IntroHeader from '@/shared/ui/IntroHeader';
 
 const ChatInfoSection: React.FC = () => {
   return (

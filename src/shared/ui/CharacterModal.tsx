@@ -1,6 +1,8 @@
-import LogoUrl from '@/assets/BaLawCharacter-large.svg';
-import Button from '@/shared/ui/common/Button';
 import React from 'react';
+
+import LogoUrl from '@/assets/BaLawCharacter-large.svg';
+
+import Button from '@/shared/ui/common/Button';
 
 type Variant = 'login' | 'exit' | 'delete';
 

@@ -1,5 +1,6 @@
-import type { RagCase } from '@/features/complaint/apis/complaints';
 import React from 'react';
+
+import type { RagCase } from '@/features/complaint/apis/complaints';
 
 type Props = {
   ragCase: RagCase;

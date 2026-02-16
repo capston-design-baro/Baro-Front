@@ -1,5 +1,6 @@
-import IntroHeader from '@/shared/ui/IntroHeader';
 import React from 'react';
+
+import IntroHeader from '@/shared/ui/IntroHeader';
 
 type ComplaintEntrySectionProps = {
   /** 새 고소장 처음부터 작성 */

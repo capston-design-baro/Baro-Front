@@ -1,5 +1,6 @@
-import CharacterImg from '@/assets/BaLawCharacter-large.svg';
 import React from 'react';
+
+import CharacterImg from '@/assets/BaLawCharacter-large.svg';
 
 type WelcomeCardProps = {
   variant?: 'login' | 'signup';

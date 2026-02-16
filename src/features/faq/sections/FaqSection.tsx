@@ -1,7 +1,9 @@
+import React, { useMemo, useState } from 'react';
+
+import IntroHeader from '@/shared/ui/IntroHeader';
+
 import FaqItemCard from '@/features/faq/components/FaqItemCard';
 import { FAQ_ITEMS } from '@/features/faq/constants/faq';
-import IntroHeader from '@/shared/ui/IntroHeader';
-import React, { useMemo, useState } from 'react';
 
 const ITEMS_PER_PAGE = 3;
 

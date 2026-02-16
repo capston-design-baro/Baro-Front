@@ -1,7 +1,8 @@
+import React, { useState } from 'react';
+
 import DaumPostcodeButton from '@/shared/ui/DaumPostcodeButton';
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import Button from '@/shared/ui/common/Button';
-import React, { useState } from 'react';
 
 type SignupProfileData = {
   name: string;

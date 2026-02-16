@@ -1,12 +1,15 @@
+import { useNavigate } from 'react-router-dom';
+
+import React from 'react';
+
+import useIsMdUp from '@/shared/hooks/useIsMdUp';
+import Footer from '@/shared/ui/Footer';
+import Header from '@/shared/ui/Header';
+
 import { login } from '@/features/auth/apis/auth';
 import LoginCard from '@/features/auth/components/LoginCard';
 import WelcomeCard from '@/features/auth/components/WelcomeCard';
 import type { LoginFormValues } from '@/features/auth/types/auth';
-import useIsMdUp from '@/shared/hooks/useIsMdUp';
-import Footer from '@/shared/ui/Footer';
-import Header from '@/shared/ui/Header';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
   const isMdUp = useIsMdUp(); // md 이상일 때만 true
