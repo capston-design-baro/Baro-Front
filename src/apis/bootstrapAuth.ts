@@ -1,6 +1,6 @@
 import axiosInstance from '@/apis/axiosInstance';
-import { ACCESS_COOKIE } from '@/constants/auth';
 import { getMe } from '@/features/auth/apis/auth';
+import { ACCESS_COOKIE } from '@/features/auth/constants/auth';
 import type { User } from '@/stores/useUserStore';
 import { useUserStore } from '@/stores/useUserStore';
 import { Cookies } from 'react-cookie';

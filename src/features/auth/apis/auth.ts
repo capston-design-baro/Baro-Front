@@ -1,5 +1,5 @@
 import axiosInstance, { applyTokens } from '@/apis/axiosInstance';
-import { ACCESS_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE } from '@/constants/auth';
+import { ACCESS_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE } from '@/features/auth/constants/auth';
 import type {
   LoginFormValues,
   LoginRequestDto,

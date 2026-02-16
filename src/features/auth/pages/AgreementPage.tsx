@@ -1,8 +1,8 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { DEFAULT_AGREEMENTS } from '@/constants/agreement';
 import AgreementsCard from '@/features/auth/components/AgreementsCard';
 import WelcomeCard from '@/features/auth/components/WelcomeCard';
+import { DEFAULT_AGREEMENTS } from '@/features/auth/constants/agreement';
 import useIsMdUp from '@/hooks/useIsMdUp';
 import React from 'react';
 

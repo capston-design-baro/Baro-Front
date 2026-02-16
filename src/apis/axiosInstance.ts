@@ -4,7 +4,7 @@ import {
   COOKIE_OPTIONS,
   REFRESH_COOKIE,
   REFRESH_MAX_AGE,
-} from '@/constants/auth';
+} from '@/features/auth/constants/auth';
 import type { TokenResponse } from '@/features/auth/types/auth';
 import axios, { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import { Cookies } from 'react-cookie';
