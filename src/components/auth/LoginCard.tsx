@@ -1,5 +1,6 @@
 import FormErrorMessage from '@/components/FormErrorMessage';
 import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
 import type { LoginCardProps, LoginFormValues } from '@/types/auth';
 import React, { useState } from 'react';
 
@@ -62,15 +63,12 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
             >
               mail
             </span>
-            <input
+            <Input
               id="email"
               type="email"
+              fullWidth
+              textAlign="left"
               placeholder="이메일 주소"
-              className={[
-                'rounded-200 h-12 flex-1 px-3',
-                'border border-neutral-300',
-                'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-              ].join(' ')}
               value={values.email}
               onChange={(e) => setValues((prev) => ({ ...prev, email: e.target.value }))}
               required
@@ -88,15 +86,12 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
             >
               lock
             </span>
-            <input
+            <Input
               id="password"
               type="password"
+              fullWidth
+              textAlign="left"
               placeholder="비밀번호"
-              className={[
-                'rounded-200 h-12 flex-1 px-3',
-                'border border-neutral-300',
-                'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-              ].join(' ')}
               value={values.password}
               onChange={(e) => setValues((prev) => ({ ...prev, password: e.target.value }))}
               required
