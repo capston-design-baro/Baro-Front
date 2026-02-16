@@ -1,5 +1,6 @@
 import axiosInstance, { applyTokens } from '@/apis/axiosInstance';
 import { ACCESS_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE } from '@/features/auth/constants/auth';
+import { useUserStore } from '@/features/auth/stores/useUserStore';
 import type {
   LoginFormValues,
   LoginRequestDto,
@@ -8,7 +9,6 @@ import type {
   TokenResponse,
   UserResponse,
 } from '@/features/auth/types/auth';
-import { useUserStore } from '@/stores/useUserStore';
 import { Cookies } from 'react-cookie';
 
 // 쿠키 관리 객체 생성

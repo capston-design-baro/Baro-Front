@@ -1,9 +1,6 @@
-import type { UserResponse } from '@/features/auth/types/auth';
+import type { User } from '@/features/auth/types/user';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-
-// 사용자 정보 타입 정의
-export type User = UserResponse;
 
 // Zustand에서 관리할 상태 타입 정의
 interface UserStore {

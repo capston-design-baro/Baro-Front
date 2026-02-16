@@ -1,4 +1,4 @@
-import { useComplaintWizard } from '@/features/complaint/store/useComplaintWizard';
+import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
 import React from 'react';
 
 type Props = {

@@ -8,7 +8,7 @@ import {
   downloadComplaintDocx,
   getMyComplaints,
 } from '@/features/complaint/apis/complaints';
-import { useComplaintWizard } from '@/features/complaint/store/useComplaintWizard';
+import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

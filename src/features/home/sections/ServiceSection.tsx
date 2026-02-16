@@ -1,5 +1,5 @@
 import ServiceCard from '@/components/ServiceCard';
-import { SERVICES } from '@/constants/service';
+import { SERVICES } from '@/features/home/constants/service';
 import '@/styles/main.css';
 import type { ServiceClickHandler } from '@/types/service';
 import React from 'react';

@@ -39,7 +39,7 @@ import ComplaintPreviewSection from '@/features/complaint/sections/ComplaintPrev
 import EvidenceInfoSection, {
   type EvidenceInfoSectionHandle,
 } from '@/features/complaint/sections/EvidenceInfoSection';
-import { useComplaintWizard } from '@/features/complaint/store/useComplaintWizard';
+import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 

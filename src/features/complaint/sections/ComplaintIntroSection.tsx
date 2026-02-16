@@ -1,7 +1,7 @@
 import FormErrorMessage from '@/components/FormErrorMessage';
 import IntroHeader from '@/components/IntroHeader';
 import Question from '@/components/Question';
-import { useComplaintWizard } from '@/features/complaint/store/useComplaintWizard';
+import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
 import React from 'react';
 
 // 칩 컴포넌트 -> colorScheme로 색상 테마 제어 (blue | red)

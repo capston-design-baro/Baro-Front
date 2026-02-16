@@ -8,8 +8,8 @@
 import logoUrl from '@/assets/BaLawLogo.svg';
 import Button from '@/components/common/Button';
 import { logout } from '@/features/auth/apis/auth';
-import { useComplaintWizard } from '@/features/complaint/store/useComplaintWizard';
-import { useUserStore } from '@/stores/useUserStore';
+import { useUserStore } from '@/features/auth/stores/useUserStore';
+import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
