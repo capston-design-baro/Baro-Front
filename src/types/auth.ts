@@ -1,13 +1,13 @@
-// UI Props
-export type LoginCardProps = {
-  className?: string;
-  onLogin?: (values: LoginFormValues) => Promise<void> | void;
-};
-
 // 로그인 폼에서 사용하는 값
 export type LoginFormValues = {
   email: string;
   password: string;
+};
+
+// UI Props
+export type LoginCardProps = {
+  className?: string;
+  onLogin: (values: LoginFormValues) => Promise<void> | void;
 };
 
 // 로그인 api에 보낼 payload
