@@ -1,8 +1,8 @@
-import DaumPostcodeButton from '@/components/DaumPostcodeButton';
-import type { DaumPostcodeResult } from '@/components/DaumPostcodeButton';
-import FormErrorMessage from '@/components/FormErrorMessage';
-import IntroHeader from '@/components/IntroHeader';
-import { splitAddressTo3FromString } from '@/utils/krContact';
+import DaumPostcodeButton from '@/shared/ui/DaumPostcodeButton';
+import type { DaumPostcodeResult } from '@/shared/ui/DaumPostcodeButton';
+import FormErrorMessage from '@/shared/ui/FormErrorMessage';
+import IntroHeader from '@/shared/ui/IntroHeader';
+import { splitAddressTo3FromString } from '@/shared/utils/krContact';
 import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 // 부모에서 사용할 타입

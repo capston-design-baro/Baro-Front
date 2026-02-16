@@ -1,4 +1,4 @@
-import Button from '@/components/common/Button';
+import Button from '@/shared/ui/common/Button';
 import React, { useState } from 'react';
 
 declare global {

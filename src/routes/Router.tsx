@@ -8,8 +8,6 @@ import MainPage from '@/features/home/pages/MainPage';
 import MyComplaintsPage from '@/features/my-complaints/pages/MyComplaintsPage';
 import { Route, Routes } from 'react-router-dom';
 
-// import SignupPage from '@/pages/SignupPage';
-
 const Router = () => {
   return (
     <Routes>
@@ -31,28 +29,22 @@ const Router = () => {
       />
 
       {/* "/signup" 경로 */}
-      {
-        <Route
-          path="/signup"
-          element={<SignupPage />}
-        />
-      }
+      <Route
+        path="/signup"
+        element={<SignupPage />}
+      />
 
       {/* "/complaint" 경로 */}
-      {
-        <Route
-          path="/complaint"
-          element={<ComplaintWizardPage />}
-        />
-      }
+      <Route
+        path="/complaint"
+        element={<ComplaintWizardPage />}
+      />
 
       {/* "/faq" 경로 */}
-      {
-        <Route
-          path="/faq"
-          element={<FaqPage />}
-        />
-      }
+      <Route
+        path="/faq"
+        element={<FaqPage />}
+      />
 
       {/* "/precedent" 경로 */}
       <Route

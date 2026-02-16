@@ -1,4 +1,4 @@
-import { bootstrapAuth } from '@/app/bootstrapAuth';
+import { bootstrapAuth } from '@/shared/lib/bootstrapAuth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';

@@ -1,6 +1,6 @@
-import DaumPostcodeButton from '@/components/DaumPostcodeButton';
-import FormErrorMessage from '@/components/FormErrorMessage';
-import Button from '@/components/common/Button';
+import DaumPostcodeButton from '@/shared/ui/DaumPostcodeButton';
+import FormErrorMessage from '@/shared/ui/FormErrorMessage';
+import Button from '@/shared/ui/common/Button';
 import React, { useState } from 'react';
 
 type SignupProfileData = {

@@ -1,4 +1,4 @@
-import type { Service } from '@/types/service';
+import type { Service } from '@/features/home/types/service';
 
 export const SERVICES: Service[] = [
   { id: 'complaint', title: '고소장 작성하기', icon: 'edit_note', to: '/complaint' },

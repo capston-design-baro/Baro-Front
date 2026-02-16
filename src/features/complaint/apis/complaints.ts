@@ -1,4 +1,4 @@
-import axiosInstance from '@/apis/axiosInstance';
+import axiosInstance from '@/shared/lib/axiosInstance';
 
 // 공용 인스턴스 (Authorization 자동 세팅됨)
 const api = axiosInstance;

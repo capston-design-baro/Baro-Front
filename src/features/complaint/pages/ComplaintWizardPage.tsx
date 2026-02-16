@@ -1,8 +1,3 @@
-import CaseDetailModal from '@/components/CaseDetailModal';
-import CharacterModal from '@/components/CharacterModal';
-import Footer from '@/components/Footer';
-import GeneratingModal from '@/components/GeneratingModal';
-import Header from '@/components/Header';
 import type { ComplainantInfoCreate } from '@/features/complaint/apis/complaints';
 import { createComplaint } from '@/features/complaint/apis/complaints';
 import type { RagCase } from '@/features/complaint/apis/complaints';
@@ -14,6 +9,7 @@ import {
   registerEvidence,
   registerRelatedCases,
 } from '@/features/complaint/apis/complaints';
+import CaseDetailModal from '@/features/complaint/components/CaseDetailModal';
 import WizardNavButtons from '@/features/complaint/components/WizardNavButtons';
 import WizardProgress from '@/features/complaint/components/WizardProgress';
 import AccusedExtraInfoSection, {
@@ -40,6 +36,10 @@ import EvidenceInfoSection, {
   type EvidenceInfoSectionHandle,
 } from '@/features/complaint/sections/EvidenceInfoSection';
 import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
+import CharacterModal from '@/shared/ui/CharacterModal';
+import Footer from '@/shared/ui/Footer';
+import GeneratingModal from '@/shared/ui/GeneratingModal';
+import Header from '@/shared/ui/Header';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 

@@ -1,8 +1,8 @@
-import Tooltip from '@/components/Tooltip';
 import type { BinaryAnswer, PrecheckQuestion } from '@/features/complaint/types/complaint';
+import Tooltip from '@/shared/ui/Tooltip';
 import React, { useEffect, useState } from 'react';
 
-import Chip from './Chip';
+import Chip from '../../../shared/ui/Chip';
 
 export interface QuestionProps {
   q: PrecheckQuestion;

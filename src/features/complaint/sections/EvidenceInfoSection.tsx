@@ -1,5 +1,5 @@
-import FormErrorMessage from '@/components/FormErrorMessage';
-import IntroHeader from '@/components/IntroHeader';
+import FormErrorMessage from '@/shared/ui/FormErrorMessage';
+import IntroHeader from '@/shared/ui/IntroHeader';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 
 export type EvidenceInfo = {

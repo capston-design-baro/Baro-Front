@@ -1,4 +1,4 @@
-import IntroHeader from '@/components/IntroHeader';
+import IntroHeader from '@/shared/ui/IntroHeader';
 import React from 'react';
 
 type ComplaintEntrySectionProps = {

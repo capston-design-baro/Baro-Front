@@ -1,4 +1,4 @@
-import type { Side } from '@/types/side';
+import type { Side } from '@/features/complaint/components/chat/types/side';
 
 /** 채팅 메시지 하나당 꼭 갖는 필수 정보들 */
 export type Message = {

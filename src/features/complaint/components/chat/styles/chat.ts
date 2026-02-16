@@ -1,5 +1,5 @@
-import { bubblePalette, bubbleWidthClasses } from '@/styles/tokens';
-import type { Side } from '@/types/side';
+import { bubblePalette, bubbleWidthClasses } from '@/features/complaint/components/chat/tokens';
+import type { Side } from '@/features/complaint/components/chat/types/side';
 
 /** 말풍선 본체 클래스 */
 export function buildSurface(side: Side) {

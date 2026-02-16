@@ -4,7 +4,7 @@
  * - 서비스 아이콘 + 제목 표시
  * - 클릭 시 onClick(service) 호출
  */
-import type { Service, ServiceClickHandler } from '@/types/service';
+import type { Service, ServiceClickHandler } from '@/features/home/types/service';
 import React from 'react';
 
 interface ServiceCardProps {

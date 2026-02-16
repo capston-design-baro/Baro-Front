@@ -1,5 +1,5 @@
 import LogoUrl from '@/assets/BaLawCharacter-large.svg';
-import Button from '@/components/common/Button';
+import Button from '@/shared/ui/common/Button';
 import React from 'react';
 
 type Variant = 'login' | 'exit' | 'delete';

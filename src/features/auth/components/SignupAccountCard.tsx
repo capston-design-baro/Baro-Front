@@ -1,6 +1,6 @@
-import FormErrorMessage from '@/components/FormErrorMessage';
-import Button from '@/components/common/Button';
 import { checkEmailAvailability } from '@/features/auth/apis/auth';
+import FormErrorMessage from '@/shared/ui/FormErrorMessage';
+import Button from '@/shared/ui/common/Button';
 import React, { useState } from 'react';
 
 type Props = {

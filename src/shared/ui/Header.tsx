@@ -6,10 +6,10 @@
  * - 로그아웃 버튼 클릭 시 -> 토큰 및 상태 초기화 후 홈으로 리디렉트
  */
 import logoUrl from '@/assets/BaLawLogo.svg';
-import Button from '@/components/common/Button';
 import { logout } from '@/features/auth/apis/auth';
 import { useUserStore } from '@/features/auth/stores/useUserStore';
 import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
+import Button from '@/shared/ui/common/Button';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

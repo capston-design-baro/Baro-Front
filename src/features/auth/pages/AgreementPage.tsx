@@ -1,9 +1,9 @@
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import AgreementsCard from '@/features/auth/components/AgreementsCard';
 import WelcomeCard from '@/features/auth/components/WelcomeCard';
 import { DEFAULT_AGREEMENTS } from '@/features/auth/constants/agreement';
-import useIsMdUp from '@/hooks/useIsMdUp';
+import useIsMdUp from '@/shared/hooks/useIsMdUp';
+import Footer from '@/shared/ui/Footer';
+import Header from '@/shared/ui/Header';
 import React from 'react';
 
 const AgreementsPage: React.FC = () => {

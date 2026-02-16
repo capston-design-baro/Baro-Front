@@ -1,5 +1,3 @@
-import { ChatBubble } from '@/components/ChatBubble';
-import Button from '@/components/common/Button';
 import {
   type ChatMessageHistoryItem,
   getChatHistory,
@@ -8,7 +6,9 @@ import {
   sendChat,
 } from '@/features/complaint/apis/complaints';
 import type { ChatMetaPayload, RagCase } from '@/features/complaint/apis/complaints';
-import type { Side } from '@/types/side';
+import { ChatBubble } from '@/features/complaint/components/ChatBubble';
+import type { Side } from '@/features/complaint/components/chat/types/side';
+import Button from '@/shared/ui/common/Button';
 import type { AxiosError } from 'axios';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 

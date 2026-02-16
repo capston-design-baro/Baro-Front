@@ -1,8 +1,8 @@
-import axiosInstance from '@/apis/axiosInstance';
 import { getMe } from '@/features/auth/apis/auth';
 import { ACCESS_COOKIE } from '@/features/auth/constants/auth';
 import { toUser } from '@/features/auth/mappers/user';
 import { useUserStore } from '@/features/auth/stores/useUserStore';
+import axiosInstance from '@/shared/lib/axiosInstance';
 import { Cookies } from 'react-cookie';
 
 // 애플리케이션 시작 시 실행해서 인증 상태를 "부트스트랩"하는 함수

@@ -1,7 +1,7 @@
-import IntroHeader from '@/components/IntroHeader';
-import Button from '@/components/common/Button';
 import type { CrimeCategory, CrimeDomain } from '@/features/crime-types/constants/crimeTypes';
 import { CRIME_TYPES } from '@/features/crime-types/constants/crimeTypes';
+import IntroHeader from '@/shared/ui/IntroHeader';
+import Button from '@/shared/ui/common/Button';
 import React, { useEffect, useMemo, useState } from 'react';
 
 const CrimeTypeSection: React.FC = () => {

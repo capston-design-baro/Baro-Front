@@ -1,10 +1,10 @@
-import DaumPostcodeButton from '@/components/DaumPostcodeButton';
-import type { DaumPostcodeResult } from '@/components/DaumPostcodeButton';
-import FormErrorMessage from '@/components/FormErrorMessage';
-import IntroHeader from '@/components/IntroHeader';
-import Button from '@/components/common/Button';
 import { getMe } from '@/features/auth/apis/auth';
-import { splitAddressTo3FromString, splitPhoneKR } from '@/utils/krContact';
+import DaumPostcodeButton from '@/shared/ui/DaumPostcodeButton';
+import type { DaumPostcodeResult } from '@/shared/ui/DaumPostcodeButton';
+import FormErrorMessage from '@/shared/ui/FormErrorMessage';
+import IntroHeader from '@/shared/ui/IntroHeader';
+import Button from '@/shared/ui/common/Button';
+import { splitAddressTo3FromString, splitPhoneKR } from '@/shared/utils/krContact';
 import type { AxiosError } from 'axios';
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 
