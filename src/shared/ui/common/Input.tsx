@@ -25,7 +25,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     // 상태 스타일 (error)
     const stateStyles = error
-      ? 'border-warning-200 focus:border-warning-300'
+      ? 'border-warning-200'
       : 'border-neutral-300 focus:border-primary-400';
 
     // 텍스트 정렬 (left, center, right)
