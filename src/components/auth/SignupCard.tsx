@@ -1,13 +1,14 @@
-import { register } from '@/apis/auth';
+import { mapRegisterError, register } from '@/apis/auth';
+import SignupAccountCard from '@/components/auth/SignupAccountCard';
+import SignupProfileCard from '@/components/auth/SignupProfileCard';
 import type { RegisterFormValues } from '@/types/auth';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import SignupAccountCard from './SignupAccountCard';
-import SignupProfileCard from './SignupProfileCard';
-
+// 회원가입 단계 (1: 이메일 및 비밀번호, 2: 프로필 정보)
 type Step = 1 | 2;
 
+// 회원가입 전체 과정에서 유지되는 데이터 타입
 type FormData = {
   email: string;
   password: string;
@@ -19,6 +20,7 @@ type FormData = {
 };
 
 const SignupCard: React.FC = () => {
+  // 상태 관리
   const [step, setStep] = useState<Step>(1);
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -29,16 +31,17 @@ const SignupCard: React.FC = () => {
     town: '',
     phone: '',
   });
+  const [, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
-  // 1단계에서 "다음"
+  // 1단계에서 "다음"을 누르면 입력받은 이메일, 비밀번호를 저장하고 2단계로 이동
   const handleAccountNext = (partialData: { email: string; password: string }) => {
     setFormData((prev) => ({ ...prev, ...partialData }));
     setStep(2);
   };
 
-  // 2단계에서 "이전"
+  // 2단계에서 "이전"을 누르면 현재까지 입력된 정보를 저장하고 1단계로 돌아감
   const handleProfileBack = (partialData?: Partial<FormData>) => {
     if (partialData) {
       setFormData((prev) => ({ ...prev, ...partialData }));
@@ -46,7 +49,7 @@ const SignupCard: React.FC = () => {
     setStep(1);
   };
 
-  // 2단계에서 "회원가입" or "다음"
+  // 2단계에서 "회원가입"을 누르면 모든 정보를 취합하여 회원가입 API를 호출
   const handleProfileNext = async (partialData: {
     name: string;
     city: string;
@@ -54,9 +57,12 @@ const SignupCard: React.FC = () => {
     town: string;
     phone: string;
   }) => {
+    // 최종 데이터 병합
     const nextData = { ...formData, ...partialData };
     setFormData(nextData);
+    setError(null);
 
+    // API 요청을 위한 Payload 구성
     const payload: RegisterFormValues = {
       email: nextData.email,
       name: nextData.name,
@@ -70,21 +76,25 @@ const SignupCard: React.FC = () => {
     };
 
     try {
+      // 회원가입 API 호출
       await register(payload);
       navigate('/login');
     } catch (error) {
-      console.error('회원가입 실패:', error);
+      // 에러 처리
+      setError(mapRegisterError(error));
     }
   };
 
   return (
     <div className="h-full w-full max-w-[460px]">
       {step === 1 ? (
+        // 1단계: 계정 정보 입력 (이메일, 비밀번호)
         <SignupAccountCard
           defaultValues={formData}
           onNext={handleAccountNext}
         />
       ) : (
+        // 2단계: 프로필 정보 입력 (이름, 주소, 전화번호)
         <SignupProfileCard
           defaultValues={formData}
           onBack={handleProfileBack}
