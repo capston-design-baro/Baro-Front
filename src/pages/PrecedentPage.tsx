@@ -1,6 +1,6 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import CrimeTypeSection from '@/sections/CrimeTypeSection';
+import CrimeTypeSection from '@/features/crime-types/pages/CrimeTypeSection';
 import React from 'react';
 
 const PrecedentPage: React.FC = () => {
