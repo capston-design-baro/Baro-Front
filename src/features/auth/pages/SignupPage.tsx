@@ -1,12 +1,15 @@
-import { register } from '@/features/auth/apis/auth';
-import SignupCard from '@/features/auth/components/SignupCard';
-import WelcomeCard from '@/features/auth/components/WelcomeCard';
-import type { RegisterFormValues } from '@/features/auth/types/auth';
+import { useNavigate } from 'react-router-dom';
+
+import React from 'react';
+
 import useIsMdUp from '@/shared/hooks/useIsMdUp';
 import Footer from '@/shared/ui/Footer';
 import Header from '@/shared/ui/Header';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import { register } from '@/features/auth/apis/auth';
+import SignupCard from '@/features/auth/components/SignupCard';
+import WelcomeCard from '@/features/auth/components/WelcomeCard';
+import type { RegisterFormValues } from '@/features/auth/types/form';
 
 const SignupPage: React.FC = () => {
   const isMdUp = useIsMdUp();

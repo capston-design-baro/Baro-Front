@@ -1,8 +1,10 @@
-import Question from '@/features/complaint/components/Question';
-import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
+import React from 'react';
+
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import IntroHeader from '@/shared/ui/IntroHeader';
-import React from 'react';
+
+import Question from '@/features/complaint/components/Question';
+import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
 
 // 칩 컴포넌트 -> colorScheme로 색상 테마 제어 (blue | red)
 const ComplaintIntroSection: React.FC = () => {

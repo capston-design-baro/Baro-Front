@@ -1,11 +1,14 @@
-import { useUserStore } from '@/features/auth/stores/useUserStore';
-import ServiceSection from '@/features/home/sections/ServiceSection';
-import type { Service } from '@/features/home/types/service';
+import { useNavigate } from 'react-router-dom';
+
+import { useState } from 'react';
+
 import CharacterModal from '@/shared/ui/CharacterModal';
 import Footer from '@/shared/ui/Footer';
 import Header from '@/shared/ui/Header';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import { useUserStore } from '@/features/auth/stores/useUserStore';
+import ServiceSection from '@/features/home/sections/ServiceSection';
+import type { Service } from '@/features/home/types/service';
 
 export default function MainPage() {
   const navigate = useNavigate();

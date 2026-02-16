@@ -1,3 +1,14 @@
+// 사용자 정보
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  address: string;
+  phoneNumber: string;
+  createdAt: Date;
+}
+
+// 약관 동의 정보
 export interface Agreement {
   id: number; // 약관 고유 ID
   isChecked: boolean; // 동의 여부

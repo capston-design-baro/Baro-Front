@@ -1,6 +1,15 @@
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import React, { useEffect, useRef, useState } from 'react';
+
+import CharacterModal from '@/shared/ui/CharacterModal';
+import Footer from '@/shared/ui/Footer';
+import GeneratingModal from '@/shared/ui/GeneratingModal';
+import Header from '@/shared/ui/Header';
+
 import type { ComplainantInfoCreate } from '@/features/complaint/apis/complaints';
-import { createComplaint } from '@/features/complaint/apis/complaints';
 import type { RagCase } from '@/features/complaint/apis/complaints';
+import { createComplaint } from '@/features/complaint/apis/complaints';
 import {
   type AccusedInfoCreate,
   type EvidenceCreate,
@@ -27,21 +36,15 @@ import ComplaintEntrySection from '@/features/complaint/sections/ComplaintEntryS
 import type { ComplainantExtraInfoSectionHandle } from '@/features/complaint/sections/ComplaintExtraInfoSection';
 import type { ComplainantExtraInfo } from '@/features/complaint/sections/ComplaintExtraInfoSection';
 import ComplainantExtraInfoSection from '@/features/complaint/sections/ComplaintExtraInfoSection';
-import ComplainantInfoSection from '@/features/complaint/sections/ComplaintInfoSection';
 import type { ComplainantInfoSectionHandle } from '@/features/complaint/sections/ComplaintInfoSection';
 import type { ComplaintBasicInfo } from '@/features/complaint/sections/ComplaintInfoSection';
+import ComplainantInfoSection from '@/features/complaint/sections/ComplaintInfoSection';
 import ComplaintIntroSection from '@/features/complaint/sections/ComplaintIntroSection';
 import ComplaintPreviewSection from '@/features/complaint/sections/ComplaintPreviewSection';
 import EvidenceInfoSection, {
   type EvidenceInfoSectionHandle,
 } from '@/features/complaint/sections/EvidenceInfoSection';
 import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWizard';
-import CharacterModal from '@/shared/ui/CharacterModal';
-import Footer from '@/shared/ui/Footer';
-import GeneratingModal from '@/shared/ui/GeneratingModal';
-import Header from '@/shared/ui/Header';
-import React, { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 const ComplaintWizardPage: React.FC = () => {
   const navigate = useNavigate();

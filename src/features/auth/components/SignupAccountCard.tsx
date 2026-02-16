@@ -1,7 +1,9 @@
-import { checkEmailAvailability } from '@/features/auth/apis/auth';
+import React, { useState } from 'react';
+
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import Button from '@/shared/ui/common/Button';
-import React, { useState } from 'react';
+
+import { checkEmailAvailability } from '@/features/auth/apis/auth';
 
 type Props = {
   defaultValues?: {

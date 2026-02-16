@@ -1,9 +1,10 @@
+import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
+
 import DaumPostcodeButton from '@/shared/ui/DaumPostcodeButton';
 import type { DaumPostcodeResult } from '@/shared/ui/DaumPostcodeButton';
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import IntroHeader from '@/shared/ui/IntroHeader';
 import { splitAddressTo3FromString } from '@/shared/utils/krContact';
-import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
 // 부모에서 사용할 타입
 export type AccusedBasicInfo = {

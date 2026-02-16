@@ -1,7 +1,9 @@
-import FaqSection from '@/features/faq/sections/FaqSection';
+import React from 'react';
+
 import Footer from '@/shared/ui/Footer';
 import Header from '@/shared/ui/Header';
-import React from 'react';
+
+import FaqSection from '@/features/faq/sections/FaqSection';
 
 const FaqPage: React.FC = () => {
   return (

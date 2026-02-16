@@ -1,5 +1,6 @@
-import type { FaqItem } from '@/features/faq/constants/faq';
 import React from 'react';
+
+import type { FaqItem } from '@/features/faq/constants/faq';
 
 type Props = {
   item: FaqItem;

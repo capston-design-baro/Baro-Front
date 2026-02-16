@@ -1,8 +1,11 @@
+import React, { useState } from 'react';
+
 import DocxIcon from '@/assets/Docs.svg';
-import { downloadComplaintDocx } from '@/features/complaint/apis/complaints';
+
 import IntroHeader from '@/shared/ui/IntroHeader';
 import Button from '@/shared/ui/common/Button';
-import React, { useState } from 'react';
+
+import { downloadComplaintDocx } from '@/features/complaint/apis/complaints';
 
 type ComplaintDownloadSectionProps = {
   complaintId: number;

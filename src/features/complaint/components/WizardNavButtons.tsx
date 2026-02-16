@@ -1,5 +1,6 @@
-import Button from '@/shared/ui/common/Button';
 import React from 'react';
+
+import Button from '@/shared/ui/common/Button';
 
 type WizardNavButtonsProps = {
   onPrev?: () => void;

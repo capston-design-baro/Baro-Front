@@ -1,9 +1,10 @@
+import { create } from 'zustand';
+
 import type {
   BinaryAnswer,
   ComplaintWizardState,
   PrecheckQuestion,
 } from '@/features/complaint/types/complaint';
-import { create } from 'zustand';
 
 // 사전 확인 질문 목록
 const initialPrechecks: PrecheckQuestion[] = [

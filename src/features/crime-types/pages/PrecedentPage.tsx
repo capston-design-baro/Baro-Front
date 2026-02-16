@@ -1,7 +1,9 @@
-import CrimeTypeSection from '@/features/crime-types/pages/CrimeTypeSection';
+import React from 'react';
+
 import Footer from '@/shared/ui/Footer';
 import Header from '@/shared/ui/Header';
-import React from 'react';
+
+import CrimeTypeSection from '@/features/crime-types/pages/CrimeTypeSection';
 
 const PrecedentPage: React.FC = () => {
   return (

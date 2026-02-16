@@ -1,5 +1,6 @@
-import Button from '@/shared/ui/common/Button';
 import React, { useState } from 'react';
+
+import Button from '@/shared/ui/common/Button';
 
 declare global {
   interface Window {
