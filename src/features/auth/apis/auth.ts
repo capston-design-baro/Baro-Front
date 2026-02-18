@@ -18,9 +18,16 @@ export type EmailCheckResponse = {
 
 // 폼 값을 로그인 요청 dto로 변환
 function toLoginRequestDto(values: LoginFormValues): LoginRequestDto {
+  const email = values.email.trim();
+  const password = values.password;
+
+  // 유효성 검사
+  if (!email) throw new Error('EMPTY_EMAIL');
+  if (!password) throw new Error('EMPTY_PASSWORD');
+
   return {
-    email: values.email.trim(),
-    password: values.password,
+    email,
+    password,
   };
 }
 

@@ -5,6 +5,7 @@ import Button from '@/shared/ui/common/Button';
 import Input from '@/shared/ui/common/Input';
 
 import type { LoginFormValues } from '@/features/auth/types/form';
+import { mapAuthError } from '@/features/auth/utils/mapAuthError';
 
 type LoginCardProps = {
   className?: string;
@@ -27,8 +28,8 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
 
     try {
       await onLogin(values);
-    } catch {
-      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+    } catch (error) {
+      setError(mapAuthError(error, 'login'));
     } finally {
       setLoading(false);
     }
