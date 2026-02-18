@@ -5,12 +5,16 @@ export function mapAuthError(error: unknown, context?: AuthContext): string {
     switch (error.message) {
       case 'EMPTY_EMAIL':
         return '이메일을 입력해주세요.';
+
       case 'EMPTY_NAME':
         return '이름을 입력해주세요.';
+
       case 'EMPTY_PASSWORD':
         return '비밀번호를 입력해주세요.';
+
       case 'EMPTY_ADDRESS':
         return '주소를 입력해주세요.';
+
       case 'EMPTY_PHONE':
         return '전화번호를 입력해주세요.';
     }
