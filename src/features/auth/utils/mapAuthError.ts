@@ -1,6 +1,31 @@
-export type AuthContext = 'login' | 'register' | 'check-email' | 'token';
+import axios from 'axios';
 
-export function mapAuthError(error: unknown, context?: AuthContext): string {
+import { extractFromLoc } from '@/shared/apis/fastapiError';
+
+function mapValidationErrors(field: string) {
+  switch (field) {
+    case 'email':
+      return '이메일';
+
+    case 'password':
+      return '비밀번호';
+
+    case 'name':
+      return '이름';
+
+    case 'address':
+      return '주소';
+
+    case 'phone_number':
+      return '전화번호';
+
+    default:
+      return field;
+  }
+}
+
+export function mapAuthError(error: unknown): string {
+  // 프론트 validation 에러 처리
   if (error instanceof Error) {
     switch (error.message) {
       case 'EMPTY_EMAIL':
@@ -21,14 +46,9 @@ export function mapAuthError(error: unknown, context?: AuthContext): string {
   }
 
   // axios 에러 처리
-  if (typeof error === 'object' && error !== null && 'response' in error) {
-    const err = error as {
-      response?: {
-        status: number;
-        data: { detail: string | { msg: string }[] };
-      };
-    };
-    const status = err.response?.status;
+  if (axios.isAxiosError(error)) {
+    const status = error.response?.status;
+    const data = error.response?.data;
 
     // 로그인 실패 (401)
     if (status === 401) {
@@ -42,23 +62,27 @@ export function mapAuthError(error: unknown, context?: AuthContext): string {
 
     // 입력 필드 오류 (422)
     if (status === 422) {
-      // 로그인 시 422
-      if (context === 'login') {
-        return '이메일 형식이 잘못되었습니다.';
+      const detail = data?.detail;
+
+      if (typeof detail === 'string') {
+        return detail;
       }
 
-      // 회원가입 시 422
-      if (context === 'register') {
-        return '이메일 형식이 잘못되었습니다.';
-      }
+      if (Array.isArray(detail)) {
+        const fieldErrors = detail[0];
+        const fieldName = extractFromLoc(fieldErrors.loc);
+        const fieldKoreanName = fieldName ? mapValidationErrors(fieldName) : '입력값';
 
-      // 이메일 중복 체크 시 422
-      if (context === 'check-email') {
-        return '이메일 형식이 잘못되었습니다.';
-      }
+        if (fieldName === 'email') {
+          return `${fieldKoreanName} 형식이 잘못되었습니다.`;
+        }
 
-      // 그 외
-      return '입력값을 확인해주세요.';
+        if (fieldName === 'password') {
+          return `${fieldKoreanName}는 8자 이상이어야 합니다.`;
+        }
+
+        return `${fieldKoreanName}에 오류가 있습니다. 입력값을 확인해주세요.`;
+      }
     }
   }
 

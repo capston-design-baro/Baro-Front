@@ -82,7 +82,7 @@ const SignupCard: React.FC<SignupCardProps> = ({ onSignup }) => {
       await onSignup(payload);
     } catch (error) {
       // 에러 처리
-      setError(mapAuthError(error, 'register'));
+      setError(mapAuthError(error));
     }
   };
 

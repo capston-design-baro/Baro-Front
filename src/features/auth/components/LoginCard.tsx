@@ -29,7 +29,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
     try {
       await onLogin(values);
     } catch (error) {
-      setError(mapAuthError(error, 'login'));
+      setError(mapAuthError(error));
     } finally {
       setLoading(false);
     }

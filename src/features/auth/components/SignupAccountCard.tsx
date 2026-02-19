@@ -90,7 +90,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
       console.error('failed to check email', e);
       setEmailCheckStatus('error');
 
-      setError(mapAuthError(e, 'check-email'));
+      setError(mapAuthError(e));
     }
   };
 
