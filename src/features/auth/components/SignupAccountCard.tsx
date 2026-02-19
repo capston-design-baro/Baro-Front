@@ -4,6 +4,7 @@ import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import Button from '@/shared/ui/common/Button';
 
 import { checkEmailAvailability } from '@/features/auth/apis/auth';
+import { mapAuthError } from '@/features/auth/utils/mapAuthError';
 
 type Props = {
   defaultValues?: {
@@ -89,7 +90,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
       console.error('failed to check email', e);
       setEmailCheckStatus('error');
 
-      setError('이메일 중복 확인 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
+      setError(mapAuthError(e));
     }
   };
 

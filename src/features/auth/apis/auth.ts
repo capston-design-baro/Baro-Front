@@ -18,9 +18,16 @@ export type EmailCheckResponse = {
 
 // 폼 값을 로그인 요청 dto로 변환
 function toLoginRequestDto(values: LoginFormValues): LoginRequestDto {
+  const email = values.email.trim();
+  const password = values.password;
+
+  // 유효성 검사
+  if (!email) throw new Error('EMPTY_EMAIL');
+  if (!password) throw new Error('EMPTY_PASSWORD');
+
   return {
-    email: values.email.trim(),
-    password: values.password,
+    email,
+    password,
   };
 }
 
@@ -39,21 +46,21 @@ function toRegisterRequestDto(values: RegisterFormValues): RegisterRequestDto {
     .trim();
 
   // 전화번호 처리
-  const phone = values.phone_number.trim();
+  const phone_number = values.phone_number.trim();
 
   // 유효성 검사
   if (!email) throw new Error('EMPTY_EMAIL');
   if (!name) throw new Error('EMPTY_NAME');
   if (!password) throw new Error('EMPTY_PASSWORD');
   if (!address) throw new Error('EMPTY_ADDRESS');
-  if (!phone) throw new Error('EMPTY_PHONE');
+  if (!phone_number) throw new Error('EMPTY_PHONE');
 
   return {
     email,
     name,
     password,
     address,
-    phone_number: phone,
+    phone_number,
   };
 }
 
