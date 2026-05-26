@@ -58,7 +58,7 @@ const Header: React.FC = () => {
           : 'bg-transparent',
       ].join(' ')}
     >
-      <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between px-8">
+      <div className="mx-auto flex h-12 w-full max-w-[1280px] items-center justify-between px-8">
         <img
           src={logoUrl}
           alt="BaLaw 로고"
