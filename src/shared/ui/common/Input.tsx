@@ -12,7 +12,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className = '', fullWidth = false, error = false, textAlign = 'left', ...props }, ref) => {
     // 공통 스타일
     const baseStyles = [
-      'h-12 px-3',
+      'h-9 px-3',
       'rounded-200',
       'text-body-3-regular',
       'bg-neutral-0',
