@@ -7,9 +7,9 @@ import CrimeTypeSection from '@/features/crime-types/pages/CrimeTypeSection';
 
 const PrecedentPage: React.FC = () => {
   return (
-    <div className="bg-neutral-0 flex min-h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden bg-neutral-50">
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 overflow-y-auto scroll-smooth">
         <CrimeTypeSection />
       </main>
       <Footer />

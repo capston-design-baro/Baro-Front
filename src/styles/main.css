@@ -45,6 +45,18 @@
     background-clip: text;
   }
 
+  /* 🎈 fadeUp 애니메이션 (카드 등장용) */
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   /* 🧵 BaLaw 커스텀 스크롤바 */
   .balaw-scrollbar {
     /* Firefox용 */
@@ -77,6 +89,10 @@
     .animate-wave-fill {
       animation: none;
       background-size: 100% 100%;
+    }
+
+    [style*='animation'] {
+      animation: none !important;
     }
   }
 }
