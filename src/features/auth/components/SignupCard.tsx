@@ -87,21 +87,24 @@ const SignupCard: React.FC<SignupCardProps> = ({ onSignup }) => {
   };
 
   return (
-    <div className="h-full w-full max-w-[460px]">
-      {step === 1 ? (
-        // 1단계: 계정 정보 입력 (이메일, 비밀번호)
-        <SignupAccountCard
-          defaultValues={formData}
-          onNext={handleAccountNext}
-        />
-      ) : (
-        // 2단계: 프로필 정보 입력 (이름, 주소, 전화번호)
-        <SignupProfileCard
-          defaultValues={formData}
-          onBack={handleProfileBack}
-          onNext={handleProfileNext}
-        />
-      )}
+    <div className="w-full max-w-[460px]">
+      <div
+        key={step}
+        className="animate-fade-in"
+      >
+        {step === 1 ? (
+          <SignupAccountCard
+            defaultValues={formData}
+            onNext={handleAccountNext}
+          />
+        ) : (
+          <SignupProfileCard
+            defaultValues={formData}
+            onBack={handleProfileBack}
+            onNext={handleProfileNext}
+          />
+        )}
+      </div>
     </div>
   );
 };

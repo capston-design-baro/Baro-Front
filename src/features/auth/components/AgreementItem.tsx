@@ -12,52 +12,45 @@ const AgreementItem: React.FC<Props> = ({ data, onToggleCheck }) => {
   const { id, title, content, isChecked, required } = data;
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const labelText = required ? '(필수)' : '(선택)';
-
   return (
     <>
-      {/* 왼쪽 텍스트, 오른쪽 체크박스 */}
-      <div
-        className={[
-          'flex items-center justify-between gap-4',
-          'rounded-100 bg-neutral-0 border border-neutral-200',
-          'px-4 py-3',
-        ].join(' ')}
-      >
-        <div className="flex items-center gap-2">
-          {/* 필수 or 선택 뱃지 */}
-          <span
-            className={
-              required ? 'text-body-3-bold text-positive-200' : 'text-body-3-bold text-neutral-500'
-            }
+      <div className="flex items-center justify-between py-2.5">
+        {/* 좌측: 체크 아이콘 + 제목 */}
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => onToggleCheck(id)}
+            className="flex flex-shrink-0 items-center"
           >
-            {labelText}
-          </span>
+            <span
+              className={[
+                'material-symbols-outlined !text-[20px] leading-none transition-colors duration-200',
+                isChecked ? 'text-primary-400' : 'text-neutral-300',
+              ].join(' ')}
+            >
+              {isChecked ? 'check_circle' : 'radio_button_unchecked'}
+            </span>
+          </button>
 
-          {/* 제목 및 > 아이콘 */}
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-1"
           >
-            <span className="text-body-1-regular text-neutral-900">{title}</span>
             <span
-              className="material-symbols-outlined text-neutral-400"
-              style={{ fontSize: '12px' }}
+              className={[
+                'text-detail-bold leading-none',
+                required ? 'text-primary-400' : 'text-neutral-400',
+              ].join(' ')}
             >
-              arrow_forward_ios
+              {required ? '[필수]' : '[선택]'}
+            </span>
+            <span className="text-detail-regular leading-none text-neutral-700">{title}</span>
+            <span className="material-symbols-outlined !text-[14px] leading-none text-neutral-400">
+              chevron_right
             </span>
           </button>
         </div>
-
-        {/* 오른쪽 체크박스 */}
-        <input
-          type="checkbox"
-          checked={isChecked}
-          onChange={() => onToggleCheck(id)}
-          className="accent-positive-200 h-5 w-5 cursor-pointer"
-          aria-required={required}
-        />
       </div>
 
       {/* 약관 자세히 보기 모달 */}

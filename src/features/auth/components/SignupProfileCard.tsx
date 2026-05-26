@@ -4,6 +4,8 @@ import DaumPostcodeButton from '@/shared/ui/DaumPostcodeButton';
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import Button from '@/shared/ui/common/Button';
 
+import AuthCard from '@/features/auth/components/AuthCard';
+
 type SignupProfileData = {
   name: string;
   city: string;
@@ -96,14 +98,10 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
   };
 
   return (
-    <form
+    <AuthCard
+      as="form"
       onSubmit={handleSubmit}
-      className={[
-        'rounded-300 border-primary-400 border',
-        'px-8 py-10',
-        'h-full',
-        'flex flex-col',
-      ].join(' ')}
+      className="gap-6"
     >
       {/* 제목 + 이전 버튼 */}
       <div className="relative flex items-center justify-center">
@@ -141,7 +139,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
               placeholder="홍길동"
               type="name"
               className={[
-                'rounded-200 w- h-12 flex-1 px-3',
+                'rounded-200 w- h-8 flex-1 px-3',
                 'border border-neutral-300',
                 'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
               ].join(' ')}
@@ -182,7 +180,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 onClick={handleAddressFieldClick}
                 onFocus={handleAddressFieldClick}
                 className={[
-                  'rounded-200 w- h-12 flex-1 px-3 text-center',
+                  'rounded-200 w- h-8 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   hasAddress ? 'bg-neutral-0' : 'cursor-not-allowed bg-neutral-50',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
@@ -197,7 +195,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 onClick={handleAddressFieldClick}
                 onFocus={handleAddressFieldClick}
                 className={[
-                  'rounded-200 w- h-12 flex-1 px-3 text-center',
+                  'rounded-200 w- h-8 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   hasAddress ? 'bg-neutral-0' : 'cursor-not-allowed bg-neutral-50',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
@@ -212,7 +210,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 onClick={handleAddressFieldClick}
                 onFocus={handleAddressFieldClick}
                 className={[
-                  'rounded-200 w- h-12 flex-1 px-3 text-center',
+                  'rounded-200 w- h-8 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   hasAddress ? 'bg-neutral-0' : 'cursor-not-allowed bg-neutral-50',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
@@ -246,7 +244,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 value={phone1}
                 onChange={(e) => setPhone1(e.target.value)}
                 className={[
-                  'rounded-200 w- h-12 flex-1 px-3 text-center',
+                  'rounded-200 w- h-8 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -259,7 +257,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 value={phone2}
                 onChange={(e) => setPhone2(e.target.value)}
                 className={[
-                  'rounded-200 w- h-12 flex-1 px-3 text-center',
+                  'rounded-200 w- h-8 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -272,7 +270,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
                 value={phone3}
                 onChange={(e) => setPhone3(e.target.value)}
                 className={[
-                  'rounded-200 w- h-12 flex-1 px-3 text-center',
+                  'rounded-200 w- h-8 flex-1 px-3 text-center',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -295,7 +293,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
       >
         {isSubmitting ? '회원가입 진행중...' : '회원가입'}
       </Button>
-    </form>
+    </AuthCard>
   );
 };
 

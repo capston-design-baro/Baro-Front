@@ -9,6 +9,22 @@
 
 /* 커스텀 유틸리티 레이어 시작 */
 @layer utilities {
+  /* 🎈 fadeIn 애니메이션 (페이지 전환용) */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.35s ease-out both;
+  }
+
   /* 🌊 wave-fill 애니메이션 정의*/
   @keyframes wave-fill {
     0% {

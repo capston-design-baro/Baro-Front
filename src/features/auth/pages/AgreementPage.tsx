@@ -1,38 +1,37 @@
 import React from 'react';
 
-import useIsMdUp from '@/shared/hooks/useIsMdUp';
+import characterUrl from '@/assets/BaLawCharacter-large.svg';
+
 import Footer from '@/shared/ui/Footer';
 import Header from '@/shared/ui/Header';
+import SectionHeader from '@/shared/ui/SectionHeader';
 
 import AgreementsCard from '@/features/auth/components/AgreementsCard';
-import WelcomeCard from '@/features/auth/components/WelcomeCard';
 import { DEFAULT_AGREEMENTS } from '@/features/auth/constants/agreement';
 
 const AgreementsPage: React.FC = () => {
-  const isMdUp = useIsMdUp();
-
   return (
-    <div className="bg-neutral-0 flex min-h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden bg-neutral-50">
       <Header />
+      <main className="flex flex-1 items-center justify-center overflow-y-auto px-4 py-8">
+        <div className="animate-fade-in flex w-full max-w-[420px] flex-col items-center">
+          {/* 캐릭터 + 인사말 */}
+          <img
+            src={characterUrl}
+            alt="BaLaw 캐릭터"
+            className="mb-4 h-24 w-24"
+            draggable={false}
+          />
+          <SectionHeader
+            size="sm"
+            title="시작하기 전에"
+            description="서비스 이용을 위한 약관에 동의해주세요."
+          />
 
-      <main className="flex flex-1 items-center">
-        <div className="mx-auto w-full max-w-[1000px] py-8 md:py-10">
-          <div className="flex flex-col items-center justify-center gap-8 md:flex-row">
-            {/* md 이상에서만 WelcomeCard 렌더 */}
-            {isMdUp && (
-              <div className="h-[600px] w-full max-w-[460px] flex-1">
-                <WelcomeCard variant="signup" />
-              </div>
-            )}
-
-            {/* 약관 카드는 항상 표시 */}
-            <div className="h-[600px] w-full max-w-[460px] flex-1">
-              <AgreementsCard initial={DEFAULT_AGREEMENTS} />
-            </div>
-          </div>
+          {/* 약관 카드 */}
+          <AgreementsCard initial={DEFAULT_AGREEMENTS} />
         </div>
       </main>
-
       <Footer />
     </div>
   );

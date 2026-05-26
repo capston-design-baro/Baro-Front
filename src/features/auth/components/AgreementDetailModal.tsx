@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
@@ -25,30 +26,29 @@ const AgreementDetailModal: React.FC<Props> = ({
 
   const baseTitle = title.replace(/\(\)/, '');
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40"
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="agreement-modal-title"
     >
+      {/* 배경 오버레이 (클릭 시 닫힘) */}
+      <div
+        className="fixed inset-0 bg-neutral-900/40"
+        onClick={onClose}
+      />
       <div
         className={[
-          'flex flex-col',
-          'max-h-[60vh] w-full max-w-md',
-          'bg-neutral-0 rounded-200 shadow-lg',
+          'relative flex flex-col',
+          'max-h-[70vh] w-full max-w-md',
+          'rounded-[16px] bg-white',
+          'shadow-[0_8px_30px_rgba(0,0,0,0.12)]',
           'overflow-hidden',
         ].join(' ')}
       >
         {/* 헤더 */}
-        <header
-          className={[
-            'flex items-center justify-between',
-            'border-b border-neutral-200',
-            'bg-primary-0/50',
-            'px-5 py-3',
-          ].join(' ')}
-        >
+        <header className="flex items-center justify-between px-6 py-2">
           <h2
             id="agreement-modal-title"
             className="text-body-3-bold text-neutral-900"
@@ -58,18 +58,14 @@ const AgreementDetailModal: React.FC<Props> = ({
           <button
             type="button"
             onClick={onClose}
-            className={[
-              'rounded-400 border border-neutral-300',
-              'px-3 py-1.5',
-              'text-detail-regular text-neutral-800',
-              'bg-neutral-0 hover:bg-warning-0',
-            ].join(' ')}
+            className="flex h-6 w-6 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
           >
-            닫기
+            <span className="material-symbols-outlined !text-[16px]">close</span>
           </button>
         </header>
+
         {/* 본문 */}
-        <div className="prose prose-slate prose-sm max-w-none overflow-y-auto p-6">
+        <div className="balaw-scrollbar prose prose-slate prose-sm max-w-none overflow-y-auto border-t border-neutral-100 px-6 py-5">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeSanitize]}
@@ -77,32 +73,37 @@ const AgreementDetailModal: React.FC<Props> = ({
             {content}
           </ReactMarkdown>
         </div>
+
         {/* 푸터 */}
-        <footer
-          className={[
-            'flex items-center justify-end gap-4',
-            'border-t border-neutral-200',
-            'bg-primary-0/50',
-            'px-5 py-3',
-          ].join(' ')}
-        >
-          <label className="flex cursor-pointer items-center gap-2">
-            <span className="text-body-3-regular text-neutral-900">
-              BaLaw {baseTitle}에 동의합니다.
+        <footer className="border-t border-neutral-100 px-6 py-4">
+          <button
+            type="button"
+            onClick={() => {
+              onToggleCheck();
+              setTimeout(onClose, 400);
+            }}
+            className={[
+              'rounded-300 flex w-full items-center justify-center gap-2 py-2.5',
+              'transition-all duration-200',
+              checked
+                ? 'bg-primary-0 text-primary-400'
+                : 'bg-neutral-50 text-neutral-500 hover:bg-neutral-100',
+            ].join(' ')}
+          >
+            <span
+              className={[
+                'material-symbols-outlined !text-[20px] transition-colors duration-200',
+                checked ? 'text-primary-400' : 'text-neutral-400',
+              ].join(' ')}
+            >
+              {checked ? 'check_circle' : 'radio_button_unchecked'}
             </span>
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={() => {
-                onToggleCheck();
-                onClose();
-              }}
-              className="accent-positive-200 h-4 w-4 cursor-pointer"
-            />
-          </label>
+            <span className="text-body-3-bold">{baseTitle}에 동의합니다</span>
+          </button>
         </footer>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 
