@@ -44,19 +44,19 @@ const AgreementDetailModal: React.FC<Props> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* 헤더 */}
-        <header className="flex items-center justify-between px-6 py-4">
+        <header className="flex items-center justify-between px-6 py-2">
           <h2
             id="agreement-modal-title"
-            className="text-body-2-bold text-neutral-900"
+            className="text-body-3-bold text-neutral-900"
           >
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
+            className="flex h-6 w-6 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700"
           >
-            <span className="material-symbols-outlined !text-[20px]">close</span>
+            <span className="material-symbols-outlined !text-[16px]">close</span>
           </button>
         </header>
 
@@ -76,7 +76,7 @@ const AgreementDetailModal: React.FC<Props> = ({
             type="button"
             onClick={() => {
               onToggleCheck();
-              onClose();
+              setTimeout(onClose, 400);
             }}
             className={[
               'flex w-full items-center justify-center gap-2 rounded-300 py-2.5',

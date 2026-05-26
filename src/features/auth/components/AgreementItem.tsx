@@ -20,11 +20,11 @@ const AgreementItem: React.FC<Props> = ({ data, onToggleCheck }) => {
           <button
             type="button"
             onClick={() => onToggleCheck(id)}
-            className="flex-shrink-0"
+            className="flex flex-shrink-0 items-center"
           >
             <span
               className={[
-                'material-symbols-outlined !text-[22px] transition-colors duration-200',
+                'material-symbols-outlined !text-[20px] leading-none transition-colors duration-200',
                 isChecked ? 'text-primary-400' : 'text-neutral-300',
               ].join(' ')}
             >
@@ -35,18 +35,18 @@ const AgreementItem: React.FC<Props> = ({ data, onToggleCheck }) => {
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-1 text-left"
+            className="flex items-center gap-1"
           >
             <span
               className={[
-                'text-detail-bold',
+                'text-detail-bold leading-none',
                 required ? 'text-primary-400' : 'text-neutral-400',
               ].join(' ')}
             >
               {required ? '[필수]' : '[선택]'}
             </span>
-            <span className="text-body-3-regular text-neutral-700">{title}</span>
-            <span className="material-symbols-outlined !text-[14px] text-neutral-400">
+            <span className="text-detail-regular leading-none text-neutral-700">{title}</span>
+            <span className="material-symbols-outlined !text-[14px] leading-none text-neutral-400">
               chevron_right
             </span>
           </button>
