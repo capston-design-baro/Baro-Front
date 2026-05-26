@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
+import SectionHeader from '@/shared/ui/SectionHeader';
+
 import type { CrimeCategory, CrimeDomain } from '@/features/crime-types/constants/crimeTypes';
 import { CRIME_TYPES } from '@/features/crime-types/constants/crimeTypes';
 
@@ -41,15 +43,10 @@ const CrimeTypeSection: React.FC = () => {
     <section className="w-full bg-neutral-50">
       <div className="mx-auto flex max-w-[720px] flex-col items-center px-4 py-8 sm:py-12">
         {/* 헤더 */}
-        <header className="mb-10 text-center sm:mb-14">
-          <h2 className="text-heading-2-bold sm:text-main-4 text-primary-400 mb-3">
-            범죄 유형 안내
-          </h2>
-          <p className="text-body-3-regular sm:text-body-2-regular text-neutral-500">
-            어떤 유형으로 고소해야 할지 모르겠다면,
-            <br className="sm:hidden" /> 아래에서 확인해보세요.
-          </p>
-        </header>
+        <SectionHeader
+          title="범죄 유형 안내"
+          description="어떤 유형으로 고소해야 할지 모르겠다면, 아래에서 확인해보세요."
+        />
 
         {/* 형사 / 민사 Pill 탭 */}
         <div className="relative mb-8 inline-flex rounded-full bg-neutral-100 p-1">

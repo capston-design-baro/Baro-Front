@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import SectionHeader from '@/shared/ui/SectionHeader';
+
 import FaqItemCard from '@/features/faq/components/FaqItemCard';
 import { FAQ_ITEMS } from '@/features/faq/constants/faq';
 
@@ -34,14 +36,10 @@ const FaqSection: React.FC = () => {
     >
       <div className="mx-auto flex max-w-[720px] flex-col items-center px-4 py-8 sm:py-12">
         {/* 상단 타이틀 영역 */}
-        <header className="mb-10 text-center sm:mb-14">
-          <h2 className="text-heading-2-bold sm:text-main-4 text-primary-400 mb-3">
-            자주 하는 질문
-          </h2>
-          <p className="text-body-3-regular sm:text-body-2-regular text-neutral-500">
-            여러분이 가장 많이 물어본 질문들이에요.
-          </p>
-        </header>
+        <SectionHeader
+          title="자주 하는 질문"
+          description="여러분이 가장 많이 물어본 질문들이에요."
+        />
 
         {/* FAQ 리스트 */}
         <div className="flex w-full flex-col gap-3">
