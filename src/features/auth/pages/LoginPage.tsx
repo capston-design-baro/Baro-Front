@@ -2,17 +2,16 @@ import { useNavigate } from 'react-router-dom';
 
 import React from 'react';
 
-import useIsMdUp from '@/shared/hooks/useIsMdUp';
+import characterUrl from '@/assets/BaLawCharacter-large.svg';
 import Footer from '@/shared/ui/Footer';
 import Header from '@/shared/ui/Header';
+import SectionHeader from '@/shared/ui/SectionHeader';
 
 import { login } from '@/features/auth/apis/auth';
 import LoginCard from '@/features/auth/components/LoginCard';
-import WelcomeCard from '@/features/auth/components/WelcomeCard';
 import type { LoginFormValues } from '@/features/auth/types/form';
 
 const LoginPage: React.FC = () => {
-  const isMdUp = useIsMdUp(); // md 이상일 때만 true
   const navigate = useNavigate();
 
   const handleLogin = async (values: LoginFormValues) => {
@@ -21,27 +20,27 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-neutral-0 flex min-h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden bg-neutral-50">
       <Header />
+      <main className="flex flex-1 items-center justify-center overflow-y-auto px-4 py-8">
+        <div className="flex w-full max-w-[420px] flex-col items-center">
+          {/* 캐릭터 + 인사말 */}
+          <img
+            src={characterUrl}
+            alt="BaLaw 캐릭터"
+            className="mb-4 h-24 w-24"
+            draggable={false}
+          />
+          <SectionHeader
+            size="sm"
+            title="다시 만나서 반가워요!"
+            description="바로와 함께 시작해볼까요?"
+          />
 
-      <main className="flex flex-1 items-center">
-        <div className="mx-auto w-full max-w-[1000px] py-8 md:py-10">
-          <div className="flex flex-col items-center justify-center gap-8 md:flex-row">
-            {/* md 이상에서만 WelcomeCard 렌더 */}
-            {isMdUp && (
-              <div className="h-[600px] w-full max-w-[460px] flex-1">
-                <WelcomeCard variant="login" />
-              </div>
-            )}
-
-            {/* 로그인 카드는 항상 표시 */}
-            <div className="h-[600px] w-full max-w-[460px] flex-1">
-              <LoginCard onLogin={handleLogin} />
-            </div>
-          </div>
+          {/* 로그인 카드 */}
+          <LoginCard onLogin={handleLogin} />
         </div>
       </main>
-
       <Footer />
     </div>
   );

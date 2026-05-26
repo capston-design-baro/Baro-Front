@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import Button from '@/shared/ui/common/Button';
 
+import AuthCard from '@/features/auth/components/AuthCard';
 import { checkEmailAvailability } from '@/features/auth/apis/auth';
 import { mapAuthError } from '@/features/auth/utils/mapAuthError';
 
@@ -115,20 +116,10 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
   const isNextDisabled = !email || !pw || !pwCheck || emailCheckStatus !== 'success';
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={[
-        'rounded-300 border-primary-400 border',
-        'px-8 py-10',
-        'h-full',
-        'flex flex-col',
-      ].join(' ')}
-    >
-      {/* 제목 */}
-      <h2 className="text-heading-1-bold text-primary-400 text-center">회원가입</h2>
+    <AuthCard as="form" onSubmit={handleSubmit} className="gap-6">
 
       {/* 입력 폼 */}
-      <div className="mt-15 flex flex-1 flex-col justify-center gap-6 px-5">
+      <div className="flex flex-col gap-5">
         {/* 이메일 */}
         <div className="flex flex-col gap-2">
           {renderLabel('이메일', true)}
@@ -144,7 +135,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                 id="email"
                 type="email"
                 className={[
-                  'rounded-200 h-12 flex-1 px-3',
+                  'rounded-200 h-8 flex-1 px-3',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -160,7 +151,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
               {/* 중복 확인 버튼 */}
               <Button
                 variant="secondary"
-                size="md"
+                size="sm"
                 disabled={emailCheckStatus !== 'idle'}
                 onClick={handleEmailCheck}
               >
@@ -189,7 +180,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                 id="password"
                 type={showPw ? 'text' : 'password'}
                 className={[
-                  'rounded-200 h-12 w-full px-3 pr-10',
+                  'rounded-200 h-8 w-full px-3 pr-10',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -231,7 +222,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
                 id="password2"
                 type={showPwCheck ? 'text' : 'password'}
                 className={[
-                  'rounded-200 h-12 w-full px-3 pr-10',
+                  'rounded-200 h-8 w-full px-3 pr-10',
                   'border border-neutral-300',
                   'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
                 ].join(' ')}
@@ -272,7 +263,7 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
       >
         다음
       </Button>
-    </form>
+    </AuthCard>
   );
 };
 
