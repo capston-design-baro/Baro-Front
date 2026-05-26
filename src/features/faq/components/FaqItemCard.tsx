@@ -2,27 +2,78 @@ import React from 'react';
 
 import type { FaqItem } from '@/features/faq/constants/faq';
 
-type Props = {
+interface Props {
   item: FaqItem;
-};
+  isOpen: boolean;
+  onToggle: () => void;
+  index: number;
+  isVisible: boolean;
+}
 
-const FaqItemCard: React.FC<Props> = ({ item }) => {
+const FaqItemCard: React.FC<Props> = ({ item, isOpen, onToggle, index, isVisible }) => {
   return (
-    <div className="flex flex-col gap-3">
-      {/* 질문 영역 */}
-      <div className="w-full">
-        <p className="text-heading-4-bold text-neutral-900">
-          <span className="text-primary-400 mr-1">Q.</span>
-          {item.question}
-        </p>
-      </div>
+    <div
+      className={[
+        'overflow-hidden rounded-[16px] bg-white transition-all duration-300',
+        'shadow-[0_2px_16px_rgba(0,0,0,0.04)]',
+        isOpen ? 'shadow-[0_4px_20px_rgba(37,99,235,0.08)]' : '',
+        // 등장 애니메이션
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0',
+      ].join(' ')}
+      style={{ transitionDelay: isVisible ? `${index * 80}ms` : '0ms' }}
+    >
+      <div className="flex">
+        {/* 좌측 하이라이트 바 */}
+        <div
+          className={[
+            'w-1 flex-shrink-0 transition-all duration-300',
+            isOpen ? 'bg-primary-400' : 'bg-transparent',
+          ].join(' ')}
+        />
 
-      {/* 답변 카드 영역 */}
-      <div
-        className="rounded-300 bg-primary-50 w-full px-6 py-4"
-        style={{ boxShadow: '0px 4px 12px 0 rgba(37,99,235,0.1)' }}
-      >
-        <p className="text-body-2 whitespace-pre-line text-neutral-800">{item.answer}</p>
+        <div className="flex-1">
+          {/* 질문 영역 (토글 버튼) */}
+          <button
+            type="button"
+            onClick={onToggle}
+            className="flex w-full items-center justify-between px-5 py-5 text-left"
+          >
+            <p
+              className={[
+                'text-body-2-bold pr-4 transition-colors duration-300',
+                isOpen ? 'text-primary-400' : 'text-neutral-900',
+              ].join(' ')}
+            >
+              <span className="text-primary-400 mr-1.5">Q.</span>
+              {item.question}
+            </p>
+            <span
+              className={[
+                'material-symbols-outlined flex-shrink-0 !text-[20px]',
+                'transition-all duration-300',
+                isOpen ? 'text-primary-400 rotate-180' : 'text-neutral-400',
+              ].join(' ')}
+            >
+              expand_more
+            </span>
+          </button>
+
+          {/* 답변 영역 (아코디언) */}
+          <div
+            className={[
+              'grid transition-all duration-300 ease-out',
+              isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
+            ].join(' ')}
+          >
+            <div className="overflow-hidden">
+              <div className="border-t border-neutral-100 px-5 pt-4 pb-5">
+                <p className="text-body-3-regular leading-relaxed whitespace-pre-line text-neutral-600">
+                  {item.answer}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
