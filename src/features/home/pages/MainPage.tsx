@@ -7,7 +7,10 @@ import Footer from '@/shared/ui/Footer';
 import Header from '@/shared/ui/Header';
 
 import { useUserStore } from '@/features/auth/stores/useUserStore';
+import HeroSection from '@/features/home/sections/HeroSection';
+import ProcessSection from '@/features/home/sections/ProcessSection';
 import ServiceSection from '@/features/home/sections/ServiceSection';
+import TrustSection from '@/features/home/sections/TrustSection';
 import type { Service } from '@/features/home/types/service';
 
 export default function MainPage() {
@@ -27,10 +30,28 @@ export default function MainPage() {
     }
   };
 
+  const handleHeroStart = () => {
+    if (!user) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    navigate('/complaint');
+  };
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
       <Header />
-      <main className="my-6 flex-1">
+      <main className="flex-1 snap-y snap-proximity overflow-y-auto scroll-smooth">
+        {/* 히어로 섹션 */}
+        <HeroSection onClickStart={handleHeroStart} />
+
+        {/* 특징 섹션 */}
+        <TrustSection />
+
+        {/* 고소장 작성 단계 안내 섹션 */}
+        <ProcessSection />
+
+        {/* 서비스 카드 섹션 */}
         <ServiceSection onClickCard={handleClickCard} />
       </main>
       <Footer />
