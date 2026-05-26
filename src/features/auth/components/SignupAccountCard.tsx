@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import Button from '@/shared/ui/common/Button';
 
-import AuthCard from '@/features/auth/components/AuthCard';
 import { checkEmailAvailability } from '@/features/auth/apis/auth';
+import AuthCard from '@/features/auth/components/AuthCard';
 import { mapAuthError } from '@/features/auth/utils/mapAuthError';
 
 type Props = {
@@ -116,8 +116,11 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
   const isNextDisabled = !email || !pw || !pwCheck || emailCheckStatus !== 'success';
 
   return (
-    <AuthCard as="form" onSubmit={handleSubmit} className="gap-6">
-
+    <AuthCard
+      as="form"
+      onSubmit={handleSubmit}
+      className="gap-6"
+    >
       {/* 입력 폼 */}
       <div className="flex flex-col gap-5">
         {/* 이메일 */}

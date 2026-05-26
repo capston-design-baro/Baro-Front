@@ -15,7 +15,7 @@ const AuthCard: React.FC<AuthCardProps> = ({ children, as = 'div', onSubmit, cla
       onSubmit={onSubmit}
       className={[
         'w-full rounded-[16px]',
-        'bg-gradient-to-b from-primary-0/40 via-white to-white',
+        'from-primary-0/40 bg-gradient-to-b via-white to-white',
         'border border-neutral-100',
         'shadow-[0_4px_24px_rgba(0,0,0,0.06)]',
         'px-8 py-8',

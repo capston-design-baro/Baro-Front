@@ -1,9 +1,9 @@
+import { createPortal } from 'react-dom';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 
 import React from 'react';
-import { createPortal } from 'react-dom';
 
 type Props = {
   open: boolean;
@@ -83,7 +83,7 @@ const AgreementDetailModal: React.FC<Props> = ({
               setTimeout(onClose, 400);
             }}
             className={[
-              'flex w-full items-center justify-center gap-2 rounded-300 py-2.5',
+              'rounded-300 flex w-full items-center justify-center gap-2 py-2.5',
               'transition-all duration-200',
               checked
                 ? 'bg-primary-0 text-primary-400'
@@ -98,9 +98,7 @@ const AgreementDetailModal: React.FC<Props> = ({
             >
               {checked ? 'check_circle' : 'radio_button_unchecked'}
             </span>
-            <span className="text-body-3-bold">
-              {baseTitle}에 동의합니다
-            </span>
+            <span className="text-body-3-bold">{baseTitle}에 동의합니다</span>
           </button>
         </footer>
       </div>

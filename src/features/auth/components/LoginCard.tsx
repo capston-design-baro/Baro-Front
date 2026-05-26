@@ -5,7 +5,6 @@ import Button from '@/shared/ui/common/Button';
 import Input from '@/shared/ui/common/Input';
 
 import AuthCard from '@/features/auth/components/AuthCard';
-
 import type { LoginFormValues } from '@/features/auth/types/form';
 import { mapAuthError } from '@/features/auth/utils/mapAuthError';
 
@@ -51,9 +50,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
       <form className="flex flex-col gap-4">
         {/* 이메일 */}
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined !text-[22px] text-neutral-400">
-            mail
-          </span>
+          <span className="material-symbols-outlined !text-[22px] text-neutral-400">mail</span>
           <Input
             id="email"
             type="email"
@@ -72,9 +69,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ className = '', onLogin }) => {
 
         {/* 비밀번호 */}
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined !text-[22px] text-neutral-400">
-            lock
-          </span>
+          <span className="material-symbols-outlined !text-[22px] text-neutral-400">lock</span>
           <Input
             id="password"
             type="password"

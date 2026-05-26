@@ -11,15 +11,17 @@ const FormErrorMessage: React.FC<FormErrorMessageProps> = ({ error, className = 
   return (
     <div
       aria-live="polite"
-      className={[
-        'flex items-center gap-2 rounded-300 bg-warning-0 px-4 py-3',
-        className,
-      ].join(' ')}
+      className={['rounded-300 bg-warning-0 flex items-center gap-2 px-4 py-3', className].join(
+        ' ',
+      )}
     >
-      <span className="material-symbols-outlined flex-shrink-0 !text-[18px] text-warning-200">
+      <span className="material-symbols-outlined text-warning-200 flex-shrink-0 !text-[18px]">
         error
       </span>
-      <p className="text-detail-regular text-warning-300" role="alert">
+      <p
+        className="text-detail-regular text-warning-300"
+        role="alert"
+      >
         {error}
       </p>
     </div>

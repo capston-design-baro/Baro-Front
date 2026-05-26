@@ -98,7 +98,11 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
   };
 
   return (
-    <AuthCard as="form" onSubmit={handleSubmit} className="gap-6">
+    <AuthCard
+      as="form"
+      onSubmit={handleSubmit}
+      className="gap-6"
+    >
       {/* 제목 + 이전 버튼 */}
       <div className="relative flex items-center justify-center">
         <button

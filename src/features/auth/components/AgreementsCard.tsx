@@ -42,12 +42,16 @@ const AgreementsCard: React.FC<Props> = ({ initial }) => {
   };
 
   return (
-    <AuthCard as="form" onSubmit={handleSubmit} className="gap-5">
+    <AuthCard
+      as="form"
+      onSubmit={handleSubmit}
+      className="gap-5"
+    >
       {/* 전체 동의 */}
       <button
         type="button"
         onClick={() => toggleAll(!allChecked)}
-        className="flex items-center gap-2.5 rounded-300 bg-neutral-50 px-4 py-3"
+        className="rounded-300 flex items-center gap-2.5 bg-neutral-50 px-4 py-3"
       >
         <span
           className={[

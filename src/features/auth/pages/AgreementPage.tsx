@@ -1,6 +1,7 @@
 import React from 'react';
 
 import characterUrl from '@/assets/BaLawCharacter-large.svg';
+
 import Footer from '@/shared/ui/Footer';
 import Header from '@/shared/ui/Header';
 import SectionHeader from '@/shared/ui/SectionHeader';

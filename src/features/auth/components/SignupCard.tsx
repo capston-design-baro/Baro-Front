@@ -88,7 +88,10 @@ const SignupCard: React.FC<SignupCardProps> = ({ onSignup }) => {
 
   return (
     <div className="w-full max-w-[460px]">
-      <div key={step} className="animate-fade-in">
+      <div
+        key={step}
+        className="animate-fade-in"
+      >
         {step === 1 ? (
           <SignupAccountCard
             defaultValues={formData}
