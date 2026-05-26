@@ -5,6 +5,7 @@ export type ServiceIcon = 'edit_note' | 'content_paste_search' | 'contact_suppor
 export interface Service {
   id: ServiceId;
   title: string;
+  description: string;
   icon: ServiceIcon;
   to: string;
 }
