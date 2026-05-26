@@ -23,7 +23,7 @@ const SignupPage: React.FC = () => {
     <div className="flex h-screen flex-col overflow-hidden bg-neutral-50">
       <Header />
       <main className="flex flex-1 items-center justify-center overflow-y-auto px-4 py-8">
-        <div className="flex w-full max-w-[420px] flex-col items-center">
+        <div className="animate-fade-in flex w-full max-w-[420px] flex-col items-center">
           {/* 캐릭터 + 인사말 */}
           <img
             src={characterUrl}
