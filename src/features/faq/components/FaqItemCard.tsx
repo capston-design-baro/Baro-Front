@@ -38,18 +38,20 @@ const FaqItemCard: React.FC<Props> = ({ item, isOpen, onToggle, index, isVisible
             onClick={onToggle}
             className="flex w-full items-center justify-between px-5 py-5 text-left"
           >
-            <p className={[
-              'text-body-2-bold pr-4 transition-colors duration-300',
-              isOpen ? 'text-primary-400' : 'text-neutral-900',
-            ].join(' ')}>
-              <span className="mr-1.5 text-primary-400">Q.</span>
+            <p
+              className={[
+                'text-body-2-bold pr-4 transition-colors duration-300',
+                isOpen ? 'text-primary-400' : 'text-neutral-900',
+              ].join(' ')}
+            >
+              <span className="text-primary-400 mr-1.5">Q.</span>
               {item.question}
             </p>
             <span
               className={[
-                'material-symbols-outlined !text-[20px] flex-shrink-0',
+                'material-symbols-outlined flex-shrink-0 !text-[20px]',
                 'transition-all duration-300',
-                isOpen ? 'rotate-180 text-primary-400' : 'text-neutral-400',
+                isOpen ? 'text-primary-400 rotate-180' : 'text-neutral-400',
               ].join(' ')}
             >
               expand_more
@@ -65,7 +67,7 @@ const FaqItemCard: React.FC<Props> = ({ item, isOpen, onToggle, index, isVisible
           >
             <div className="overflow-hidden">
               <div className="border-t border-neutral-100 px-5 pt-4 pb-5">
-                <p className="text-body-3-regular whitespace-pre-line leading-relaxed text-neutral-600">
+                <p className="text-body-3-regular leading-relaxed whitespace-pre-line text-neutral-600">
                   {item.answer}
                 </p>
               </div>

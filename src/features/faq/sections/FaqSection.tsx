@@ -28,7 +28,10 @@ const FaqSection: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="w-full bg-neutral-50">
+    <section
+      ref={sectionRef}
+      className="w-full bg-neutral-50"
+    >
       <div className="mx-auto flex max-w-[720px] flex-col items-center px-4 py-8 sm:py-12">
         {/* 상단 타이틀 영역 */}
         <header className="mb-10 text-center sm:mb-14">
