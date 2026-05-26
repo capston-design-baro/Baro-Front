@@ -1,13 +1,6 @@
-/**
- * Header 컴포넌트
- * ------------------
- * - 로고 클릭 시 홈('/')으로 이동
- * - 로그인 상태에 따라 로그인 or 로그아웃 버튼 노출
- * - 로그아웃 버튼 클릭 시 -> 토큰 및 상태 초기화 후 홈으로 리디렉트
- */
 import { useNavigate } from 'react-router-dom';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import logoUrl from '@/assets/BaLawLogo.svg';
 
@@ -19,29 +12,36 @@ import { useComplaintWizard } from '@/features/complaint/stores/useComplaintWiza
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-
-  // zustand 스토어에서 현재 로그인한 사용자 정보 가져오기
   const user = useUserStore((state) => state.user);
-
-  // 고소장 위자드 reset 함수
   const resetWizard = useComplaintWizard((s) => s.reset);
+  const [scrolled, setScrolled] = useState(false);
 
-  // 로그인 버튼 클릭 -> /login 페이지 이동
-  const handleLoginClick = () => {
-    navigate('/login');
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      // main 태그가 스크롤 컨테이너인 경우 대응
+      const scrollContainer = document.querySelector('main');
+      const scrollY = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
+      setScrolled(scrollY > 10);
+    };
 
-  // 로고 클릭 -> 홈('/') 이동
+    const scrollContainer = document.querySelector('main');
+    const target = scrollContainer || window;
+    target.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => target.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleLoginClick = () => navigate('/login');
+
   const handleLogoClick = () => {
     resetWizard();
     navigate('/');
   };
 
-  // 로그아웃 버튼 클릭
   const handleLogoutClick = async () => {
-    await logout(); // 토큰/쿠키 삭제 + store 초기화
+    await logout();
     resetWizard();
-    navigate('/'); // 로그아웃 후 홈('/')으로 이동
+    navigate('/');
   };
 
   const isLogin = Boolean(user);
@@ -50,30 +50,31 @@ const Header: React.FC = () => {
   const buttonVariant = isLogin ? 'outline-secondary' : 'outline';
 
   return (
-    /**
-     * Header Layout
-     * -----------------
-     * - 최대 폭 1280px, 가운데 정렬
-     * - 좌측: 로고
-     * - 우측: 로그인 / 로그아웃 버튼
-     */
-    <header className="bg-neutral-0 mx-auto flex h-20 w-full max-w-[1280px] items-center justify-between px-8 py-6">
-      <img
-        src={logoUrl}
-        alt="BaLaw 로고"
-        className="h-[clamp(24px,8vw,60px)] w-auto cursor-pointer"
-        onClick={handleLogoClick}
-      />
+    <header
+      className={[
+        'sticky top-0 z-40 w-full transition-all duration-300',
+        scrolled
+          ? 'bg-white/80 shadow-[0_1px_12px_rgba(0,0,0,0.06)] backdrop-blur-lg'
+          : 'bg-transparent',
+      ].join(' ')}
+    >
+      <div className="mx-auto flex h-16 w-full max-w-[1280px] items-center justify-between px-8">
+        <img
+          src={logoUrl}
+          alt="BaLaw 로고"
+          className="h-7 w-auto cursor-pointer"
+          onClick={handleLogoClick}
+        />
 
-      {/* 로그인 여부(user 존재 여부)에 따라 버튼 분기 */}
-      <Button
-        variant={buttonVariant}
-        size="sm"
-        className="w-20"
-        onClick={buttonAction}
-      >
-        {buttonText}
-      </Button>
+        <Button
+          variant={buttonVariant}
+          size="sm"
+          className="w-20"
+          onClick={buttonAction}
+        >
+          {buttonText}
+        </Button>
+      </div>
     </header>
   );
 };
