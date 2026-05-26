@@ -23,7 +23,10 @@ const ProcessSection: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="w-full snap-start bg-white">
+    <section
+      ref={sectionRef}
+      className="w-full snap-start bg-white"
+    >
       <div className="mx-auto w-full max-w-[1280px] px-6 py-20 sm:py-28">
         <header className="mb-12 text-center sm:mb-16">
           <h2 className="text-heading-2-bold sm:text-main-4 mb-3 text-neutral-900">

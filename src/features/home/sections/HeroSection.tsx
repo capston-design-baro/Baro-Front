@@ -1,7 +1,7 @@
 import '@/styles/main.css';
+import { useNavigate } from 'react-router-dom';
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import characterUrl from '@/assets/BaLawCharacter-large.svg';
 
@@ -30,21 +30,19 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onClickStart }) => {
       <div className="mx-auto flex w-full max-w-[1280px] flex-col items-center px-6 pt-16 pb-20 sm:flex-row sm:items-center sm:justify-between sm:pt-24 sm:pb-28">
         {/* 텍스트 영역 */}
         <div className="z-10 flex flex-col items-center text-center sm:items-start sm:text-left">
-          <p className="text-body-2-bold sm:text-body-1-bold mb-3 text-primary-400">
+          <p className="text-body-2-bold sm:text-body-1-bold text-primary-400 mb-3">
             AI 법률 서비스
           </p>
 
-          <h1 className="text-main-4 sm:text-main-2 lg:text-main-1 mb-4 text-neutral-900 leading-tight sm:leading-tight lg:leading-tight">
+          <h1 className="text-main-4 sm:text-main-2 lg:text-main-1 mb-4 leading-tight text-neutral-900 sm:leading-tight lg:leading-tight">
             복잡한 법률,
             <br />
-            <span className="animate-wave-fill inline-block">바로</span>가
-            쉽게 도와드릴게요.
+            <span className="animate-wave-fill inline-block">바로</span>가 쉽게 도와드릴게요.
           </h1>
 
           <p className="text-body-2-regular sm:text-body-1-regular mb-8 max-w-[400px] text-neutral-500">
             AI가 안내하는 고소장 작성,
-            <br className="sm:hidden" />
-            {' '}단계별로 쉽고 빠르게 완성해보세요.
+            <br className="sm:hidden" /> 단계별로 쉽고 빠르게 완성해보세요.
           </p>
 
           <Button

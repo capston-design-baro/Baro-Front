@@ -1,7 +1,6 @@
 import React from 'react';
 
 import ServiceCard from '@/features/home/components/ServiceCard';
-
 import { SERVICES } from '@/features/home/constants/service';
 import type { ServiceClickHandler } from '@/features/home/types/service';
 
