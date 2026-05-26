@@ -19,47 +19,48 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  // 공통 스타일
   const baseStyles = [
     'inline-flex items-center justify-center',
-    'transition-colors duration-200 ease-in-out',
+    'transition-all duration-200 ease-out',
     'disabled:cursor-not-allowed disabled:opacity-50',
     'whitespace-nowrap',
+    'font-medium',
   ].join(' ');
 
-  // 색상 (primary, error, secondary, outline)
   const variantStyles = {
     primary: [
       'bg-primary-400 text-neutral-0',
-      'hover:bg-primary-500',
-      'active:bg-primary-600',
+      'hover:bg-primary-500 hover:shadow-[0_2px_8px_rgba(37,99,235,0.25)]',
+      'active:bg-primary-600 active:shadow-none',
     ].join(' '),
-    error: ['bg-warning-200 text-neutral-0', 'hover:bg-warning-300', 'active:bg-red-700'].join(' '),
+    error: [
+      'bg-warning-200 text-neutral-0',
+      'hover:bg-warning-300 hover:shadow-[0_2px_8px_rgba(239,68,68,0.25)]',
+      'active:bg-red-700 active:shadow-none',
+    ].join(' '),
     secondary: [
-      'bg-neutral-200 text-neutral-700',
-      'hover:bg-neutral-300',
-      'active:bg-neutral-350',
+      'bg-neutral-100 text-neutral-700',
+      'hover:bg-neutral-200',
+      'active:bg-neutral-300',
     ].join(' '),
     outline: [
-      'border border-primary-400 text-primary-400 bg-white',
-      'hover:bg-primary-0/50 hover:border-primary-500',
-      'active:bg-primary-50/70 active:border-primary-600',
+      'border border-neutral-200 text-neutral-700 bg-white',
+      'hover:bg-neutral-50 hover:border-neutral-300',
+      'active:bg-neutral-100',
     ].join(' '),
     'outline-secondary': [
-      'border border-neutral-200 text-neutral-700',
-      'hover:border-neutral-300',
-      'active:border-neutral-350',
+      'border border-neutral-200 text-neutral-500',
+      'hover:bg-neutral-50 hover:text-neutral-700',
+      'active:bg-neutral-100',
     ].join(' '),
   };
 
-  // 크기 변형 (높이, 패딩, 폰트, radius)
   const sizeStyles = {
-    sm: 'h-8 px-2 text-detail-regular rounded-200', // 채팅 전송 버튼 등 작은 곳
-    md: 'h-12 px-3 text-body-3-regular rounded-200', // 일반적인 폼 버튼
-    lg: 'h-16 px-4 text-body-3-regular rounded-200', // 다운로드 버튼 등 큰 CTA
+    sm: 'h-8 px-3 text-detail-regular rounded-300',
+    md: 'h-10 px-4 text-body-3-regular rounded-300',
+    lg: 'h-14 px-5 text-body-2-regular rounded-300',
   };
 
-  // 너비 설정
   const widthStyle = fullWidth ? 'w-full' : '';
 
   return (
