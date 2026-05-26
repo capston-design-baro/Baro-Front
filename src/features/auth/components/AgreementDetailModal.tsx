@@ -3,6 +3,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 
 import React from 'react';
+import { createPortal } from 'react-dom';
 
 type Props = {
   open: boolean;
@@ -25,23 +26,26 @@ const AgreementDetailModal: React.FC<Props> = ({
 
   const baseTitle = title.replace(/\(\)/, '');
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="agreement-modal-title"
-      onClick={onClose}
     >
+      {/* 배경 오버레이 (클릭 시 닫힘) */}
+      <div
+        className="fixed inset-0 bg-neutral-900/40"
+        onClick={onClose}
+      />
       <div
         className={[
-          'flex flex-col',
+          'relative flex flex-col',
           'max-h-[70vh] w-full max-w-md',
           'rounded-[16px] bg-white',
           'shadow-[0_8px_30px_rgba(0,0,0,0.12)]',
           'overflow-hidden',
         ].join(' ')}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* 헤더 */}
         <header className="flex items-center justify-between px-6 py-2">
@@ -100,7 +104,8 @@ const AgreementDetailModal: React.FC<Props> = ({
           </button>
         </footer>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 
