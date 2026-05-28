@@ -5,35 +5,23 @@ import type { Side } from '@/features/complaint/components/chat/types/side';
 export function buildSurface(side: Side) {
   const isLeft = side === 'left';
   const palette = isLeft ? bubblePalette.bot : bubblePalette.me;
-  const corner = isLeft ? 'rounded-bl' : 'rounded-br';
-  return [
-    palette.bg,
-    palette.border,
-    palette.text,
-    'border',
-    'rounded-400',
-    corner,
-    'px-4',
-    'py-2',
-  ].join(' ');
+  const corner = isLeft ? 'rounded-tl-none' : 'rounded-tr-none';
+  return [palette.bg, palette.text, 'rounded-2xl', corner, 'px-4', 'py-3'].join(' ');
 }
 
 /** 채팅 텍스트 스타일 */
 export function textBase() {
-  return ['text-body-2-regular', 'break-words', 'whitespace-pre-wrap'].join(' ');
+  return ['text-body-3-regular', 'break-words', 'whitespace-pre-wrap', 'leading-relaxed'].join(' ');
 }
 
-/** 타임 스탬프 스타일
- * bot이 보낸거면 왼쪽에 패딩을 주고,
- * me가 보낸거면 오른쪽에 패딩을 준 후 오른쪽 정렬 함
- */
+/** 타임스탬프 스타일 */
 export function buildTime(side: Side) {
   return [
     'mt-1',
     'text-detail-regular',
     'text-neutral-400',
     'tabular-nums',
-    side === 'left' ? 'pl-2' : 'pr-2 text-right',
+    side === 'left' ? 'pl-1' : 'pr-1 text-right',
   ].join(' ');
 }
 
