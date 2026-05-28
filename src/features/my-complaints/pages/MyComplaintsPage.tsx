@@ -140,7 +140,7 @@ const MyComplaintsPage: React.FC = () => {
             size="sm"
             onClick={() => {
               resetWizard();
-              navigate('/complaint');
+              navigate('/complaint', { state: { mode: 'new' } });
             }}
           >
             <span

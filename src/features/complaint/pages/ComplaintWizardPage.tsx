@@ -86,7 +86,16 @@ const ComplaintWizardPage: React.FC = () => {
     };
   }, [step]);
 
-  const [entryMode, setEntryMode] = useState<'new' | 'resume' | null>(null);
+  const newMode = fromState?.mode === 'new';
+  const [entryMode, setEntryMode] = useState<'new' | 'resume' | null>(newMode ? 'new' : null);
+
+  // 외부에서 mode: 'new'로 진입하면 step 0 건너뛰기
+  useEffect(() => {
+    if (newMode && step === 0) {
+      setStep(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const complainantRef = useRef<ComplainantInfoSectionHandle>(null);
   const complainantExtraRef = useRef<ComplainantExtraInfoSectionHandle>(null);
