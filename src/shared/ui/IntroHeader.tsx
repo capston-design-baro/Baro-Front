@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import characterUrl from '@/assets/BaLawCharacter-large.svg';
 
