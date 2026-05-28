@@ -22,7 +22,15 @@ const FormErrorMessage: React.FC<FormErrorMessageProps> = ({ error, className = 
         className="text-detail-regular text-warning-300"
         role="alert"
       >
-        {error}
+        {error
+          .split(/(?<=\.)\s*/)
+          .filter(Boolean)
+          .map((sentence, i, arr) => (
+            <React.Fragment key={i}>
+              {sentence}
+              {i < arr.length - 1 && <br />}
+            </React.Fragment>
+          ))}
       </p>
     </div>
   );
