@@ -24,9 +24,11 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
   const [showPw, setShowPw] = useState(false);
   const [showPwCheck, setShowPwCheck] = useState(false);
 
-  const [emailCheckStatus, setEmailCheckStatus] = useState<
-    'idle' | 'checking' | 'success' | 'error'
-  >('idle');
+  // 중복 확인이 완료된 이메일을 기억 → 수정하지 않는 한 success 유지
+  const [checkedEmail, setCheckedEmail] = useState(defaultValues?.email ?? '');
+  const [emailCheckState, setEmailCheckState] = useState<'idle' | 'checking' | 'error'>('idle');
+  const emailCheckStatus: 'idle' | 'checking' | 'success' | 'error' =
+    checkedEmail && email.trim() === checkedEmail ? 'success' : emailCheckState;
 
   // UI 상태 관리
   const [error, setError] = useState<string | null>(null); // 에러 메시지
@@ -45,6 +47,12 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
     // 필수값 검증
     if (!email || !pw || !pwCheck) {
       setError('필수 항목들을 모두 입력해주세요.');
+      return;
+    }
+
+    // 비밀번호 길이 검증
+    if (pw.length < 8 || pw.length > 72) {
+      setError('비밀번호는 8자 이상 72자 이하여야 합니다.');
       return;
     }
 
@@ -73,24 +81,22 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
     }
 
     try {
-      setEmailCheckStatus('checking');
+      setEmailCheckState('checking');
       const res = await checkEmailAvailability(trimmed);
 
       if (res.available) {
-        // 사용 가능한 이메일 -> 인풋 아래에 초록색 안내 문구
-        setEmailCheckStatus('success');
-
+        setCheckedEmail(trimmed);
+        setEmailCheckState('idle');
         setError(null);
       } else {
-        // 이미 사용 중인 이메일 -> FormErrorMessage로 경고 출력
-        setEmailCheckStatus('error');
-
+        setCheckedEmail('');
+        setEmailCheckState('error');
         setError(res.message);
       }
     } catch (e) {
       console.error('failed to check email', e);
-      setEmailCheckStatus('error');
-
+      setCheckedEmail('');
+      setEmailCheckState('error');
       setError(mapAuthError(e));
     }
   };
@@ -133,38 +139,47 @@ const SignupAccountCard: React.FC<Props> = ({ defaultValues, onNext }) => {
             >
               mail
             </span>
-            <div className="flex w-full items-center gap-2">
+            <div className="relative flex-1">
               <input
                 id="email"
                 type="email"
                 className={[
-                  'rounded-200 h-8 flex-1 px-3',
-                  'border border-neutral-300',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                  'rounded-200 h-8 w-full px-3',
+                  emailCheckStatus === 'success'
+                    ? 'border-positive-200 bg-positive-0/30 border'
+                    : 'border border-neutral-300',
+                  emailCheckStatus === 'success'
+                    ? 'focus:border-positive-200 focus:ring-positive-200 outline-none focus:ring-2'
+                    : 'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
+                  emailCheckStatus === 'success' ? 'pr-8' : '',
                 ].join(' ')}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  // 이메일이 변경되면 이전 중복 확인 결과는 무효화
-                  setEmailCheckStatus('idle');
+                  setEmailCheckState('idle');
                 }}
                 autoComplete="email"
               />
-
-              {/* 중복 확인 버튼 */}
+              {emailCheckStatus === 'success' && (
+                <span
+                  className="material-symbols-outlined text-positive-200 absolute top-1/2 right-2 -translate-y-1/2"
+                  style={{ fontSize: '18px' }}
+                >
+                  check_circle
+                </span>
+              )}
+            </div>
+            {emailCheckStatus !== 'success' && (
               <Button
+                type="button"
                 variant="secondary"
                 size="sm"
-                disabled={emailCheckStatus !== 'idle'}
+                disabled={emailCheckState === 'checking'}
                 onClick={handleEmailCheck}
               >
-                {emailCheckStatus === 'checking'
-                  ? '확인 중...'
-                  : emailCheckStatus === 'success'
-                    ? '확인 완료'
-                    : '중복 확인'}
+                {emailCheckState === 'checking' ? '확인 중...' : '중복 확인'}
               </Button>
-            </div>
+            )}
           </div>
         </div>
 

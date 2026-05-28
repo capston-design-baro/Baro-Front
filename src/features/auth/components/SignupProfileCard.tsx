@@ -5,6 +5,7 @@ import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import Button from '@/shared/ui/common/Button';
 
 import AuthCard from '@/features/auth/components/AuthCard';
+import { mapAuthError } from '@/features/auth/utils/mapAuthError';
 
 type SignupProfileData = {
   name: string;
@@ -26,9 +27,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
   const [city, setCity] = useState(defaultValues.city);
   const [district, setDistrict] = useState(defaultValues.district);
   const [town, setTown] = useState(defaultValues.town);
-  const [phone1, setPhone1] = useState('');
-  const [phone2, setPhone2] = useState('');
-  const [phone3, setPhone3] = useState('');
+  const [phone, setPhone] = useState(defaultValues.phone);
 
   // UI 상태 관리
   const [error, setError] = useState<string | null>(null); // 에러 메시지
@@ -40,6 +39,20 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // 전화번호 포맷팅 (숫자만 추출 → 010-1234-5678 형태로 변환)
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(formatPhone(e.target.value));
+  };
+
+  const phoneDigits = phone.replace(/\D/g, '');
+
   // 주소 선택 결과 수신
   const handleAddressSelect = (data: { sido: string; sigungu: string; bname: string }) => {
     setCity(data.sido || '');
@@ -47,13 +60,6 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
     setTown(data.bname || '');
     setHasAddress(true);
     setError(null); // 이전 에러가 있으면 지우기
-  };
-
-  // 주소 필드 클릭 시 에러 띄우기
-  const handleAddressFieldClick = () => {
-    if (!hasAddress) {
-      setError('주소 검색 버튼을 눌러 주소를 선택해주세요.');
-    }
   };
 
   // 다음 단계로 넘어가는 핸들러
@@ -64,16 +70,16 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
     setError(null);
 
     // 필수값 검증
-    if (!name || !city || !district || !town || !phone1 || !phone2 || !phone3) {
+    if (!name || !city || !district || !town || phoneDigits.length < 10) {
       setError('필수 항목들을 모두 입력해주세요.');
       return;
     }
 
-    const fullPhone = [phone1, phone2, phone3].join('').trim();
-
     setIsSubmitting(true);
     try {
-      await Promise.resolve(onNext({ name, city, district, town, phone: fullPhone }));
+      await onNext({ name, city, district, town, phone: phoneDigits });
+    } catch (err) {
+      setError(mapAuthError(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -107,9 +113,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
       <div className="relative flex items-center justify-center">
         <button
           type="button"
-          onClick={() =>
-            onBack({ name, city, district, town, phone: [phone1, phone2, phone3].join('').trim() })
-          }
+          onClick={() => onBack({ name, city, district, town, phone: phoneDigits })}
           className="absolute left-0 flex items-center text-neutral-400 hover:text-neutral-600"
         >
           <span
@@ -141,7 +145,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
               className={[
                 'rounded-200 w- h-8 flex-1 px-3',
                 'border border-neutral-300',
-                'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
               ].join(' ')}
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -152,130 +156,45 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
 
         {/* 주소 */}
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            {/* 주소 라벨 */}
-            {renderLabel('주소', true)}
-
-            {/* 주소 검색 버튼 */}
-            <DaumPostcodeButton onSelect={handleAddressSelect} />
-          </div>
-
-          {/* 아이콘 + 주소 입력칸 3개 한 줄 */}
+          {renderLabel('주소', true)}
           <div className="flex items-center gap-4">
-            {/* 아이콘 */}
             <span
               className="material-symbols-outlined text-primary-600/50"
               style={{ fontSize: '24px' }}
             >
               location_on
             </span>
-
-            {/* 입력칸 3개 */}
-            <div className="grid w-full grid-cols-3 gap-2">
-              <input
-                id="city"
-                placeholder="시/도"
-                value={city}
-                readOnly
-                onClick={handleAddressFieldClick}
-                onFocus={handleAddressFieldClick}
-                className={[
-                  'rounded-200 w- h-8 flex-1 px-3 text-center',
-                  'border border-neutral-300',
-                  hasAddress ? 'bg-neutral-0' : 'cursor-not-allowed bg-neutral-50',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                ].join(' ')}
-              />
-
-              <input
-                id="district"
-                placeholder="시/군/구"
-                value={district}
-                readOnly
-                onClick={handleAddressFieldClick}
-                onFocus={handleAddressFieldClick}
-                className={[
-                  'rounded-200 w- h-8 flex-1 px-3 text-center',
-                  'border border-neutral-300',
-                  hasAddress ? 'bg-neutral-0' : 'cursor-not-allowed bg-neutral-50',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                ].join(' ')}
-              />
-
-              <input
-                id="town"
-                placeholder="동/읍/면"
-                value={town}
-                readOnly
-                onClick={handleAddressFieldClick}
-                onFocus={handleAddressFieldClick}
-                className={[
-                  'rounded-200 w- h-8 flex-1 px-3 text-center',
-                  'border border-neutral-300',
-                  hasAddress ? 'bg-neutral-0' : 'cursor-not-allowed bg-neutral-50',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                ].join(' ')}
-              />
-            </div>
+            <DaumPostcodeButton
+              onSelect={handleAddressSelect}
+              address={hasAddress ? { city, district, town } : undefined}
+            />
           </div>
         </div>
 
         {/* 전화번호 */}
         <div className="flex flex-col gap-2">
-          {/* 전화번호 라벨 */}
           {renderLabel('전화번호', true)}
-
-          {/* 아이콘 + 주소 입력칸 3개 한 줄 */}
           <div className="flex items-center gap-4">
-            {/* 아이콘 */}
             <span
               className="material-symbols-outlined text-primary-600/50"
               style={{ fontSize: '24px' }}
             >
               phone_in_talk
             </span>
-
-            {/* 입력칸 3개 */}
-            <div className="grid w-full grid-cols-3 gap-2">
-              <input
-                id="phone1"
-                maxLength={3}
-                placeholder="010"
-                value={phone1}
-                onChange={(e) => setPhone1(e.target.value)}
-                className={[
-                  'rounded-200 w- h-8 flex-1 px-3 text-center',
-                  'border border-neutral-300',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                ].join(' ')}
-              />
-
-              <input
-                id="phone2"
-                maxLength={4}
-                placeholder="1234"
-                value={phone2}
-                onChange={(e) => setPhone2(e.target.value)}
-                className={[
-                  'rounded-200 w- h-8 flex-1 px-3 text-center',
-                  'border border-neutral-300',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                ].join(' ')}
-              />
-
-              <input
-                id="phone3"
-                maxLength={4}
-                placeholder="5678"
-                value={phone3}
-                onChange={(e) => setPhone3(e.target.value)}
-                className={[
-                  'rounded-200 w- h-8 flex-1 px-3 text-center',
-                  'border border-neutral-300',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                ].join(' ')}
-              />
-            </div>
+            <input
+              id="phone"
+              type="tel"
+              inputMode="numeric"
+              placeholder="010-1234-5678"
+              value={phone}
+              onChange={handlePhoneChange}
+              className={[
+                'rounded-200 h-8 flex-1 px-3',
+                'border border-neutral-300',
+                'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
+              ].join(' ')}
+              autoComplete="tel"
+            />
           </div>
         </div>
       </div>
@@ -287,9 +206,7 @@ const SignupProfileCard: React.FC<Props> = ({ defaultValues, onBack, onNext }) =
         variant="primary"
         size="md"
         fullWidth
-        disabled={
-          isSubmitting || !name || !city || !district || !town || !phone1 || !phone2 || !phone3
-        }
+        disabled={isSubmitting || !name || !city || !district || !town || phoneDigits.length < 10}
       >
         {isSubmitting ? '회원가입 진행중...' : '회원가입'}
       </Button>

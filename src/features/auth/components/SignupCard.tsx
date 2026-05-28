@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import SignupAccountCard from '@/features/auth/components/SignupAccountCard';
 import SignupProfileCard from '@/features/auth/components/SignupProfileCard';
 import type { RegisterFormValues } from '@/features/auth/types/form';
-import { mapAuthError } from '@/features/auth/utils/mapAuthError';
 
 // 회원가입 단계 (1: 이메일 및 비밀번호, 2: 프로필 정보)
 type Step = 1 | 2;
@@ -35,8 +34,6 @@ const SignupCard: React.FC<SignupCardProps> = ({ onSignup }) => {
     town: '',
     phone: '',
   });
-  const [, setError] = useState<string | null>(null);
-
   // 1단계에서 "다음"을 누르면 입력받은 이메일, 비밀번호를 저장하고 2단계로 이동
   const handleAccountNext = (partialData: { email: string; password: string }) => {
     setFormData((prev) => ({ ...prev, ...partialData }));
@@ -62,7 +59,6 @@ const SignupCard: React.FC<SignupCardProps> = ({ onSignup }) => {
     // 최종 데이터 병합
     const nextData = { ...formData, ...partialData };
     setFormData(nextData);
-    setError(null);
 
     // API 요청을 위한 Payload 구성
     const payload: RegisterFormValues = {
@@ -77,13 +73,7 @@ const SignupCard: React.FC<SignupCardProps> = ({ onSignup }) => {
       phone_number: nextData.phone,
     };
 
-    try {
-      // 회원가입 API 호출
-      await onSignup(payload);
-    } catch (error) {
-      // 에러 처리
-      setError(mapAuthError(error));
-    }
+    await onSignup(payload);
   };
 
   return (
