@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-
-import Tooltip from '@/shared/ui/Tooltip';
+import React from 'react';
 
 import type { BinaryAnswer, PrecheckQuestion } from '@/features/complaint/types/complaint';
 
@@ -11,72 +9,61 @@ export interface QuestionProps {
   onToggleConfirm: (id: PrecheckQuestion['id']) => void;
   onSetBinary: (id: PrecheckQuestion['id'], answer: BinaryAnswer) => void;
   forceOpenInfo?: boolean;
+  isLast?: boolean;
 }
 
-const Question: React.FC<QuestionProps> = ({ q, onToggleConfirm, onSetBinary, forceOpenInfo }) => {
-  const [showInfo, setShowInfo] = useState(false);
-
-  const toggleInfo = () => setShowInfo((prev) => !prev);
-  const closeInfo = () => setShowInfo(false);
-
-  useEffect(() => {
-    if (forceOpenInfo && q.description) {
-      setShowInfo(true);
-    }
-  }, [forceOpenInfo, q.description]);
-
-  const iconColor = showInfo
-    ? forceOpenInfo
-      ? 'text-warning-200 hover:text-warning-300'
-      : 'text-primary-400'
-    : 'text-neutral-400 hover:text-primary-400';
-
+const Question: React.FC<QuestionProps> = ({
+  q,
+  onToggleConfirm,
+  onSetBinary,
+  forceOpenInfo,
+  isLast,
+}) => {
   return (
-    <div className="flex w-[420px] flex-col gap-1 px-3">
-      <div className="flex w-[400px] items-center justify-between gap-2">
-        <p className="text-body-2-regular leading-tight font-medium text-black">{q.title}</p>
-        <div className="relative flex items-center justify-center">
-          <button
-            type="button"
-            className={['transition-colors focus:outline-none', iconColor].join(' ')}
-            onClick={toggleInfo}
-          >
-            <span
-              className="material-symbols-outlined leading-none"
-              style={{ fontSize: '20px' }}
-            >
-              info
-            </span>
-          </button>
+    <div
+      className={[
+        'flex flex-col gap-3 px-5 py-4',
+        !isLast ? 'border-b border-neutral-100' : '',
+      ].join(' ')}
+    >
+      {/* 질문 제목 */}
+      <p className="text-body-3-bold md:text-body-2-bold text-neutral-800">{q.title}</p>
 
-          {q.description && (
-            <Tooltip
-              open={showInfo}
-              onClose={closeInfo}
-              text={q.description}
-              position="right"
-              forced={forceOpenInfo}
-            />
-          )}
-        </div>
-      </div>
+      {/* 설명 - 항상 표시 */}
+      {q.description && (
+        <p
+          className={[
+            'text-detail-regular md:text-body-3-regular',
+            forceOpenInfo ? 'text-warning-200' : 'text-neutral-400',
+          ].join(' ')}
+        >
+          {q.description
+            .split(/(?<=\.)\s*/)
+            .filter(Boolean)
+            .map((sentence, i, arr) => (
+              <React.Fragment key={i}>
+                {sentence}
+                {i < arr.length - 1 && <br />}
+              </React.Fragment>
+            ))}
+        </p>
+      )}
 
-      <div className="flex h-12 w-[400px] items-center justify-end gap-3">
+      {/* 응답 영역 */}
+      <div className="flex items-center justify-end gap-2">
         {q.kind === 'binary' ? (
           <>
-            {/* 예 = 붉은색 */}
-            <Chip
-              active={q.answer === 'yes'}
-              onClick={() => onSetBinary(q.id, 'yes')}
-              label="예"
-              colorScheme="warning"
-            />
-            {/* 아니오 = 파란색 */}
             <Chip
               active={q.answer === 'no'}
               onClick={() => onSetBinary(q.id, 'no')}
               label="아니오"
               colorScheme="primary"
+            />
+            <Chip
+              active={q.answer === 'yes'}
+              onClick={() => onSetBinary(q.id, 'yes')}
+              label="예"
+              colorScheme="warning"
             />
           </>
         ) : (
