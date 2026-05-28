@@ -47,7 +47,7 @@ const EvidenceInfoSection = forwardRef<EvidenceInfoSectionHandle>((_props, ref) 
         showArrow
       />
 
-      <div className="grid w-full flex-1 grid-cols-1 place-content-center gap-4 px-4 md:grid-cols-2 md:gap-6">
+      <div className="mx-auto grid w-full max-w-[520px] flex-1 grid-cols-1 place-content-center gap-4 px-4 md:grid-cols-2 md:gap-6">
         {/* 네, 증거가 있어요 */}
         <button
           type="button"

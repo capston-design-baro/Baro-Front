@@ -185,62 +185,104 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className="mt-2 flex w-[420px] flex-1 flex-col justify-center gap-5"
+          className="mt-2 flex w-full flex-1 flex-col items-center justify-center gap-6"
         >
-          {/* 입력 필드 카드 */}
-          <div className="flex flex-1 items-center justify-center">
-            <div className="rounded-300 w-full max-w-[520px] border border-neutral-200 bg-white shadow-sm">
-              {/* 카드 헤더 */}
-              <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-3">
-                <span className="text-body-3-bold text-neutral-700">내 정보</span>
+          {/* ID 카드 미리보기 */}
+          <div className="w-full max-w-[520px]">
+            <div className="border-primary-200 from-primary-0 overflow-hidden rounded-2xl border bg-gradient-to-br to-white shadow-sm">
+              {/* 카드 상단 바 */}
+              <div className="bg-primary-400 flex items-center justify-between px-5 py-2.5">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="material-symbols-outlined text-white/80"
+                    style={{ fontSize: '16px' }}
+                  >
+                    badge
+                  </span>
+                  <span className="text-detail-bold text-white/90">고소인 정보</span>
+                </div>
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="primary"
                   size="xs"
+                  className="!bg-white/20 !text-white hover:!bg-white/30"
                   onClick={handleLoadFromProfile}
                 >
-                  불러오기
+                  내 정보 불러오기
                 </Button>
               </div>
 
-              {/* 이름 */}
-              <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
-                {renderLabel('이름', true)}
-                <input
-                  id="name"
-                  type="text"
-                  className={[
-                    'rounded-200 h-10 w-full px-3',
-                    'border border-neutral-300',
-                    'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
-                  ].join(' ')}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  placeholder="홍길동"
-                />
+              {/* 카드 본문 */}
+              <div className="grid grid-cols-2 gap-x-6 gap-y-3 px-5 py-4">
+                <div className="col-span-1">
+                  <p className="text-detail-regular text-neutral-400">이름</p>
+                  <p
+                    className={`text-body-3-bold transition-colors ${name ? 'text-neutral-900' : 'text-neutral-300'}`}
+                  >
+                    {name || '---'}
+                  </p>
+                </div>
+                <div className="col-span-1">
+                  <p className="text-detail-regular text-neutral-400">전화번호</p>
+                  <p
+                    className={`text-body-3-bold transition-colors ${phone ? 'text-neutral-900' : 'text-neutral-300'}`}
+                  >
+                    {phone || '---'}
+                  </p>
+                </div>
+                <div className="col-span-1">
+                  <p className="text-detail-regular text-neutral-400">이메일</p>
+                  <p
+                    className={`text-body-3-bold transition-colors ${email ? 'text-neutral-900' : 'text-neutral-300'}`}
+                  >
+                    {email || '---'}
+                  </p>
+                </div>
+                <div className="col-span-1">
+                  <p className="text-detail-regular text-neutral-400">주소</p>
+                  <p
+                    className={`text-body-3-bold transition-colors ${hasAddress ? 'text-neutral-900' : 'text-neutral-300'}`}
+                  >
+                    {hasAddress ? [addr1, addr2, addr3].filter(Boolean).join(' ') : '---'}
+                  </p>
+                </div>
               </div>
+            </div>
+          </div>
 
-              {/* 이메일 */}
-              <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
-                {renderLabel('이메일', false)}
-                <input
-                  id="email"
-                  type="email"
-                  className={[
-                    'rounded-200 h-10 w-full px-3',
-                    'border border-neutral-300',
-                    'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
-                  ].join(' ')}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  placeholder="example@email.com"
-                />
+          {/* 입력 폼 카드 */}
+          <div className="w-full max-w-[520px]">
+            <div className="rounded-2xl border border-neutral-200 bg-white shadow-sm">
+              {/* 이름 + 이메일 (2열) */}
+              <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 px-5 py-4">
+                <div className="flex flex-col gap-1.5">
+                  {renderLabel('이름', true)}
+                  <input
+                    id="name"
+                    type="text"
+                    className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 w-full border border-neutral-300 px-3 outline-none focus:ring-2"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    autoComplete="name"
+                    placeholder="홍길동"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {renderLabel('이메일', false)}
+                  <input
+                    id="email"
+                    type="email"
+                    className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 w-full border border-neutral-300 px-3 outline-none focus:ring-2"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                    placeholder="example@email.com"
+                  />
+                </div>
               </div>
 
               {/* 주소 */}
-              <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+              <div className="flex flex-col gap-1.5 border-b border-neutral-100 px-5 py-4">
                 {renderLabel('주소', true)}
                 <DaumPostcodeButton
                   onSelect={handleAddressSelect}
@@ -249,7 +291,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
               </div>
 
               {/* 전화번호 */}
-              <div className="flex flex-col gap-2 px-5 py-4">
+              <div className="flex flex-col gap-1.5 px-5 py-4">
                 {renderLabel('전화번호', true)}
                 <input
                   id="phone"
@@ -258,11 +300,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
                   placeholder="010-1234-5678"
                   value={phone}
                   onChange={handlePhoneChange}
-                  className={[
-                    'rounded-200 h-10 w-full px-3',
-                    'border border-neutral-300',
-                    'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
-                  ].join(' ')}
+                  className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 w-full border border-neutral-300 px-3 outline-none focus:ring-2"
                   autoComplete="tel"
                 />
               </div>

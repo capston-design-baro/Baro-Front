@@ -190,81 +190,124 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="mt-6 flex w-[420px] flex-1 flex-col justify-center gap-5"
+        className="mt-2 flex w-full flex-1 flex-col items-center justify-center gap-6"
       >
-        {/* 입력 필드 카드 */}
-        <div className="flex flex-1 items-center justify-center">
-          <div className="rounded-300 w-full max-w-[520px] border border-neutral-200 bg-white shadow-sm">
-            {/* 이름 */}
-            <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
-              <div className="flex items-center justify-between">
-                {renderLabel('이름', true)}
-                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 cursor-pointer"
-                    checked={unknownName}
-                    onChange={(e) =>
-                      handleCheckboxChange(e.target.checked, setUnknownName, setName)
-                    }
-                  />
-                  모름
-                </label>
-              </div>
-              <input
-                disabled={unknownName}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={[
-                  'rounded-200 h-10 w-full px-3',
-                  'border border-neutral-300',
-                  'disabled:bg-neutral-100 disabled:text-neutral-400',
-                  'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
-                ].join(' ')}
-                placeholder={unknownName ? '모름' : '이름 입력'}
-                type="text"
-              />
+        {/* ID 카드 미리보기 */}
+        <div className="w-full max-w-[520px]">
+          <div className="overflow-hidden rounded-2xl border border-neutral-300 bg-gradient-to-br from-neutral-50 to-white shadow-sm">
+            <div className="flex items-center gap-2 bg-neutral-700 px-5 py-2.5">
+              <span
+                className="material-symbols-outlined text-white/80"
+                style={{ fontSize: '16px' }}
+              >
+                person_search
+              </span>
+              <span className="text-detail-bold text-white/90">피고소인 정보</span>
             </div>
-
-            {/* 이메일 */}
-            <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
-              <div className="flex items-center justify-between">
-                {renderLabel('이메일', true)}
-                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 cursor-pointer"
-                    checked={unknownEmail}
-                    onChange={(e) =>
-                      handleCheckboxChange(e.target.checked, setUnknownEmail, setEmail)
-                    }
-                  />
-                  모름
-                </label>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3 px-5 py-4">
+              <div>
+                <p className="text-detail-regular text-neutral-400">이름</p>
+                <p
+                  className={`text-body-3-bold transition-colors ${unknownName ? 'text-neutral-300 italic' : name ? 'text-neutral-900' : 'text-neutral-300'}`}
+                >
+                  {unknownName ? '모름' : name || '---'}
+                </p>
               </div>
-              <input
-                disabled={unknownEmail}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={[
-                  'rounded-200 h-10 w-full px-3',
-                  'border border-neutral-300',
-                  'disabled:bg-neutral-100 disabled:text-neutral-400',
-                  'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
-                ].join(' ')}
-                placeholder={unknownEmail ? '모름' : '이메일 입력'}
-                type="text"
-              />
+              <div>
+                <p className="text-detail-regular text-neutral-400">전화번호</p>
+                <p
+                  className={`text-body-3-bold transition-colors ${unknownPhone ? 'text-neutral-300 italic' : phone ? 'text-neutral-900' : 'text-neutral-300'}`}
+                >
+                  {unknownPhone ? '모름' : phone || '---'}
+                </p>
+              </div>
+              <div>
+                <p className="text-detail-regular text-neutral-400">이메일</p>
+                <p
+                  className={`text-body-3-bold transition-colors ${unknownEmail ? 'text-neutral-300 italic' : email ? 'text-neutral-900' : 'text-neutral-300'}`}
+                >
+                  {unknownEmail ? '모름' : email || '---'}
+                </p>
+              </div>
+              <div>
+                <p className="text-detail-regular text-neutral-400">주소</p>
+                <p
+                  className={`text-body-3-bold transition-colors ${unknownAddr ? 'text-neutral-300 italic' : hasAddress ? 'text-neutral-900' : 'text-neutral-300'}`}
+                >
+                  {unknownAddr
+                    ? '모름'
+                    : hasAddress
+                      ? [addr1, addr2, addr3].filter(Boolean).join(' ')
+                      : '---'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 입력 폼 카드 */}
+        <div className="w-full max-w-[520px]">
+          <div className="rounded-2xl border border-neutral-200 bg-white shadow-sm">
+            {/* 이름 + 이메일 (2열) */}
+            <div className="grid grid-cols-2 gap-4 border-b border-neutral-100 px-5 py-4">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  {renderLabel('이름', true)}
+                  <label className="text-detail-regular inline-flex cursor-pointer items-center gap-1 text-neutral-500">
+                    <input
+                      type="checkbox"
+                      className="h-3.5 w-3.5 cursor-pointer"
+                      checked={unknownName}
+                      onChange={(e) =>
+                        handleCheckboxChange(e.target.checked, setUnknownName, setName)
+                      }
+                    />
+                    모름
+                  </label>
+                </div>
+                <input
+                  disabled={unknownName}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 w-full border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400"
+                  placeholder={unknownName ? '모름' : '이름 입력'}
+                  type="text"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  {renderLabel('이메일', true)}
+                  <label className="text-detail-regular inline-flex cursor-pointer items-center gap-1 text-neutral-500">
+                    <input
+                      type="checkbox"
+                      className="h-3.5 w-3.5 cursor-pointer"
+                      checked={unknownEmail}
+                      onChange={(e) =>
+                        handleCheckboxChange(e.target.checked, setUnknownEmail, setEmail)
+                      }
+                    />
+                    모름
+                  </label>
+                </div>
+                <input
+                  disabled={unknownEmail}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 w-full border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400"
+                  placeholder={unknownEmail ? '모름' : '이메일 입력'}
+                  type="text"
+                />
+              </div>
             </div>
 
             {/* 주소 */}
-            <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+            <div className="flex flex-col gap-1.5 border-b border-neutral-100 px-5 py-4">
               <div className="flex items-center justify-between">
                 {renderLabel('주소', true)}
-                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-1 text-neutral-500">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 cursor-pointer"
+                    className="h-3.5 w-3.5 cursor-pointer"
                     checked={unknownAddr}
                     onChange={(e) => {
                       handleCheckboxChange(
@@ -284,7 +327,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                 </label>
               </div>
               {unknownAddr ? (
-                <div className="rounded-200 flex h-10 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">
+                <div className="rounded-200 flex h-9 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">
                   모름
                 </div>
               ) : (
@@ -296,13 +339,13 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
             </div>
 
             {/* 전화번호 */}
-            <div className="flex flex-col gap-2 px-5 py-4">
+            <div className="flex flex-col gap-1.5 px-5 py-4">
               <div className="flex items-center justify-between">
                 {renderLabel('전화번호', true)}
-                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-1 text-neutral-500">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 cursor-pointer"
+                    className="h-3.5 w-3.5 cursor-pointer"
                     checked={unknownPhone}
                     onChange={(e) => {
                       if (e.target.checked) setPhone('');
@@ -313,19 +356,13 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
                 </label>
               </div>
               <input
-                id="phone"
                 type="tel"
                 inputMode="numeric"
                 placeholder={unknownPhone ? '모름' : '010-1234-5678'}
                 value={phone}
                 onChange={handlePhoneChange}
                 disabled={unknownPhone}
-                className={[
-                  'rounded-200 h-10 w-full px-3',
-                  'border border-neutral-300',
-                  'disabled:bg-neutral-100 disabled:text-neutral-400',
-                  'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
-                ].join(' ')}
+                className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 w-full border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400"
                 autoComplete="tel"
               />
             </div>

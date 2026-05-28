@@ -9,7 +9,7 @@ const ChatInfoSection: React.FC = () => {
     >
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         {/* 말풍선 - 캐릭터 위에 표시 */}
-        <div className="animate-bubble-up relative max-w-[480px]">
+        <div className="animate-bubble-up relative max-w-[520px]">
           {/* 말풍선 본체 */}
           <div className="rounded-300 border-primary-100 bg-primary-0/40 border px-6 py-4 md:px-8 md:py-5">
             <div className="flex flex-col gap-1 text-center">

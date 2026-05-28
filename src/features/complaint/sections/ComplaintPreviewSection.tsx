@@ -69,7 +69,7 @@ const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
   return (
     <section
       aria-label={`고소장 미리보기 (ID: ${complaintId})`}
-      className="mx-auto flex w-full max-w-[700px] flex-1 flex-col gap-4"
+      className="mx-auto flex w-full max-w-[640px] flex-1 flex-col gap-4"
     >
       <IntroHeader
         title="완성된 고소장 미리 보기"
