@@ -36,7 +36,7 @@ const GeneratingModal: React.FC<GeneratingModalProps> = ({ open, title, descript
               <>
                 입력해 주신 내용을 바탕으로
                 <br />
-                고소장 초안을 정리하는 중입니다.
+                고소장 초안을 정리하고 있어요.
               </>
             )}
           </p>
