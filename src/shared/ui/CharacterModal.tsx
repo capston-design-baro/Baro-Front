@@ -32,16 +32,10 @@ const CharacterModal: React.FC<Props> = ({ variant = 'login', onCancel, onConfir
     leftButtonText = '다음에 할게요';
     rightButtonText = '로그인';
   } else if (variant === 'exit') {
-    title = '정말 나가시겠어요?';
-    description = (
-      <>
-        지금 나가면 작성 중인 내용은
-        <br />
-        다시 복구할 수 없어요.
-      </>
-    );
-    leftButtonText = '계속 작성하기';
-    rightButtonText = '나가기';
+    title = '잠깐, 나가시겠어요?';
+    description = '작성 중인 고소장은 자동 저장돼요.';
+    leftButtonText = '이어서 작성';
+    rightButtonText = '나갈게요';
   } else {
     // delete
     title = '이 고소장을 삭제할까요?';

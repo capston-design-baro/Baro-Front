@@ -154,11 +154,47 @@ const EvidenceInfoSection = forwardRef<EvidenceInfoSectionHandle>((_props, ref) 
         className="mt-4"
       />
 
-      <p className="text-detail-regular mt-3 text-center text-neutral-400">
-        증거가 없더라도 고소는 가능해요.
-        <br />
-        다만 수사 과정에서 추가 자료 제출이 필요할 수 있어요.
-      </p>
+      {/* 선택 결과에 따른 안내 */}
+      {selection && (
+        <div className="animate-fade-in mx-auto mt-4 w-full max-w-[520px]">
+          <div
+            className={[
+              'flex items-start gap-3 rounded-xl border px-4 py-3',
+              selection === 'yes'
+                ? 'border-primary-100 bg-primary-0/30'
+                : 'border-neutral-200 bg-neutral-50',
+            ].join(' ')}
+          >
+            <span
+              className={`material-symbols-outlined mt-0.5 ${selection === 'yes' ? 'text-primary-400' : 'text-neutral-400'}`}
+              style={{ fontSize: '18px' }}
+            >
+              {selection === 'yes' ? 'lightbulb' : 'info'}
+            </span>
+            <div className="flex flex-col gap-1">
+              {selection === 'yes' ? (
+                <>
+                  <p className="text-body-3-bold text-neutral-700">증거 제출 안내</p>
+                  <p className="text-detail-regular text-neutral-500">
+                    증거는 관할 경찰서에 고소장과 함께 직접 제출해주세요.
+                    <br />
+                    캡처본이나 녹취 파일은 USB에 담아가시면 편해요.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-body-3-bold text-neutral-700">걱정 마세요</p>
+                  <p className="text-detail-regular text-neutral-500">
+                    증거가 없어도 고소는 가능해요.
+                    <br />
+                    수사 과정에서 경찰이 증거 수집을 도와줄 수 있어요.
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 });

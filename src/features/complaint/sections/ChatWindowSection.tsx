@@ -98,7 +98,7 @@ const ChatWindowSection: React.FC<Props> = ({
       {
         id: `intro-${Date.now()}`,
         side: 'left',
-        text: '먼저 사건의 경위를 자유롭게 작성해 주세요.',
+        text: '안녕하세요, 바로예요 👋\n\n어떤 일이 있었는지 알려주세요.\n언제, 어디서, 누구에게, 어떤 피해를 입었는지 자세히 적어주시면 고소장 작성에 큰 도움이 돼요.',
         time: fmtTime(),
       },
     ]);
@@ -114,21 +114,41 @@ const ChatWindowSection: React.FC<Props> = ({
         const history: ChatMessageHistoryItem[] = await getChatHistory(complaintId);
 
         if (!history || history.length === 0) {
-          setMsgs([
-            {
-              id: `resume-${Date.now()}`,
-              side: 'left',
-              text: '사건 개요를 입력해주세요.',
-              time: fmtTime(),
-            },
-          ]);
+          // 히스토리도 없고 ai_session_id도 없으면 처음부터 시작
+          if (!initialAiSessionId) {
+            setPhase('askSummary');
+            setMsgs([
+              {
+                id: `intro-${Date.now()}`,
+                side: 'left',
+                text: '안녕하세요, 바로예요 👋\n\n어떤 일이 있었는지 알려주세요.\n언제, 어디서, 누구에게, 어떤 피해를 입었는지 자세히 적어주시면 고소장 작성에 큰 도움이 돼요.',
+                time: fmtTime(),
+              },
+            ]);
+          } else {
+            setMsgs([
+              {
+                id: `resume-${Date.now()}`,
+                side: 'left',
+                text: '사건 개요를 입력해주세요.',
+                time: fmtTime(),
+              },
+            ]);
+          }
         } else {
           const restored: Msg[] = [];
           let lastMeta: ChatMetaPayload | undefined;
 
+          const AUTO_MSG = '위 사건 개요를 기반으로, 이어서 질문을 해 주세요.';
+
           history.forEach((msg, idx) => {
             if (isAiMetaMessage(msg.content)) {
-              lastMeta = msg.content; // 여기서 content가 ChatMetaPayload로 좁혀짐
+              lastMeta = msg.content;
+              return;
+            }
+
+            // 자동 발송 메시지는 히스토리에서 숨김
+            if (typeof msg.content === 'string' && msg.content === AUTO_MSG) {
               return;
             }
 
@@ -153,6 +173,14 @@ const ChatWindowSection: React.FC<Props> = ({
               time: fmtTime(),
             });
           }
+
+          // 맨 위에 안내 메시지 삽입
+          restored.unshift({
+            id: `intro-${Date.now()}`,
+            side: 'left',
+            text: '안녕하세요, 바로예요 👋\n\n어떤 일이 있었는지 알려주세요.\n언제, 어디서, 누구에게, 어떤 피해를 입었는지 자세히 적어주시면 고소장 작성에 큰 도움이 돼요.',
+            time: restored.length > 0 ? restored[0].time : fmtTime(),
+          });
 
           setMsgs(restored);
 
@@ -304,16 +332,6 @@ const ChatWindowSection: React.FC<Props> = ({
         setMsgs((prev) => {
           const nextMsgs = [...prev, keywordMsg, ...(firstQuestionMsg ? [firstQuestionMsg] : [])];
 
-          if (isDoneReply) {
-            const guideMsg: Msg = {
-              id: `done-guide-${Date.now()}`,
-              side: 'left',
-              text: '화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 확인해 주세요.',
-              time: fmtTime(),
-            };
-            nextMsgs.push(guideMsg);
-          }
-
           return nextMsgs;
         });
 
@@ -384,21 +402,7 @@ const ChatWindowSection: React.FC<Props> = ({
 
       const isDoneReply = reply.includes(DONE_PHRASE);
 
-      setMsgs((prev) => {
-        const nextMsgs = [...prev, botMsg];
-
-        if (isDoneReply) {
-          const guideMsg: Msg = {
-            id: `done-guide-${Date.now()}`,
-            side: 'left',
-            text: '화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
-            time: fmtTime(),
-          };
-          nextMsgs.push(guideMsg);
-        }
-
-        return nextMsgs;
-      });
+      setMsgs((prev) => [...prev, botMsg]);
 
       if (isDoneReply) {
         setIsCompleted(true);
@@ -437,7 +441,7 @@ const ChatWindowSection: React.FC<Props> = ({
     }
   };
 
-  const inputDisabled = phase === 'initializing' || isCompleted;
+  const inputDisabled = phase === 'initializing' || isCompleted || isBotTyping;
 
   return (
     <section
@@ -514,9 +518,11 @@ const ChatWindowSection: React.FC<Props> = ({
             onInput={resizeTextarea}
             onKeyDown={onKeyDown}
             placeholder={
-              mode === 'new' && phase === 'askSummary'
-                ? '사건의 경위를 자유롭게 입력해 주세요...'
-                : '메시지를 입력해주세요...'
+              isBotTyping
+                ? '바로가 입력 중이에요...'
+                : mode === 'new' && phase === 'askSummary'
+                  ? '사건의 경위를 자유롭게 입력해 주세요...'
+                  : '메시지를 입력해주세요...'
             }
             rows={1}
             aria-label="메시지 입력"
