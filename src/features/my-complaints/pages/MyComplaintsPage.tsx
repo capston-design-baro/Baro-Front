@@ -378,12 +378,20 @@ const MyComplaintsPage: React.FC = () => {
       </main>
 
       {deleteTarget && (
-        <div className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
-          <CharacterModal
-            variant="delete"
-            onCancel={() => setDeleteTarget(null)}
-            onConfirm={confirmDelete}
-          />
+        <div
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4"
+          onClick={() => setDeleteTarget(null)}
+        >
+          <div
+            className="animate-pop-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CharacterModal
+              variant="delete"
+              onCancel={() => setDeleteTarget(null)}
+              onConfirm={confirmDelete}
+            />
+          </div>
         </div>
       )}
       <Footer />

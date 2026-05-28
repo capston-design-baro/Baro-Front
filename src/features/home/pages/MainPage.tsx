@@ -57,15 +57,23 @@ export default function MainPage() {
       <Footer />
       {/* 로그인 유도 모달 (로그인 안 된 상태에서 고소장 작성 클릭 시) */}
       {showLoginPrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
-          <CharacterModal
-            variant="login"
-            onCancel={() => setShowLoginPrompt(false)}
-            onConfirm={() => {
-              setShowLoginPrompt(false);
-              navigate('/login');
-            }}
-          />
+        <div
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4"
+          onClick={() => setShowLoginPrompt(false)}
+        >
+          <div
+            className="animate-pop-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CharacterModal
+              variant="login"
+              onCancel={() => setShowLoginPrompt(false)}
+              onConfirm={() => {
+                setShowLoginPrompt(false);
+                navigate('/login');
+              }}
+            />
+          </div>
         </div>
       )}
     </div>
