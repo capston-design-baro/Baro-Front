@@ -75,7 +75,8 @@
 
   /* 🎈 캐릭터 둥실둥실 애니메이션 */
   @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0);
     }
     50% {
@@ -161,8 +162,12 @@
   }
 
   @keyframes overlayIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .animate-expand-card {
