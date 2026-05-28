@@ -20,26 +20,43 @@ const WizardNavButtons: React.FC<WizardNavButtonsProps> = ({
   nextLabel = '다음',
 }) => {
   return (
-    <div className="mx-auto flex w-full max-w-[420px] items-center justify-center">
-      <div className="flex w-full items-center justify-between gap-3">
-        <Button
-          variant="primary"
-          size="md"
-          fullWidth
-          onClick={onPrev}
-          disabled={disablePrev}
-        >
-          {prevLabel}
-        </Button>
-        <Button
-          variant="primary"
-          size="md"
-          fullWidth
-          onClick={onNext}
-          disabled={isNextDisabled}
-        >
-          {nextLabel}
-        </Button>
+    <div className="w-full shrink-0">
+      {/* 바 본체 */}
+      <div className="px-6 pt-2 pb-3">
+        <div className="mx-auto flex w-full max-w-[420px] items-center justify-between">
+          {/* 이전: 텍스트 버튼 */}
+          <button
+            type="button"
+            onClick={onPrev}
+            disabled={disablePrev}
+            className="text-body-3-regular flex items-center gap-1 text-neutral-500 transition-colors hover:text-neutral-700 disabled:invisible"
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: '18px' }}
+            >
+              arrow_back
+            </span>
+            {prevLabel}
+          </button>
+
+          {/* 다음: primary 버튼 */}
+          <Button
+            variant="primary"
+            size="md"
+            onClick={onNext}
+            disabled={isNextDisabled}
+            className="min-w-[120px]"
+          >
+            {nextLabel}
+            <span
+              className="material-symbols-outlined ml-1"
+              style={{ fontSize: '18px' }}
+            >
+              arrow_forward
+            </span>
+          </Button>
+        </div>
       </div>
     </div>
   );

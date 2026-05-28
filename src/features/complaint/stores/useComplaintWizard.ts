@@ -10,48 +10,49 @@ import type {
 const initialPrechecks: PrecheckQuestion[] = [
   {
     id: 'alreadyCriminalFiled',
-    title: '이 사건에 대해 형사 고소(고소장 제출)를 한 적이 있나요?',
+    title: '같은 사건으로 고소장을 낸 적이 있나요?',
     hintIcon: 'info',
     kind: 'binary',
     answer: null,
-    description: '이미 동일한 사건으로 형사 고소를 한 경우, 중복 접수로 처리될 수 있습니다.',
+    description:
+      '이미 같은 사건으로 고소장을 낸 적이 있다면, 경찰이나 검찰에서 "이미 처리된 사건"으로 보고 새 고소장을 받아주지 않을 수 있어요.',
   },
   {
     id: 'alreadyCivilFiled',
-    title: '이 사건에 대해 민사 소송(손해배상 청구 등)을 제기한 적이 있나요?',
+    title: '같은 사건으로 민사 소송을 진행한 적이 있나요?',
     hintIcon: 'info',
     kind: 'binary',
     answer: null,
     description:
-      '이미 동일한 사건으로 민사 소송을 진행 중인 경우, 형사 고소보다 민사 절차를 우선 검토해야 할 수 있습니다.',
+      '민사 소송은 돈이나 피해 보상을 받기 위한 절차예요. 이미 진행 중이라면 고소장 접수 전에 상황을 다시 확인해보는 게 좋아요.',
   },
   {
     id: 'withdrawnBefore',
-    title: '이 사건에 대해 취하한 적이 있나요?',
+    title: '같은 사건으로 고소를 취소한 적이 있나요?',
     hintIcon: 'info',
     kind: 'binary',
     answer: null,
     description:
-      '이전에 같은 사건을 취하한 이력이 있는 경우, 다시 고소하는 데 제한이 있을 수 있습니다.',
+      '한 번 취소한 고소는 다시 접수하기 어려울 수 있어요. 해당되신다면 법률 전문가와 먼저 상담해보시는 걸 추천드려요.',
   },
   {
     id: 'knowFalseAccusation',
-    title: '무고죄에 대해 알고 계신가요?',
+    title: '거짓 고소는 처벌받을 수 있어요',
     hintIcon: 'info',
     kind: 'confirm',
     confirmChip: {
       key: 'falseAccusationNotice',
-      label: '관련 안내를 확인했습니다.',
+      label: '확인했어요',
       checked: false,
     },
     description:
-      '고의로 사실이 아닌 내용을 신고하거나 타인을 범죄자로 만들기 위한 허위 고소는 무고죄에 해당할 수 있으며, 법적 처벌 대상이 될 수 있습니다.',
+      '사실이 아닌 내용으로 다른 사람을 고소하면 "무고죄"로 오히려 본인이 처벌받을 수 있어요. 작성하시는 내용이 사실에 기반한 것인지 꼭 확인해주세요.',
   },
 ];
 
 const INITIAL_STATE: ComplaintWizardState = {
   step: 0,
-  stepsTotal: 11,
+  stepsTotal: 9,
   prechecks: initialPrechecks,
   offense: null,
 };
@@ -197,7 +198,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
   percentage: () => {
     const { step, stepsTotal } = get().state;
     if (stepsTotal <= 1) return 0;
-    return Math.round(((step + 1) / stepsTotal) * 100);
+    return Math.round((step / (stepsTotal - 1)) * 100);
   },
 
   setOffense: (offense) =>

@@ -18,17 +18,17 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // main 태그가 스크롤 컨테이너인 경우 대응
-      const scrollContainer = document.querySelector('main');
-      const scrollY = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
-      setScrolled(scrollY > 10);
+      const mainEl = document.querySelector('main');
+      const mainScroll = mainEl ? mainEl.scrollTop : 0;
+      setScrolled(mainScroll > 10 || window.scrollY > 10);
     };
 
-    const scrollContainer = document.querySelector('main');
-    const target = scrollContainer || window;
-    target.addEventListener('scroll', handleScroll, { passive: true });
+    const mainEl = document.querySelector('main');
+    const targets: (HTMLElement | Window)[] = [window];
+    if (mainEl) targets.push(mainEl);
 
-    return () => target.removeEventListener('scroll', handleScroll);
+    targets.forEach((t) => t.addEventListener('scroll', handleScroll, { passive: true }));
+    return () => targets.forEach((t) => t.removeEventListener('scroll', handleScroll));
   }, []);
 
   const handleLoginClick = () => navigate('/login');

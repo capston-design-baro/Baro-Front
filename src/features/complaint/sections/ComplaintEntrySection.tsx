@@ -21,12 +21,7 @@ const ComplaintEntrySection: React.FC<ComplaintEntrySectionProps> = ({
 
   return (
     <section
-      className={[
-        'flex flex-col items-center justify-between',
-        'h-[600px] w-full max-w-[1000px]',
-        'pb-6',
-        'bg-neutral-0',
-      ].join(' ')}
+      className={['flex flex-col items-center', 'w-full flex-1', 'pb-6', 'bg-neutral-0'].join(' ')}
     >
       <IntroHeader
         title="고소장 작성하기"
@@ -38,97 +33,102 @@ const ComplaintEntrySection: React.FC<ComplaintEntrySectionProps> = ({
         showArrow
       />
 
-      {/* 카드 2개 가로/세로 반응형 배치 + 가운데 정렬 */}
-      <div className="flex w-full flex-1 flex-col items-center justify-center gap-6 px-4 md:flex-row">
-        {/* ─────────────────────
-            새 고소장 작성하기 카드
-        ───────────────────── */}
+      {/* 카드 2개 */}
+      <div className="mx-auto grid w-full max-w-[520px] flex-1 grid-cols-1 place-content-center justify-center gap-4 px-4 md:grid-cols-2 md:gap-6">
+        {/* 새 고소장 작성하기 */}
         <button
           type="button"
           onClick={onNew}
           className={[
-            'group flex flex-col items-center justify-center',
-            'h-[200px] w-[260px]',
-            'rounded-300 p-6',
-            // ghost base
-            'to-neutral-0/10 bg-radial from-neutral-200/40 via-neutral-100/10',
-            'border',
-            'shadow-[inset_0_1px_2px_rgba(255,255,255,0.12)]',
-            'backdrop-blur-md',
-            'transition-all duration-300 ease-out',
-            // active vs default
+            'group relative flex w-full flex-col items-center justify-center gap-4',
+            'rounded-300 px-6 py-10',
+            'border-2 bg-white',
+            'transition-all duration-200 ease-out',
             isNewActive
-              ? 'border-primary-300 ring-primary-200 ring-2'
-              : 'hover:ring-primary-50/40 border-white/50 hover:border-white/70 hover:ring-2',
+              ? 'border-primary-400 bg-primary-0/30 shadow-[0_0_0_3px_rgba(59,130,246,0.1)]'
+              : 'hover:border-primary-300 border-neutral-200 hover:shadow-md',
           ].join(' ')}
         >
-          {/* 아이콘 */}
-          <span
+          {/* 아이콘 배경 원 */}
+          <div
             className={[
-              'material-symbols-outlined',
-              'text-[60px]',
-              isNewActive ? 'text-primary-500' : 'text-neutral-600',
-              'group-hover:text-primary-400 transition-colors',
+              'flex h-14 w-14 items-center justify-center rounded-full transition-colors',
+              isNewActive ? 'bg-primary-400' : 'group-hover:bg-primary-100 bg-neutral-100',
             ].join(' ')}
           >
-            note_add
-          </span>
+            <span
+              className={[
+                'material-symbols-outlined transition-colors',
+                isNewActive ? 'text-white' : 'group-hover:text-primary-400 text-neutral-500',
+              ].join(' ')}
+              style={{ fontSize: '28px' }}
+            >
+              edit_note
+            </span>
+          </div>
 
-          {/* 제목 */}
-          <p
-            className={[
-              'text-body-2-bold mt-4',
-              isNewActive ? 'text-primary-500' : 'text-neutral-900',
-              'group-hover:text-primary-400 transition-colors',
-            ].join(' ')}
-          >
-            새 고소장 작성하기
-          </p>
+          {/* 텍스트 */}
+          <div className="flex flex-col items-center gap-1">
+            <p
+              className={[
+                'text-body-2-bold transition-colors',
+                isNewActive ? 'text-primary-500' : 'text-neutral-800',
+              ].join(' ')}
+            >
+              새 고소장 작성하기
+            </p>
+            <p className="text-detail-regular text-neutral-400">처음부터 새로 작성해요</p>
+          </div>
+
+          {/* 선택 체크 */}
         </button>
 
-        {/* ─────────────────────
-            이어 작성하기 카드
-        ───────────────────── */}
+        {/* 이어 작성하기 */}
         <button
           type="button"
           onClick={onResumeDrafts}
           className={[
-            'group flex flex-col items-center justify-center',
-            'h-[200px] w-[260px]',
-            'rounded-300 p-6',
-            // ghost base
-            'to-neutral-0/10 bg-radial from-neutral-200/40 via-neutral-100/10',
-            'border',
-            'shadow-[inset_0_1px_2px_rgba(255,255,255,0.12)]',
-            'backdrop-blur-md',
-            'transition-all duration-300 ease-out',
-            // active vs default
+            'group relative flex w-full flex-col items-center justify-center gap-4',
+            'rounded-300 px-6 py-10',
+            'border-2 bg-white',
+            'transition-all duration-200 ease-out',
             isResumeActive
-              ? 'border-primary-300 ring-primary-200 ring-2'
-              : 'hover:ring-primary-50/40 border-white/50 hover:border-white/70 hover:ring-2',
+              ? 'border-primary-400 bg-primary-0/30 shadow-[0_0_0_3px_rgba(59,130,246,0.1)]'
+              : 'hover:border-primary-300 border-neutral-200 hover:shadow-md',
           ].join(' ')}
         >
-          {/* 아이콘 */}
-          <span
+          <div
             className={[
-              'material-symbols-outlined',
-              'text-[60px]',
-              isResumeActive ? 'text-primary-500' : 'text-neutral-600',
-              'group-hover:text-primary-400 transition-colors',
+              'flex h-14 w-14 items-center justify-center rounded-full transition-colors',
+              isResumeActive ? 'bg-primary-400' : 'group-hover:bg-primary-100 bg-neutral-100',
             ].join(' ')}
           >
-            history
-          </span>
+            <span
+              className={[
+                'material-symbols-outlined transition-colors',
+                isResumeActive ? 'text-white' : 'group-hover:text-primary-400 text-neutral-500',
+              ].join(' ')}
+              style={{ fontSize: '28px' }}
+            >
+              draft
+            </span>
+          </div>
 
-          <p
-            className={[
-              'text-body-2-bold mt-4',
-              isResumeActive ? 'text-primary-500' : 'text-neutral-900',
-              'group-hover:text-primary-400 transition-colors',
-            ].join(' ')}
-          >
-            이어 작성하기
-          </p>
+          <div className="flex flex-col items-center gap-1">
+            <p
+              className={[
+                'text-body-2-bold transition-colors',
+                isResumeActive ? 'text-primary-500' : 'text-neutral-800',
+              ].join(' ')}
+            >
+              이어 작성하기
+            </p>
+            <p className="text-detail-regular text-neutral-400">
+              임시 저장한 고소장을
+              <br />
+              이어서 작성해요
+            </p>
+          </div>
         </button>
       </div>
     </section>

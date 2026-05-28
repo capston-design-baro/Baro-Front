@@ -4,54 +4,45 @@ import BaLawCharacterLarge from '@/assets/BaLawCharacter-large.svg';
 
 type GeneratingModalProps = {
   open: boolean;
-  title?: string;
-  description?: string;
 };
 
-const GeneratingModal: React.FC<GeneratingModalProps> = ({ open, title, description }) => {
+const GeneratingModal: React.FC<GeneratingModalProps> = ({ open }) => {
   if (!open) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4"
+      className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4"
       role="dialog"
       aria-modal="true"
       aria-label="고소장 생성 중"
     >
       <div
         className={[
-          'relative flex w-full max-w-sm flex-col items-center',
-          'rounded-400 from-primary-0 to-primary-400 bg-gradient-to-b',
-          'px-6 py-10 sm:px-10 sm:py-14',
-          'shadow-lg',
+          'animate-pop-in relative flex w-full max-w-sm flex-col items-center',
+          'rounded-2xl bg-white',
+          'px-8 py-10',
+          'shadow-[0_16px_40px_rgba(15,23,42,0.2)]',
         ].join(' ')}
       >
-        {/* 텍스트 영역 */}
-        <div className="flex flex-col items-center gap-2 text-center">
-          <p className="text-body-1-bold sm:text-heading-4-bold text-primary-900">
-            {title ?? 'AI가 고소장을 작성하고 있어요.'}
-          </p>
-          <p className="text-detail-regular sm:text-body-3-regular text-neutral-600">
-            {description ?? (
-              <>
-                입력해 주신 내용을 바탕으로
-                <br />
-                고소장 초안을 정리하는 중입니다.
-              </>
-            )}
-          </p>
-        </div>
+        {/* 캐릭터 */}
+        <img
+          src={BaLawCharacterLarge}
+          alt="바로 캐릭터"
+          className="animate-float mb-6 h-32 w-32"
+          draggable={false}
+        />
 
-        {/* 로딩 인디케이터 + 캐릭터 */}
-        <div className="mt-6 flex flex-col items-center gap-3">
-          <div className="border-primary-200 border-t-primary-100 h-8 w-8 animate-spin rounded-full border-4" />
-          {/* 캐릭터 이미지 */}
-          <img
-            src={BaLawCharacterLarge}
-            alt="바로 캐릭터"
-            className="h-52 w-52 object-contain"
-          />
-          <p className="text-detail-regular text-neutral-200">잠시만 기다려 주세요...</p>
+        {/* 타이핑 애니메이션 텍스트 */}
+        <div className="flex flex-col items-center gap-3">
+          <p className="animate-typing text-body-2-bold text-neutral-800">
+            바로가 고소장을 작성하고 있어요
+          </p>
+          <p className="animate-typing-delay-1 text-body-3-regular text-neutral-500">
+            입력해 주신 내용을 바탕으로 초안을 정리 중이에요
+          </p>
+          <p className="animate-typing-delay-2 text-detail-regular text-neutral-400">
+            조금만 기다려 주세요, 거의 다 됐어요!
+          </p>
         </div>
       </div>
     </div>

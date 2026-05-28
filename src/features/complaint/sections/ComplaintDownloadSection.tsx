@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
-import DocxIcon from '@/assets/Docs.svg';
+import characterUrl from '@/assets/BaLawCharacter-large.svg';
 
-import IntroHeader from '@/shared/ui/IntroHeader';
 import Button from '@/shared/ui/common/Button';
 
 import { downloadComplaintDocx } from '@/features/complaint/apis/complaints';
@@ -13,12 +12,13 @@ type ComplaintDownloadSectionProps = {
 
 const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ complaintId }) => {
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
 
   const handleDownload = async () => {
     try {
       setIsDownloading(true);
       await downloadComplaintDocx(complaintId);
-      // 필요하면 토스트 등으로 "다운로드가 시작됐어요" 안내
+      setDownloaded(true);
     } catch (e) {
       console.error('failed to download docx', e);
       alert('DOCX 파일 다운로드에 실패했어요. 잠시 후 다시 시도해 주세요.');
@@ -30,82 +30,104 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
   return (
     <section
       aria-label={`고소장 DOCX 다운로드 (ID: ${complaintId})`}
-      className={[
-        'mx-auto flex flex-col items-center',
-        'h-[600px] w-full max-w-[1000px]',
-        'bg-neutral-0 pt-6 pb-6',
-      ].join(' ')}
+      className="mx-auto flex w-full max-w-[520px] flex-1 flex-col items-center justify-center gap-6"
     >
-      <IntroHeader
-        title="고소장 DOCX 파일로 저장하기"
-        lines={[
-          'AI가 작성한 고소장을 Word(DOCX) 파일로 내려받을 수 있어요.',
-          '다운로드 후에 내용을 직접 수정하거나 인쇄해서 사용할 수 있습니다.',
-        ]}
-        center
-        showArrow
-      />
+      {/* 캐릭터 + 말풍선 */}
+      <div className="flex flex-col items-center gap-3">
+        <img
+          src={characterUrl}
+          alt="바로 캐릭터"
+          className="animate-pop-in h-28 w-28 md:h-36 md:w-36"
+          draggable={false}
+        />
+        <div className="animate-bubble-up border-primary-100 bg-primary-0/40 rounded-2xl border px-6 py-4 text-center">
+          <p className="text-body-2-bold md:text-body-1-bold text-neutral-800">
+            {downloaded ? '다운로드가 완료됐어요!' : '고소장이 완성됐어요!'}
+          </p>
+          <p className="text-body-3-regular md:text-body-2-regular mt-1 text-neutral-500">
+            {downloaded
+              ? '파일을 열어서 내용을 확인해보세요.'
+              : 'Word 파일로 다운로드해서 확인하고 제출해보세요.'}
+          </p>
+        </div>
+      </div>
 
-      <div
-        className={[
-          'mt-8 flex min-h-0 w-full max-w-[520px] flex-1 flex-col',
-          'rounded-200 bg-neutral-0 border border-neutral-200 shadow-sm',
-          'px-6 py-5',
-        ].join(' ')}
-      >
-        {/* 상단 아이콘 + 타이틀 */}
-        <div className="mb-6 flex items-center gap-3">
-          <div
-            className={[
-              'flex h-10 w-10 items-center justify-center',
-              'bg-primary-50 text-primary-500 rounded-full',
-              'text-body-2-bold',
-            ].join(' ')}
-          >
-            W
-          </div>
-          <div className="flex flex-col">
-            <span className="text-caption-regular text-neutral-500">문서 ID #{complaintId}</span>
-            <span className="text-body-2-bold text-neutral-900">
-              고소장을 Word 문서로 저장할 수 있어요
+      {/* 다운로드 카드 */}
+      <div className="w-full rounded-2xl border border-neutral-200 bg-white shadow-sm">
+        {/* 파일 정보 */}
+        <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-4">
+          <div className="bg-primary-100 flex h-12 w-12 items-center justify-center rounded-xl">
+            <span
+              className="material-symbols-outlined text-primary-500"
+              style={{ fontSize: '28px' }}
+            >
+              description
             </span>
           </div>
+          <div className="flex flex-col">
+            <span className="text-body-3-bold text-neutral-800">고소장_{complaintId}.docx</span>
+            <span className="text-detail-regular text-neutral-400">Word 문서 파일</span>
+          </div>
         </div>
 
-        {/* 안내 텍스트/단계 */}
-        <div className="text-body-3-regular mb-5 space-y-2 text-neutral-700">
-          <p>아래 버튼을 눌러 DOCX 파일을 내려받은 뒤, 필요에 따라 수정·보관해 주세요.</p>
-          <ul className="text-caption-regular space-y-1 text-neutral-600">
-            <li>1️⃣ 다운로드한 파일을 열어 내용이 정확한지 다시 한 번 확인해 주세요.</li>
-            <li>2️⃣ 필요하다면 일부 문장을 직접 수정하거나 추가 메모를 남길 수 있어요.</li>
-            <li>3️⃣ 완성된 문서를 인쇄해 제출하거나, 전자문서로 보관할 수 있습니다.</li>
-          </ul>
+        {/* 안내 사항 */}
+        <div className="space-y-2 border-b border-neutral-100 px-5 py-4">
+          <div className="flex items-start gap-2">
+            <span
+              className="material-symbols-outlined text-primary-300 mt-0.5"
+              style={{ fontSize: '16px' }}
+            >
+              check_circle
+            </span>
+            <p className="text-detail-regular text-neutral-600">
+              다운로드한 파일을 열어 내용이 정확한지 확인해주세요
+            </p>
+          </div>
+          <div className="flex items-start gap-2">
+            <span
+              className="material-symbols-outlined text-primary-300 mt-0.5"
+              style={{ fontSize: '16px' }}
+            >
+              check_circle
+            </span>
+            <p className="text-detail-regular text-neutral-600">
+              필요하다면 문장을 수정하거나 메모를 추가할 수 있어요
+            </p>
+          </div>
+          <div className="flex items-start gap-2">
+            <span
+              className="material-symbols-outlined text-primary-300 mt-0.5"
+              style={{ fontSize: '16px' }}
+            >
+              check_circle
+            </span>
+            <p className="text-detail-regular text-neutral-600">
+              완성된 문서를 인쇄해 제출하거나 전자문서로 보관하세요
+            </p>
+          </div>
         </div>
 
-        {/* 버튼 영역 */}
-        <div className="mt-auto flex flex-col items-center gap-3">
+        {/* 다운로드 버튼 */}
+        <div className="px-5 py-4">
           <Button
-            variant="primary"
-            size="md"
+            variant={downloaded ? 'secondary' : 'primary'}
+            size="lg"
             fullWidth
             onClick={handleDownload}
             disabled={isDownloading}
           >
-            {/* DOCX 아이콘 */}
-            <span className="bg-primary-400/15 flex h-9 w-9 items-center justify-center rounded-[12px]">
-              <img
-                src={DocxIcon}
-                alt="DOCX 파일 아이콘"
-                className="h-5 w-5"
-              />
+            <span
+              className="material-symbols-outlined mr-2"
+              style={{ fontSize: '20px' }}
+            >
+              {downloaded ? 'refresh' : 'download'}
             </span>
-
-            {isDownloading ? '다운로드 준비 중...' : 'DOCX 파일 다운로드'}
+            {isDownloading
+              ? '다운로드 준비 중...'
+              : downloaded
+                ? '다시 다운로드'
+                : 'DOCX 파일 다운로드'}
           </Button>
-
-          <p className="text-detail-regular text-neutral-500">
-            * 브라우저의 팝업 차단 설정에 따라 다운로드 창이 보이지 않을 수 있어요.
-          </p>
         </div>
       </div>
     </section>

@@ -18,26 +18,16 @@ import {
   registerEvidence,
   registerRelatedCases,
 } from '@/features/complaint/apis/complaints';
-import CaseDetailModal from '@/features/complaint/components/CaseDetailModal';
 import WizardNavButtons from '@/features/complaint/components/WizardNavButtons';
 import WizardProgress from '@/features/complaint/components/WizardProgress';
-import AccusedExtraInfoSection, {
-  type AccusedExtraInfo,
-  type AccusedExtraInfoSectionHandle,
-} from '@/features/complaint/sections/AccusedExtraInfoSection';
 import AccusedInfoSection, {
-  type AccusedBasicInfo,
   type AccusedInfoSectionHandle,
 } from '@/features/complaint/sections/AccusedInfoSection';
 import ChatInfoSection from '@/features/complaint/sections/ChatInfoSection';
 import ChatWindowSection from '@/features/complaint/sections/ChatWindowSection';
 import ComplaintDownloadSection from '@/features/complaint/sections/ComplaintDownloadSection';
 import ComplaintEntrySection from '@/features/complaint/sections/ComplaintEntrySection';
-import type { ComplainantExtraInfoSectionHandle } from '@/features/complaint/sections/ComplaintExtraInfoSection';
-import type { ComplainantExtraInfo } from '@/features/complaint/sections/ComplaintExtraInfoSection';
-import ComplainantExtraInfoSection from '@/features/complaint/sections/ComplaintExtraInfoSection';
 import type { ComplainantInfoSectionHandle } from '@/features/complaint/sections/ComplaintInfoSection';
-import type { ComplaintBasicInfo } from '@/features/complaint/sections/ComplaintInfoSection';
 import ComplainantInfoSection from '@/features/complaint/sections/ComplaintInfoSection';
 import ComplaintIntroSection from '@/features/complaint/sections/ComplaintIntroSection';
 import ComplaintPreviewSection from '@/features/complaint/sections/ComplaintPreviewSection';
@@ -67,16 +57,39 @@ const ComplaintWizardPage: React.FC = () => {
   const nextRaw = useComplaintWizard((s) => s.next);
   const prev = useComplaintWizard((s) => s.prev);
   const resetWizard = useComplaintWizard((s) => s.reset);
+  const allChecked = useComplaintWizard((s) => s.allChecked());
   const setStep = useComplaintWizard((s) => s.setStep);
 
-  const [isChatCompleted, setIsChatCompleted] = useState(false);
+  const [, setIsChatCompleted] = useState(false);
 
-  const [entryMode, setEntryMode] = useState<'new' | 'resume' | null>(null);
+  // 채팅 단계에서만 html 스크롤 차단
+  useEffect(() => {
+    if (step === 6) {
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.height = '100%';
+    } else {
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+    }
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+    };
+  }, [step]);
+
+  const newMode = fromState?.mode === 'new';
+  const [entryMode, setEntryMode] = useState<'new' | 'resume' | null>(newMode ? 'new' : null);
+
+  // 외부에서 mode: 'new'로 진입하면 step 0 건너뛰기
+  useEffect(() => {
+    if (newMode && step === 0) {
+      setStep(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const complainantRef = useRef<ComplainantInfoSectionHandle>(null);
-  const complainantExtraRef = useRef<ComplainantExtraInfoSectionHandle>(null);
   const accusedRef = useRef<AccusedInfoSectionHandle>(null);
-  const accusedExtraRef = useRef<AccusedExtraInfoSectionHandle>(null);
   const evidenceRef = useRef<EvidenceInfoSectionHandle>(null);
 
   // AI 메타 정보 (이 페이지에서만 관리)
@@ -85,8 +98,6 @@ const ComplaintWizardPage: React.FC = () => {
   const [ragSearchStarted, setRagSearchStarted] = useState(false);
 
   const [complaintId, setComplaintId] = useState<number | null>(initialComplaintIdFromState);
-  const [complainantBasicInfo, setComplainantBasicInfo] = useState<ComplaintBasicInfo | null>(null);
-  const [accusedBasicInfo, setAccusedBasicInfo] = useState<AccusedBasicInfo | null>(null);
 
   const [generatedComplaint, setGeneratedComplaint] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -106,7 +117,7 @@ const ComplaintWizardPage: React.FC = () => {
   useEffect(() => {
     if (resumeMode && initialComplaintIdFromState) {
       setComplaintId(initialComplaintIdFromState);
-      setStep(8); // 0: 엔트리, 1: 인트로, ..., 7: 증거, 8: 채팅
+      setStep(6); // 0: 엔트리, 1: 인트로, 2: 고소인, 3: 피고소인, 4: 채팅안내, 5: 증거, 6: 채팅
     }
   }, [resumeMode, initialComplaintIdFromState, setStep]);
 
@@ -133,36 +144,22 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    // 2: 고소인 기본정보 → 로컬 상태만 저장
+    // 2: 고소인 정보 (기본+추가 통합) → complaint 생성 + 관련 사건 등록
     if (step === 2) {
       if (!complainantRef.current) return;
 
       try {
-        const basic = await complainantRef.current.save();
-        setComplainantBasicInfo(basic);
-        nextRaw();
-      } catch {
-        // 섹션 내부에서 에러 처리
-      }
-      return;
-    }
-
-    // 3: 고소인 추가정보 → complaint 생성 + 관련 사건 등록
-    if (step === 3) {
-      if (!complainantBasicInfo || !complainantExtraRef.current) return;
-
-      try {
-        const extra: ComplainantExtraInfo = await complainantExtraRef.current.save();
+        const info = await complainantRef.current.save();
 
         const payload: ComplainantInfoCreate = {
-          complainant_name: complainantBasicInfo.name,
-          complainant_email: complainantBasicInfo.unknownEmail ? '' : complainantBasicInfo.email,
-          complainant_address: complainantBasicInfo.unknownAddr ? '' : complainantBasicInfo.address,
-          complainant_phone: complainantBasicInfo.unknownPhone ? '' : complainantBasicInfo.phone,
-          complainant_job: extra.unknownOccupation ? '' : extra.occupation,
-          complainant_office_address: extra.unknownOfficeAddress ? '' : extra.officeAddress,
-          complainant_office_phone: extra.unknownOfficePhone ? '' : extra.officePhone,
-          complainant_home_phone: extra.unknownHomePhone ? '' : extra.homePhone,
+          complainant_name: info.name,
+          complainant_email: info.unknownEmail ? '' : info.email,
+          complainant_address: info.unknownAddr ? '' : info.address,
+          complainant_phone: info.unknownPhone ? '' : info.phone,
+          complainant_job: info.unknownOccupation ? '' : info.occupation,
+          complainant_office_address: info.unknownOfficeAddress ? '' : info.officeAddress,
+          complainant_office_phone: info.unknownOfficePhone ? '' : info.officePhone,
+          complainant_home_phone: info.unknownHomePhone ? '' : info.homePhone,
         };
 
         const res = await createComplaint(payload);
@@ -193,36 +190,21 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    // 4: 피고소인 기본정보
-    if (step === 4) {
-      try {
-        const basic = await accusedRef.current?.save();
-        if (basic) {
-          setAccusedBasicInfo(basic);
-          nextRaw();
-        }
-      } catch {
-        // 섹션 내부에서 에러 처리
-      }
-      return;
-    }
-
-    // 5: 피고소인 추가정보 → registerAccused
-    if (step === 5) {
-      if (!complaintId || !accusedBasicInfo) return;
-      if (!accusedExtraRef.current) return;
+    // 3: 피고소인 정보 (기본 + 추가 통합) → registerAccused
+    if (step === 3) {
+      if (!complaintId) return;
+      if (!accusedRef.current) return;
 
       try {
-        const extra: AccusedExtraInfo = await accusedExtraRef.current.save();
-
+        const info = await accusedRef.current.save();
         const payload: AccusedInfoCreate = {
-          accused_name: accusedBasicInfo.name,
-          accused_email: accusedBasicInfo.email,
-          accused_address: accusedBasicInfo.address,
-          accused_phone: accusedBasicInfo.phone,
-          accused_job: extra.occupation,
-          accused_office_address: extra.officeAddress,
-          accused_etc: extra.etc,
+          accused_name: info.name,
+          accused_email: info.email,
+          accused_address: info.address,
+          accused_phone: info.phone,
+          accused_job: info.occupation,
+          accused_office_address: info.officeAddress,
+          accused_etc: info.etc,
         };
 
         await registerAccused(complaintId, payload);
@@ -233,8 +215,8 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    // 7: 증거 섹션 → registerEvidence 후 채팅 단계(8)로
-    if (step === 7) {
+    // 4: 증거 섹션 → registerEvidence
+    if (step === 4) {
       if (!complaintId) return;
       if (!evidenceRef.current) return;
 
@@ -246,7 +228,7 @@ const ComplaintWizardPage: React.FC = () => {
         };
 
         await registerEvidence(complaintId, payload);
-        nextRaw(); // → step 8 (ChatWindowSection)
+        nextRaw(); // → step 5 (채팅 안내)
       } catch (e) {
         console.error('failed to register evidence', e);
       }
@@ -254,8 +236,8 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    // 8: 채팅 완료 후 → 최종 고소장 생성 + 미리보기(9)
-    if (step === 8) {
+    // 6: 채팅 완료 후 → 최종 고소장 생성 + 미리보기(7)
+    if (step === 6) {
       if (!complaintId) return;
 
       // 버튼 누르는 즉시 모달 띄우기
@@ -283,7 +265,7 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    if (step === 10) {
+    if (step === 8) {
       resetWizard(); // 위자드 상태 초기화
       navigate('/'); // 홈으로 이동
       return;
@@ -296,12 +278,19 @@ const ComplaintWizardPage: React.FC = () => {
   const chatMode: 'new' | 'resume' = resumeMode ? 'resume' : 'new';
 
   return (
-    <div className="bg-neutral-0 flex min-h-screen w-full flex-col">
+    <div
+      className={`bg-neutral-0 flex w-full flex-col ${step === 6 ? 'h-screen overflow-hidden' : 'min-h-screen'}`}
+    >
       <Header />
-      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4">
-        <WizardProgress onExit={handleExit} />
-        {/* 위자드 본문: 0~7단계 (420px 카드) */}
-        <div className="mx-auto w-full max-w-[420px]">
+      <main
+        className={`mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4 ${step === 6 ? 'min-h-0 overflow-hidden' : ''}`}
+      >
+        <WizardProgress
+          onExit={handleExit}
+          className="mb-4 shrink-0"
+        />
+        {/* 위자드 본문: 0~7단계 */}
+        <div className={step >= 6 ? 'hidden' : 'flex min-h-0 flex-1 flex-col'}>
           {/* 0: 시작 선택 (새로 작성 / 이어쓰기 / 목록 보기) */}
           {step === 0 && (
             <ComplaintEntrySection
@@ -312,23 +301,18 @@ const ComplaintWizardPage: React.FC = () => {
           )}
 
           {/* 1: 인트로 / 안내 */}
-          <div className={step === 1 ? 'block' : 'hidden'}>
+          <div className={step === 1 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ComplaintIntroSection />
           </div>
 
-          {/* 2: 고소인 기본정보 */}
-          <div className={step === 2 ? 'block' : 'hidden'}>
+          {/* 2: 고소인 정보 */}
+          <div className={step === 2 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ComplainantInfoSection ref={complainantRef} />
           </div>
 
-          {/* 3: 고소인 추가정보 */}
-          <div className={step === 3 ? 'block' : 'hidden'}>
-            <ComplainantExtraInfoSection ref={complainantExtraRef} />
-          </div>
-
-          {/* 4: 피고소인 기본정보 */}
+          {/* 3: 피고소인 정보 */}
           {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
-            <div className={step === 4 ? 'block' : 'hidden'}>
+            <div className={step === 3 ? 'flex flex-1 flex-col' : 'hidden'}>
               <AccusedInfoSection
                 ref={accusedRef}
                 complaintId={complaintId}
@@ -336,40 +320,35 @@ const ComplaintWizardPage: React.FC = () => {
             </div>
           )}
 
-          {/* 5: 피고소인 추가정보 */}
+          {/* 4: 증거 제출 */}
           {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
-            <div className={step === 5 ? 'block' : 'hidden'}>
-              <AccusedExtraInfoSection
-                ref={accusedExtraRef}
-                complaintId={complaintId}
-              />
+            <div className={step === 4 ? 'flex flex-1 flex-col' : 'hidden'}>
+              <EvidenceInfoSection ref={evidenceRef} />
             </div>
           )}
 
-          {/* 6: 채팅 안내 */}
-          <div className={step === 6 ? 'block' : 'hidden'}>
+          {/* 5: 채팅 안내 */}
+          <div className={step === 5 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ChatInfoSection />
           </div>
-
-          {/* 7: 증거 제출 여부 확인 */}
-          {typeof complaintId === 'number' &&
-            Number.isFinite(complaintId) &&
-            complaintId > 0 &&
-            step === 7 && <EvidenceInfoSection ref={evidenceRef} />}
         </div>
         {/* 8: 실제 채팅창 + 오른쪽 메타 패널 */}
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
-          step === 8 && (
-            <div className="flex flex-1 gap-2">
-              <div className="flex flex-1">
+          step === 6 && (
+            <div className="flex min-h-0 flex-1 gap-4">
+              <div className="flex min-h-0 flex-1">
                 <ChatWindowSection
                   complaintId={complaintId}
                   mode={chatMode}
                   initialAiSessionId={initialAiSessionIdFromState ?? null}
                   onInitStart={() => setRagSearchStarted(true)}
-                  onComplete={() => setIsChatCompleted(true)}
+                  onComplete={() => {
+                    setIsChatCompleted(true);
+                    // 자동으로 다음 단계로 이동
+                    setTimeout(() => handleNext(), 1500);
+                  }}
                   onInitMeta={({ offense, rag_keyword, rag_cases }) => {
                     console.log('📌 onInitMeta in Wizard:', {
                       offense,
@@ -382,67 +361,225 @@ const ComplaintWizardPage: React.FC = () => {
                 />
               </div>
 
-              <aside className="rounded-200 bg-neutral-0 mt-2 h-[498px] w-[340px] border border-neutral-200 p-4 xl:h-[576px]">
-                <h2 className="text-body-1-bold mb-2">AI가 찾은 핵심 키워드</h2>
-                <p className="text-body-3-regular mb-4 text-neutral-700">
-                  {ragKeyword
-                    ? `"${ragKeyword}"`
-                    : '사건 개요를 입력하면, AI가 핵심 키워드를 분석해서 보여드려요.'}
-                </p>
+              <aside className="flex min-h-0 w-[340px] shrink-0 flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
+                {/* 헤더 */}
+                <div className="flex items-center gap-2 border-b border-neutral-100 px-5 py-3">
+                  <div className="bg-primary-100 flex h-7 w-7 items-center justify-center rounded-full">
+                    <span
+                      className="material-symbols-outlined text-primary-400"
+                      style={{ fontSize: '16px' }}
+                    >
+                      search
+                    </span>
+                  </div>
+                  <h2 className="text-body-3-bold text-neutral-800">AI 분석 결과</h2>
+                </div>
 
-                {ragKeyword && (
-                  <>
-                    <h3 className="text-body-2-bold mb-1">검색 기준</h3>
-                    <p className="text-body-3-regular mb-3 text-neutral-600">
-                      유사 판례는 "{ragKeyword}"를 중심으로 검색했어요.
-                    </p>
-                  </>
-                )}
-
-                <h3 className="text-body-2-bold mb-2">유사 판례</h3>
-
-                {ragCases.length === 0 ? (
-                  ragSearchStarted ? (
-                    <p className="animate-wave-fill inline-block">유사 판례를 찾고 있어요...</p>
+                {/* 키워드 섹션 */}
+                <div className="border-b border-neutral-100 px-5 py-4">
+                  <p className="text-detail-regular mb-2 text-neutral-400">핵심 키워드</p>
+                  {ragKeyword ? (
+                    <span className="bg-primary-0 text-body-3-bold text-primary-500 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5">
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: '16px' }}
+                      >
+                        tag
+                      </span>
+                      {ragKeyword}
+                    </span>
                   ) : (
-                    <p className="text-caption-regular text-neutral-500">
-                      아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.
+                    <p className="text-body-3-regular text-neutral-400">
+                      사건 개요를 입력하면 AI가 분석해드려요
                     </p>
-                  )
-                ) : (
-                  <ul className="flex flex-col gap-3">
-                    {ragCases.map((c, idx) => (
-                      <li key={c.case_no || idx}>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCase(c)}
-                          className={[
-                            'rounded-200 bg-neutral-0 w-full border border-neutral-200 px-3 py-2',
-                            'flex items-center justify-between gap-3',
-                            'hover:border-primary-100 hover:bg-primary-25/40',
-                            'transition-colors duration-200',
-                          ].join(' ')}
-                        >
-                          <div className="flex flex-col text-left">
-                            <span className="text-caption-regular text-neutral-500">사건 번호</span>
-                            <span className="text-body-4-bold text-neutral-900">{c.case_no}</span>
-                          </div>
-                          <div className="flex flex-col items-end gap-1">
-                            <span className="text-detail-regular text-primary-600 mt-1 inline-flex items-center gap-1">
-                              자세히 보기
-                              <span
-                                className="material-symbols-outlined"
-                                style={{ fontSize: '16px' }}
+                  )}
+                </div>
+
+                {/* 유사 판례 */}
+                <div className="flex flex-1 flex-col overflow-hidden px-5 py-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-detail-regular text-neutral-400">유사 판례</p>
+                    {ragCases.length > 0 && (
+                      <span className="text-detail-bold text-primary-400">{ragCases.length}건</span>
+                    )}
+                  </div>
+
+                  <div className="balaw-scrollbar flex-1 overflow-y-auto">
+                    {ragCases.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        {ragSearchStarted ? (
+                          <>
+                            {/* 책 넘기기 애니메이션 */}
+                            <div
+                              className="relative mb-3 h-12 w-16"
+                              style={{ perspective: '400px' }}
+                            >
+                              {/* 책 전체를 비스듬히 기울임 */}
+                              <div
+                                className="absolute inset-0"
+                                style={{
+                                  transform: 'rotateX(20deg) rotateZ(-5deg)',
+                                  transformStyle: 'preserve-3d',
+                                }}
                               >
-                                open_in_new
-                              </span>
+                                {/* 책 뒤표지 */}
+                                <div className="bg-primary-300 absolute inset-0 rounded-r-sm shadow-sm" />
+                                {/* 책 옆면 (두께) */}
+                                <div className="bg-primary-400 absolute top-0 left-0 h-full w-1 rounded-l-sm" />
+                                {/* 페이지 3 */}
+                                <div
+                                  className="animate-book-page-3 bg-primary-50 absolute inset-0 rounded-r-sm shadow-sm"
+                                  style={{
+                                    transformOrigin: 'left center',
+                                    backfaceVisibility: 'hidden',
+                                  }}
+                                >
+                                  <div className="mx-2 mt-2 space-y-1">
+                                    <div className="h-[2px] w-3/4 rounded bg-neutral-200" />
+                                    <div className="h-[2px] w-1/2 rounded bg-neutral-200" />
+                                  </div>
+                                </div>
+                                {/* 페이지 2 */}
+                                <div
+                                  className="animate-book-page-2 bg-primary-0 absolute inset-0 rounded-r-sm shadow-sm"
+                                  style={{
+                                    transformOrigin: 'left center',
+                                    backfaceVisibility: 'hidden',
+                                  }}
+                                >
+                                  <div className="mx-2 mt-2 space-y-1">
+                                    <div className="h-[2px] w-2/3 rounded bg-neutral-200" />
+                                    <div className="h-[2px] w-4/5 rounded bg-neutral-200" />
+                                  </div>
+                                </div>
+                                {/* 페이지 1 (맨 위) */}
+                                <div
+                                  className="animate-book-page-1 absolute inset-0 rounded-r-sm bg-white shadow-sm"
+                                  style={{
+                                    transformOrigin: 'left center',
+                                    backfaceVisibility: 'hidden',
+                                  }}
+                                >
+                                  <div className="mx-2 mt-2 space-y-1">
+                                    <div className="h-[2px] w-1/2 rounded bg-neutral-300" />
+                                    <div className="h-[2px] w-3/4 rounded bg-neutral-200" />
+                                    <div className="h-[2px] w-2/3 rounded bg-neutral-200" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <p className="text-body-3-regular text-neutral-500">
+                              유사 판례를 찾고 있어요...
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <span
+                              className="material-symbols-outlined mb-2 text-neutral-300"
+                              style={{ fontSize: '28px' }}
+                            >
+                              gavel
                             </span>
-                          </div>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                            <p className="text-body-3-regular text-neutral-400">
+                              아직 불러온 판례가 없어요
+                            </p>
+                            <p className="text-detail-regular mt-1 text-neutral-300">
+                              사건 개요를 입력하면 관련 판례를 보여드릴게요
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <ul className="flex flex-col gap-3">
+                        {ragCases.map((c, idx) => {
+                          const isOpen = selectedCase?.case_no === c.case_no;
+
+                          return (
+                            <li key={c.case_no || idx}>
+                              <div
+                                className={[
+                                  'w-full rounded-xl border bg-neutral-50 transition-all duration-300',
+                                  isOpen
+                                    ? 'border-primary-200 bg-primary-0/20'
+                                    : 'border-neutral-200',
+                                ].join(' ')}
+                              >
+                                {/* 카드 헤더 (클릭 가능) */}
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedCase(isOpen ? null : c)}
+                                  className="group flex w-full items-center justify-between px-4 py-3 text-left"
+                                >
+                                  <div className="flex flex-col gap-0.5">
+                                    <span className="text-body-3-bold text-neutral-800">
+                                      {c.case_no}
+                                    </span>
+                                    {c.label && (
+                                      <span className="text-detail-regular text-neutral-500">
+                                        {c.label}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span
+                                    className={[
+                                      'material-symbols-outlined text-neutral-400 transition-transform duration-300',
+                                      isOpen ? 'rotate-180' : '',
+                                    ].join(' ')}
+                                    style={{ fontSize: '18px' }}
+                                  >
+                                    expand_more
+                                  </span>
+                                </button>
+
+                                {/* 펼쳐지는 상세 영역 */}
+                                <div
+                                  className="grid transition-[grid-template-rows] duration-300 ease-out"
+                                  style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+                                >
+                                  <div className="overflow-hidden">
+                                    <div className="border-t border-neutral-100 px-4 pt-3 pb-4">
+                                      {/* 유사 포인트 */}
+                                      {c.similarity && (
+                                        <div className="mb-3">
+                                          <p className="text-detail-regular mb-1 text-neutral-400">
+                                            유사 포인트
+                                          </p>
+                                          <p className="text-detail-regular leading-relaxed text-neutral-700">
+                                            {c.similarity}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {/* 사건 개요 */}
+                                      <div className="mb-3">
+                                        <p className="text-detail-regular mb-1 text-neutral-400">
+                                          사건 개요
+                                        </p>
+                                        <p className="text-detail-regular leading-relaxed whitespace-pre-line text-neutral-700">
+                                          {c.summary || '요약 정보가 없어요.'}
+                                        </p>
+                                      </div>
+
+                                      {/* 판결 결과 */}
+                                      <div>
+                                        <p className="text-detail-regular mb-1 text-neutral-400">
+                                          판결 결과
+                                        </p>
+                                        <p className="text-detail-regular leading-relaxed whitespace-pre-line text-neutral-700">
+                                          {c.result || '판결 결과 정보가 없어요.'}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                </div>
               </aside>
             </div>
           )}
@@ -450,52 +587,58 @@ const ComplaintWizardPage: React.FC = () => {
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
-          step === 9 &&
+          step === 7 &&
           generatedComplaint && (
-            <ComplaintPreviewSection
-              complaintId={complaintId}
-              content={generatedComplaint}
-            />
+            <div className="flex min-h-0 flex-1 flex-col">
+              <ComplaintPreviewSection
+                complaintId={complaintId}
+                content={generatedComplaint}
+              />
+            </div>
           )}
         {/* 10: DOCX 다운로드 섹션 */}
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
-          step === 10 && <ComplaintDownloadSection complaintId={complaintId} />}
-        <WizardNavButtons
-          onPrev={prev}
-          onNext={handleNext}
-          isNextDisabled={isGenerating || (step === 8 && !isChatCompleted)}
-          disablePrev={step === 0 || step === 8 || step === 9}
-          nextLabel={
-            step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
-          }
-        />
+          step === 8 && (
+            <div className="flex min-h-0 flex-1 flex-col">
+              <ComplaintDownloadSection complaintId={complaintId} />
+            </div>
+          )}
+        {step !== 6 && (
+          <WizardNavButtons
+            onPrev={prev}
+            onNext={handleNext}
+            isNextDisabled={
+              isGenerating || (step === 0 && entryMode === null) || (step === 1 && !allChecked)
+            }
+            disablePrev={step === 0 || step === 7}
+            nextLabel={step === 8 ? '종료' : '다음'}
+          />
+        )}
         <GeneratingModal open={showGeneratingModal} />
       </main>
       <Footer />
 
-      {/* 판례 상세 모달 */}
-      {selectedCase && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
-          <CaseDetailModal
-            ragCase={selectedCase}
-            onClose={() => setSelectedCase(null)}
-          />
-        </div>
-      )}
-
       {showExitModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
-          <CharacterModal
-            variant="exit"
-            onCancel={() => setShowExitModal(false)}
-            onConfirm={() => {
-              setShowExitModal(false);
-              resetWizard();
-              navigate('/');
-            }}
-          />
+        <div
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4"
+          onClick={() => setShowExitModal(false)}
+        >
+          <div
+            className="animate-pop-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CharacterModal
+              variant="exit"
+              onCancel={() => setShowExitModal(false)}
+              onConfirm={() => {
+                setShowExitModal(false);
+                resetWizard();
+                navigate('/');
+              }}
+            />
+          </div>
         </div>
       )}
     </div>
