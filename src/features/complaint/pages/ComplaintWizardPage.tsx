@@ -545,11 +545,15 @@ const ComplaintWizardPage: React.FC = () => {
 
       {/* 판례 상세 모달 */}
       {selectedCase && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
-          <CaseDetailModal
-            ragCase={selectedCase}
-            onClose={() => setSelectedCase(null)}
-          />
+        <div className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4"
+          onClick={() => setSelectedCase(null)}
+        >
+          <div className="animate-expand-card" onClick={(e) => e.stopPropagation()}>
+            <CaseDetailModal
+              ragCase={selectedCase}
+              onClose={() => setSelectedCase(null)}
+            />
+          </div>
         </div>
       )}
 
