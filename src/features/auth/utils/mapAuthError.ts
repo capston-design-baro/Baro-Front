@@ -68,19 +68,18 @@ export function mapAuthError(error: unknown): string {
         return detail;
       }
 
-      if (Array.isArray(detail)) {
-        const fieldErrors = detail[0];
-        const fieldName = extractFromLoc(fieldErrors.loc);
+      if (Array.isArray(detail) && detail.length > 0) {
+        const fieldError = detail[0];
+        const msg = fieldError.msg;
+
+        // 서버가 한국어 메시지를 제공하면 "Value error, " 접두어만 제거 후 그대로 사용
+        if (typeof msg === 'string') {
+          const cleaned = msg.replace(/^Value error,\s*/, '');
+          if (cleaned) return cleaned;
+        }
+
+        const fieldName = extractFromLoc(fieldError.loc);
         const fieldKoreanName = fieldName ? mapValidationErrors(fieldName) : '입력값';
-
-        if (fieldName === 'email') {
-          return `${fieldKoreanName} 형식이 잘못되었습니다.`;
-        }
-
-        if (fieldName === 'password') {
-          return `${fieldKoreanName}는 8자 이상이어야 합니다.`;
-        }
-
         return `${fieldKoreanName}에 오류가 있습니다. 입력값을 확인해주세요.`;
       }
     }
