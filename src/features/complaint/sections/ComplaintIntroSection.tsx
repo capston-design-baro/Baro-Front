@@ -18,8 +18,8 @@ const ComplaintIntroSection: React.FC = () => {
   return (
     <section
       className={[
-        'flex flex-col items-center justify-between',
-        'h-[600px] w-full max-w-[1000px]',
+        'flex flex-col items-center',
+        'w-full flex-1',
         'pb-6',
         'bg-neutral-0 rounded-400',
       ].join(' ')}
@@ -28,28 +28,37 @@ const ComplaintIntroSection: React.FC = () => {
         title="고소장 작성하기"
         lines={[
           '고소장 작성 전에 확인해야 할 것들이 있어요.',
-          '원활한 고소장 접수를 위해서',
-          '솔직하게 체크해주세요.',
+          '원활한 고소장 접수를 위해서 솔직하게 체크해주세요.',
         ]}
         center
         showArrow
       />
 
-      <div className="flex flex-col gap-5 pt-6">
-        {prechecks.map((q) => (
-          <Question
-            key={q.id}
-            q={q}
-            onToggleConfirm={toggleConfirm}
-            onSetBinary={setBinaryAnswer}
-            forceOpenInfo={q.id === blockedPrecheckId}
-          />
-        ))}
+      <div className="flex w-full max-w-[520px] flex-1 flex-col items-center justify-center">
+        <div className="rounded-300 w-full border border-neutral-200 bg-white shadow-sm">
+          {prechecks.map((q, idx) => (
+            <Question
+              key={q.id}
+              q={q}
+              onToggleConfirm={toggleConfirm}
+              onSetBinary={setBinaryAnswer}
+              forceOpenInfo={q.id === blockedPrecheckId}
+              isLast={idx === prechecks.length - 1}
+            />
+          ))}
+        </div>
       </div>
 
       {/* 경고 문구 */}
       <FormErrorMessage
-        error={triedNext && !allChecked ? '모든 안내 사항을 꼼꼼히 읽고 체크해주세요.' : null}
+        className="mt-4"
+        error={
+          triedNext && blockedPrecheckId
+            ? '해당 항목에 "예"라고 답하셨어요. 이 경우 고소장 작성이 어려울 수 있으니, 법률 전문가와 먼저 상담해보시는 걸 추천드려요.'
+            : triedNext && !allChecked
+              ? '모든 항목을 확인하고 체크해주세요.'
+              : null
+        }
       />
     </section>
   );

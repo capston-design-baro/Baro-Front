@@ -35,109 +35,166 @@ const EvidenceInfoSection = forwardRef<EvidenceInfoSectionHandle>((_props, ref) 
 
   return (
     <section
-      className={[
-        'flex flex-col items-center justify-between',
-        'h-[600px] w-full max-w-[1000px]',
-        'pb-6',
-        'bg-neutral-0',
-      ].join(' ')}
+      className={['flex flex-col items-center', 'w-full flex-1', 'pb-6', 'bg-neutral-0'].join(' ')}
     >
       <IntroHeader
         title="증거 유무 확인"
         lines={[
           '확보한 증거들이 있나요?',
-          '증거 확보 유무만 체크해주고,',
-          '확보한 증거가 있다면 따로 관할서에 제출하면 돼요.',
+          '증거 확보 유무만 체크해주고, 확보한 증거가 있다면 따로 관할서에 제출하면 돼요.',
         ]}
         center
         showArrow
       />
-      <div className="mt-5 flex flex-col gap-3">
+
+      <div className="mx-auto grid w-full max-w-[520px] flex-1 grid-cols-1 place-content-center gap-4 px-4 md:grid-cols-2 md:gap-6">
+        {/* 네, 증거가 있어요 */}
         <button
           type="button"
-          onClick={() => setSelection('yes')}
+          onClick={() => {
+            setSelection('yes');
+            setError(null);
+          }}
           className={[
-            'rounded-300 flex w-full items-center gap-2 border px-4 py-3 text-left',
-            // ghost base
-            'to-neutral-0/10 bg-radial from-neutral-200/40 via-neutral-100/10',
-            'border',
-            'shadow-[inset_0_1px_2px_rgba(255,255,255,0.12)]',
-            'backdrop-blur-md',
-            'transition-all duration-300 ease-out',
-            // active vs default
+            'group relative flex w-full flex-col items-center justify-center gap-4',
+            'rounded-300 px-6 py-10',
+            'border-2 bg-white',
+            'transition-all duration-200 ease-out',
             isYesActive
-              ? 'border-primary-300 ring-primary-200 ring-2'
-              : 'hover:ring-primary-50/40 border-white/50 hover:border-white/70 hover:ring-2',
+              ? 'border-primary-400 bg-primary-0/30 shadow-[0_0_0_3px_rgba(59,130,246,0.1)]'
+              : 'hover:border-primary-300 border-neutral-200 hover:shadow-md',
           ].join(' ')}
         >
-          <span
+          <div
             className={[
-              'inline-flex h-5 w-5 items-center justify-center',
-              selection === 'yes' ? 'text-primary-500' : 'text-neutral-400',
+              'flex h-14 w-14 items-center justify-center rounded-full transition-colors',
+              isYesActive ? 'bg-primary-400' : 'group-hover:bg-primary-100 bg-neutral-100',
             ].join(' ')}
           >
             <span
-              className="material-symbols-outlined leading-none"
-              style={{ fontSize: '20px' }}
+              className={[
+                'material-symbols-outlined transition-colors',
+                isYesActive ? 'text-white' : 'group-hover:text-primary-400 text-neutral-500',
+              ].join(' ')}
+              style={{ fontSize: '28px' }}
             >
-              {selection === 'yes' ? 'check_box' : 'check_box_outline_blank'}
+              folder_open
             </span>
-          </span>
-          <div className="flex flex-col">
-            <span className="text-body-4-bold text-neutral-900">네, 제출할 증거가 있어요.</span>
-            <span className="text-caption-regular text-neutral-600">
-              캡처본, 녹취, 진단서, 영수증 등 이미 가지고 있는 자료가 있습니다.
-            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <p
+              className={[
+                'text-body-2-bold transition-colors',
+                isYesActive ? 'text-primary-500' : 'text-neutral-800',
+              ].join(' ')}
+            >
+              네, 증거가 있어요
+            </p>
+            <p className="text-detail-regular text-neutral-400">
+              캡처본, 녹취, 진단서 등
+              <br />
+              제출할 자료가 있어요
+            </p>
           </div>
         </button>
 
+        {/* 아니요, 없어요 */}
         <button
           type="button"
-          onClick={() => setSelection('no')}
+          onClick={() => {
+            setSelection('no');
+            setError(null);
+          }}
           className={[
-            'rounded-300 flex w-full items-center gap-2 border px-4 py-3 text-left',
-            // ghost base
-            'to-neutral-0/10 bg-radial from-neutral-200/40 via-neutral-100/10',
-            'border',
-            'shadow-[inset_0_1px_2px_rgba(255,255,255,0.12)]',
-            'backdrop-blur-md',
-            'transition-all duration-300 ease-out',
-            // active vs default
+            'group relative flex w-full flex-col items-center justify-center gap-4',
+            'rounded-300 px-6 py-10',
+            'border-2 bg-white',
+            'transition-all duration-200 ease-out',
             isNoActive
-              ? 'border-primary-300 ring-primary-200 ring-2'
-              : 'hover:ring-primary-50/40 border-white/50 hover:border-white/70 hover:ring-2',
+              ? 'border-primary-400 bg-primary-0/30 shadow-[0_0_0_3px_rgba(59,130,246,0.1)]'
+              : 'hover:border-primary-300 border-neutral-200 hover:shadow-md',
           ].join(' ')}
         >
-          <span
+          <div
             className={[
-              'inline-flex h-5 w-5 items-center justify-center',
-              selection === 'no' ? 'text-primary-500' : 'text-neutral-400',
+              'flex h-14 w-14 items-center justify-center rounded-full transition-colors',
+              isNoActive ? 'bg-primary-400' : 'group-hover:bg-primary-100 bg-neutral-100',
             ].join(' ')}
           >
             <span
-              className="material-symbols-outlined leading-none"
-              style={{ fontSize: '20px' }}
+              className={[
+                'material-symbols-outlined transition-colors',
+                isNoActive ? 'text-white' : 'group-hover:text-primary-400 text-neutral-500',
+              ].join(' ')}
+              style={{ fontSize: '28px' }}
             >
-              {selection === 'no' ? 'check_box' : 'check_box_outline_blank'}
+              block
             </span>
-          </span>
-          <div className="flex flex-col">
-            <span className="text-body-4-bold text-neutral-900">
-              아니요, 아직 준비된 증거가 없어요.
-            </span>
-            <span className="text-caption-regular text-neutral-600">
-              지금 당장은 없지만, 이후에 증거를 확보할 수 있을 수도 있습니다.
-            </span>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <p
+              className={[
+                'text-body-2-bold transition-colors',
+                isNoActive ? 'text-primary-500' : 'text-neutral-800',
+              ].join(' ')}
+            >
+              아니요, 없어요
+            </p>
+            <p className="text-detail-regular text-neutral-400">
+              지금은 없지만
+              <br />
+              이후에 확보할 수도 있어요
+            </p>
           </div>
         </button>
       </div>
-      {/* 경고 문구 */}
-      <FormErrorMessage error={error} />
-      <p className="text-body-3-regular mt-4 text-neutral-500">
-        * 증거가 없더라도 고소는 가능합니다.
-        <br />
-        &nbsp;&nbsp;다만 이후 수사 과정에서 추가 자료 제출이 필요할 수 있습니다.
-      </p>
+
+      <FormErrorMessage
+        error={error}
+        className="mt-4"
+      />
+
+      {/* 선택 결과에 따른 안내 */}
+      {selection && (
+        <div className="animate-fade-in mx-auto mt-4 w-full max-w-[520px]">
+          <div
+            className={[
+              'flex items-start gap-3 rounded-xl border px-4 py-3',
+              selection === 'yes'
+                ? 'border-primary-100 bg-primary-0/30'
+                : 'border-neutral-200 bg-neutral-50',
+            ].join(' ')}
+          >
+            <span
+              className={`material-symbols-outlined mt-0.5 ${selection === 'yes' ? 'text-primary-400' : 'text-neutral-400'}`}
+              style={{ fontSize: '18px' }}
+            >
+              {selection === 'yes' ? 'lightbulb' : 'info'}
+            </span>
+            <div className="flex flex-col gap-1">
+              {selection === 'yes' ? (
+                <>
+                  <p className="text-body-3-bold text-neutral-700">증거 제출 안내</p>
+                  <p className="text-detail-regular text-neutral-500">
+                    증거는 관할 경찰서에 고소장과 함께 직접 제출해주세요.
+                    <br />
+                    캡처본이나 녹취 파일은 USB에 담아가시면 편해요.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-body-3-bold text-neutral-700">걱정 마세요</p>
+                  <p className="text-detail-regular text-neutral-500">
+                    증거가 없어도 고소는 가능해요.
+                    <br />
+                    수사 과정에서 경찰이 증거 수집을 도와줄 수 있어요.
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 });

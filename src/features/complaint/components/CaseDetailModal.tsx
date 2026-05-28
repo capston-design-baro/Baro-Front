@@ -11,70 +11,67 @@ const CaseDetailModal: React.FC<Props> = ({ ragCase, onClose }) => {
   return (
     <div
       className={[
-        'relative flex flex-col',
-        'w-full max-w-2xl', // 🔹 CharacterModal보다 살짝 넓게
-        'rounded-400 bg-neutral-0',
-        'px-6 py-8 sm:px-10 sm:py-10',
-        'shadow-[0_16px_40px_rgba(15,23,42,0.25)]',
+        'relative flex w-full max-w-2xl flex-col overflow-hidden',
+        'rounded-2xl bg-white',
+        'shadow-[0_16px_40px_rgba(15,23,42,0.2)]',
       ].join(' ')}
     >
-      {/* 닫기 버튼 (우상단 X) */}
-      <button
-        type="button"
-        onClick={onClose}
-        className="hover:text-warning-300 absolute top-4 right-4 text-neutral-400"
-      >
-        <span className="material-symbols-outlined text-[20px]">close</span>
-      </button>
-
-      {/* 헤더 영역 */}
-      <header className="mb-4 flex flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-200 bg-primary-0 text-body-2-regular text-primary-600 px-3 py-1">
-            사건 번호
-          </span>
-          <span className="text-body-2-bold text-neutral-900">{ragCase.case_no}</span>
+      {/* 헤더 */}
+      <div className="flex items-start justify-between border-b border-neutral-100 px-6 py-5">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-2">
+            <span
+              className="material-symbols-outlined text-primary-400"
+              style={{ fontSize: '22px' }}
+            >
+              gavel
+            </span>
+            <span className="text-body-1-bold text-neutral-900">{ragCase.case_no}</span>
+          </div>
+          {ragCase.label && <p className="text-body-3-regular text-neutral-500">{ragCase.label}</p>}
         </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600"
+        >
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: '20px' }}
+          >
+            close
+          </span>
+        </button>
+      </div>
 
-        {ragCase.label && (
-          <p className="text-body-3-regular pb-6 text-neutral-700">{ragCase.label}</p>
-        )}
-
+      {/* 본문 - 스크롤 가능 */}
+      <div className="balaw-scrollbar max-h-[60vh] overflow-y-auto">
+        {/* 유사도 */}
         {ragCase.similarity && (
-          <div className="flex flex-wrap items-center gap-2 pb-6">
-            <span className="rounded-200 bg-primary-0 text-body-2-regular text-primary-600 px-3 py-1">
-              내 사건과의 유사도
-            </span>
-            <span className="text-body-4-regular whitespace-pre-line text-neutral-700">
+          <div className="border-b border-neutral-100 px-6 py-4">
+            <p className="text-detail-regular mb-2 text-neutral-400">유사 포인트</p>
+            <p className="text-body-3-regular leading-relaxed text-neutral-700">
               {ragCase.similarity}
-            </span>
+            </p>
           </div>
         )}
 
         {/* 사건 개요 */}
-        <div className="pb-6">
-          <div className="mb-2 flex items-center gap-2">
-            <span className="rounded-200 bg-primary-0 text-body-2-regular text-primary-600 px-3 py-1">
-              사건 개요
-            </span>
-          </div>
-          <p className="text-body-4-regular whitespace-pre-line text-neutral-700">
-            {ragCase.summary || '요약 정보가 없습니다.'}
+        <div className="border-b border-neutral-100 px-6 py-4">
+          <p className="text-detail-regular mb-2 text-neutral-400">사건 개요</p>
+          <p className="text-body-3-regular leading-relaxed whitespace-pre-line text-neutral-700">
+            {ragCase.summary || '요약 정보가 없어요.'}
           </p>
         </div>
 
         {/* 판결 결과 */}
-        <div>
-          <div className="mb-2 flex items-center gap-2">
-            <span className="rounded-200 bg-primary-0 text-body-2-regular text-primary-600 px-3 py-1">
-              판결 결과
-            </span>
-          </div>
-          <p className="text-body-4-regular whitespace-pre-line text-neutral-700">
-            {ragCase.result || '판결 결과 정보가 없습니다.'}
+        <div className="px-6 py-4">
+          <p className="text-detail-regular mb-2 text-neutral-400">판결 결과</p>
+          <p className="text-body-3-regular leading-relaxed whitespace-pre-line text-neutral-700">
+            {ragCase.result || '판결 결과 정보가 없어요.'}
           </p>
         </div>
-      </header>
+      </div>
     </div>
   );
 };

@@ -2,8 +2,6 @@ import type { AxiosError } from 'axios';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import Button from '@/shared/ui/common/Button';
-
 import type { ChatMetaPayload, RagCase } from '@/features/complaint/apis/complaints';
 import {
   type ChatMessageHistoryItem,
@@ -70,6 +68,14 @@ const ChatWindowSection: React.FC<Props> = ({
   initialAiSessionId = null,
 }) => {
   const listRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const resizeTextarea = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = '24px';
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  };
 
   const [aiSessionId, setAiSessionId] = useState<string | null>(
     mode === 'resume' ? initialAiSessionId : null,
@@ -92,7 +98,7 @@ const ChatWindowSection: React.FC<Props> = ({
       {
         id: `intro-${Date.now()}`,
         side: 'left',
-        text: '먼저 사건의 경위를 자유롭게 작성해 주세요.',
+        text: '안녕하세요, 바로예요 👋\n\n어떤 일이 있었는지 알려주세요.\n언제, 어디서, 누구에게, 어떤 피해를 입었는지 자세히 적어주시면 고소장 작성에 큰 도움이 돼요.',
         time: fmtTime(),
       },
     ]);
@@ -108,21 +114,41 @@ const ChatWindowSection: React.FC<Props> = ({
         const history: ChatMessageHistoryItem[] = await getChatHistory(complaintId);
 
         if (!history || history.length === 0) {
-          setMsgs([
-            {
-              id: `resume-${Date.now()}`,
-              side: 'left',
-              text: '사건 개요를 입력해주세요.',
-              time: fmtTime(),
-            },
-          ]);
+          // 히스토리도 없고 ai_session_id도 없으면 처음부터 시작
+          if (!initialAiSessionId) {
+            setPhase('askSummary');
+            setMsgs([
+              {
+                id: `intro-${Date.now()}`,
+                side: 'left',
+                text: '안녕하세요, 바로예요 👋\n\n어떤 일이 있었는지 알려주세요.\n언제, 어디서, 누구에게, 어떤 피해를 입었는지 자세히 적어주시면 고소장 작성에 큰 도움이 돼요.',
+                time: fmtTime(),
+              },
+            ]);
+          } else {
+            setMsgs([
+              {
+                id: `resume-${Date.now()}`,
+                side: 'left',
+                text: '사건 개요를 입력해주세요.',
+                time: fmtTime(),
+              },
+            ]);
+          }
         } else {
           const restored: Msg[] = [];
           let lastMeta: ChatMetaPayload | undefined;
 
+          const AUTO_MSG = '위 사건 개요를 기반으로, 이어서 질문을 해 주세요.';
+
           history.forEach((msg, idx) => {
             if (isAiMetaMessage(msg.content)) {
-              lastMeta = msg.content; // 여기서 content가 ChatMetaPayload로 좁혀짐
+              lastMeta = msg.content;
+              return;
+            }
+
+            // 자동 발송 메시지는 히스토리에서 숨김
+            if (typeof msg.content === 'string' && msg.content === AUTO_MSG) {
               return;
             }
 
@@ -147,6 +173,14 @@ const ChatWindowSection: React.FC<Props> = ({
               time: fmtTime(),
             });
           }
+
+          // 맨 위에 안내 메시지 삽입
+          restored.unshift({
+            id: `intro-${Date.now()}`,
+            side: 'left',
+            text: '안녕하세요, 바로예요 👋\n\n어떤 일이 있었는지 알려주세요.\n언제, 어디서, 누구에게, 어떤 피해를 입었는지 자세히 적어주시면 고소장 작성에 큰 도움이 돼요.',
+            time: restored.length > 0 ? restored[0].time : fmtTime(),
+          });
 
           setMsgs(restored);
 
@@ -239,6 +273,7 @@ const ChatWindowSection: React.FC<Props> = ({
 
       setMsgs((prev) => [...prev, userMsg]);
       setInput('');
+      if (textareaRef.current) textareaRef.current.style.height = '24px';
 
       setPhase('initializing');
       setIsBotTyping(true);
@@ -297,16 +332,6 @@ const ChatWindowSection: React.FC<Props> = ({
         setMsgs((prev) => {
           const nextMsgs = [...prev, keywordMsg, ...(firstQuestionMsg ? [firstQuestionMsg] : [])];
 
-          if (isDoneReply) {
-            const guideMsg: Msg = {
-              id: `done-guide-${Date.now()}`,
-              side: 'left',
-              text: '화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 확인해 주세요.',
-              time: fmtTime(),
-            };
-            nextMsgs.push(guideMsg);
-          }
-
           return nextMsgs;
         });
 
@@ -361,6 +386,7 @@ const ChatWindowSection: React.FC<Props> = ({
     };
     setMsgs((prev) => [...prev, userMsg]);
     setInput('');
+    if (textareaRef.current) textareaRef.current.style.height = '24px';
 
     try {
       setIsBotTyping(true);
@@ -376,21 +402,7 @@ const ChatWindowSection: React.FC<Props> = ({
 
       const isDoneReply = reply.includes(DONE_PHRASE);
 
-      setMsgs((prev) => {
-        const nextMsgs = [...prev, botMsg];
-
-        if (isDoneReply) {
-          const guideMsg: Msg = {
-            id: `done-guide-${Date.now()}`,
-            side: 'left',
-            text: '화면 오른쪽 아래의 "다음" 버튼을 눌러, AI가 작성한 고소장 초안을 미리보기로 확인해 주세요.',
-            time: fmtTime(),
-          };
-          nextMsgs.push(guideMsg);
-        }
-
-        return nextMsgs;
-      });
+      setMsgs((prev) => [...prev, botMsg]);
 
       if (isDoneReply) {
         setIsCompleted(true);
@@ -429,90 +441,124 @@ const ChatWindowSection: React.FC<Props> = ({
     }
   };
 
-  const inputDisabled = phase === 'initializing' || isCompleted;
+  const inputDisabled = phase === 'initializing' || isCompleted || isBotTyping;
 
   return (
     <section
       className={[
-        'flex min-h-0 flex-1 flex-col items-center justify-between',
-        'h-[600px] w-full xl:h-[680px]',
-        'pt-2 pb-6',
-        'bg-neutral-0',
+        'flex flex-col',
+        'min-h-0 w-full flex-1 overflow-hidden',
+        'rounded-2xl border border-neutral-200 bg-neutral-50 shadow-sm',
       ].join(' ')}
     >
-      <div className="flex min-h-0 w-full flex-1 justify-center">
-        <div
-          className={[
-            'flex min-h-0 w-full max-w-[720px] flex-1 flex-col',
-            'rounded-200 bg-neutral-0 border border-gray-300',
-            'px-6 py-3',
-          ].join(' ')}
-        >
-          {/* 🔹 실제로 스크롤 되는 영역 (padding / border 없음) */}
-          <div
-            ref={listRef}
-            className="balaw-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto px-2"
-            role="list"
-            aria-label="채팅 메시지"
+      {/* 채팅 헤더 */}
+      <div className="flex items-center gap-3 border-b border-neutral-200 bg-white px-6 py-3">
+        <div className="bg-primary-400 flex h-8 w-8 items-center justify-center rounded-full">
+          <span
+            className="material-symbols-outlined text-white"
+            style={{ fontSize: '18px' }}
           >
-            {msgs.map((m) => (
-              <ChatBubble
-                key={m.id}
-                side={m.side}
-                text={m.text}
-                time={m.time}
-                srLabel={`${m.side === 'left' ? '바로' : '사용자'} 메시지`}
-              />
-            ))}
-            {isBotTyping && (
-              <ChatBubble
-                side="left"
-                text="..."
-                time={fmtTime()}
-                srLabel="바로가 입력 중입니다."
-                isTyping
-              />
-            )}
-          </div>
+            smart_toy
+          </span>
+        </div>
+        <div>
+          <p className="text-body-3-bold text-neutral-800">바로 AI</p>
+          <p className="text-detail-regular text-neutral-400">
+            {isBotTyping ? '입력 중...' : '고소장 작성 도우미'}
+          </p>
         </div>
       </div>
 
+      {/* 메시지 영역 */}
       <div
-        className={[
-          'mt-2 flex w-full max-w-[720px] items-center justify-between',
-          'rounded-200 bg-neutral-0 border border-blue-400',
-          'px-5 py-2.5',
-        ].join(' ')}
-        aria-label="채팅 입력 영역"
+        ref={listRef}
+        className="balaw-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-4 md:px-6"
+        role="list"
+        aria-label="채팅 메시지"
       >
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={onKeyDown}
-          placeholder={
-            mode === 'new' && phase === 'askSummary'
-              ? '사건의 경위를 자유롭게 입력해 주세요.'
-              : '여기에 입력하고 Enter로 전송하세요. (줄바꿈은 Shift+Enter)'
-          }
-          rows={2}
-          aria-label="메시지 입력"
-          disabled={inputDisabled}
+        {msgs.map((m) => (
+          <ChatBubble
+            key={m.id}
+            side={m.side}
+            text={m.text}
+            time={m.time}
+            srLabel={`${m.side === 'left' ? '바로' : '사용자'} 메시지`}
+          />
+        ))}
+        {isBotTyping && (
+          <ChatBubble
+            side="left"
+            text="..."
+            time={fmtTime()}
+            srLabel="바로가 입력 중입니다."
+            isTyping
+          />
+        )}
+      </div>
+
+      {/* 입력 영역 */}
+      <div className="border-t border-neutral-200 bg-white px-4 py-3 md:px-6">
+        <div
           className={[
-            'flex-1 resize-none text-left',
-            'text-body-3-regular leading-5',
-            'text-neutral-700 placeholder:text-neutral-500',
-            'focus:outline-none disabled:opacity-50',
+            'flex items-end gap-2',
+            input.length > 60 || input.includes(' ') ? 'rounded-2xl' : 'rounded-full',
+            'border border-neutral-300 bg-neutral-50',
+            'px-4 py-2',
+            'focus-within:border-primary-400 focus-within:ring-primary-400/20 focus-within:ring-2',
+            'transition-all',
           ].join(' ')}
-        />
-        <Button
-          variant="primary"
-          size="sm"
-          className="w-16"
-          onClick={handleSend}
-          disabled={inputDisabled || !input.trim()}
         >
-          전송
-        </Button>
+          <textarea
+            ref={textareaRef}
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              resizeTextarea();
+            }}
+            onInput={resizeTextarea}
+            onKeyDown={onKeyDown}
+            placeholder={
+              isBotTyping
+                ? '바로가 입력 중이에요...'
+                : mode === 'new' && phase === 'askSummary'
+                  ? '사건의 경위를 자유롭게 입력해 주세요...'
+                  : '메시지를 입력해주세요...'
+            }
+            rows={1}
+            aria-label="메시지 입력"
+            disabled={inputDisabled}
+            className={[
+              'flex-1 resize-none bg-transparent',
+              'text-body-3-regular leading-relaxed',
+              'text-neutral-800 placeholder:text-neutral-400',
+              'focus:outline-none disabled:opacity-50',
+              'h-[24px] max-h-[120px] overflow-y-auto',
+            ].join(' ')}
+          />
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={inputDisabled || !input.trim()}
+            className={[
+              'flex h-8 w-8 shrink-0 items-center justify-center rounded-full',
+              'transition-all duration-200',
+              inputDisabled || !input.trim()
+                ? 'bg-neutral-200 text-neutral-400'
+                : 'bg-primary-400 hover:bg-primary-500 text-white active:scale-95',
+            ].join(' ')}
+            aria-label="전송"
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: '18px' }}
+            >
+              arrow_upward
+            </span>
+          </button>
+        </div>
+        <p className="text-detail-regular mt-1.5 text-center text-neutral-400">
+          Enter로 전송 · Shift+Enter로 줄바꿈
+        </p>
       </div>
     </section>
   );
