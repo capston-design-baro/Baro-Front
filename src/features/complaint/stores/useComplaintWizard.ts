@@ -198,7 +198,7 @@ export const useComplaintWizard = create<ComplaintWizardStore>((set, get) => ({
   percentage: () => {
     const { step, stepsTotal } = get().state;
     if (stepsTotal <= 1) return 0;
-    return Math.round(((step + 1) / stepsTotal) * 100);
+    return Math.round((step / (stepsTotal - 1)) * 100);
   },
 
   setOffense: (offense) =>

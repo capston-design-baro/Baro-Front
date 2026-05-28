@@ -60,7 +60,7 @@ const ComplaintWizardPage: React.FC = () => {
   const allChecked = useComplaintWizard((s) => s.allChecked());
   const setStep = useComplaintWizard((s) => s.setStep);
 
-  const [isChatCompleted, setIsChatCompleted] = useState(false);
+  const [, setIsChatCompleted] = useState(false);
 
   // 채팅 단계에서만 html 스크롤 차단
   useEffect(() => {
@@ -215,8 +215,8 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    // 5: 증거 섹션 → registerEvidence 후 채팅 단계(6)로
-    if (step === 5) {
+    // 4: 증거 섹션 → registerEvidence
+    if (step === 4) {
       if (!complaintId) return;
       if (!evidenceRef.current) return;
 
@@ -228,7 +228,7 @@ const ComplaintWizardPage: React.FC = () => {
         };
 
         await registerEvidence(complaintId, payload);
-        nextRaw(); // → step 8 (ChatWindowSection)
+        nextRaw(); // → step 5 (채팅 안내)
       } catch (e) {
         console.error('failed to register evidence', e);
       }
@@ -320,16 +320,17 @@ const ComplaintWizardPage: React.FC = () => {
             </div>
           )}
 
-          {/* 4: 채팅 안내 */}
-          <div className={step === 4 ? 'flex flex-1 flex-col' : 'hidden'}>
+          {/* 4: 증거 제출 */}
+          {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
+            <div className={step === 4 ? 'flex flex-1 flex-col' : 'hidden'}>
+              <EvidenceInfoSection ref={evidenceRef} />
+            </div>
+          )}
+
+          {/* 5: 채팅 안내 */}
+          <div className={step === 5 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ChatInfoSection />
           </div>
-
-          {/* 5: 증거 제출 */}
-          {typeof complaintId === 'number' &&
-            Number.isFinite(complaintId) &&
-            complaintId > 0 &&
-            step === 5 && <EvidenceInfoSection ref={evidenceRef} />}
         </div>
         {/* 8: 실제 채팅창 + 오른쪽 메타 패널 */}
         {typeof complaintId === 'number' &&
@@ -408,12 +409,65 @@ const ComplaintWizardPage: React.FC = () => {
                       <div className="flex flex-col items-center justify-center py-8 text-center">
                         {ragSearchStarted ? (
                           <>
-                            <span
-                              className="material-symbols-outlined text-primary-300 mb-2 animate-spin"
-                              style={{ fontSize: '28px' }}
+                            {/* 책 넘기기 애니메이션 */}
+                            <div
+                              className="relative mb-3 h-12 w-16"
+                              style={{ perspective: '400px' }}
                             >
-                              progress_activity
-                            </span>
+                              {/* 책 전체를 비스듬히 기울임 */}
+                              <div
+                                className="absolute inset-0"
+                                style={{
+                                  transform: 'rotateX(20deg) rotateZ(-5deg)',
+                                  transformStyle: 'preserve-3d',
+                                }}
+                              >
+                                {/* 책 뒤표지 */}
+                                <div className="bg-primary-300 absolute inset-0 rounded-r-sm shadow-sm" />
+                                {/* 책 옆면 (두께) */}
+                                <div className="bg-primary-400 absolute top-0 left-0 h-full w-1 rounded-l-sm" />
+                                {/* 페이지 3 */}
+                                <div
+                                  className="animate-book-page-3 bg-primary-50 absolute inset-0 rounded-r-sm shadow-sm"
+                                  style={{
+                                    transformOrigin: 'left center',
+                                    backfaceVisibility: 'hidden',
+                                  }}
+                                >
+                                  <div className="mx-2 mt-2 space-y-1">
+                                    <div className="h-[2px] w-3/4 rounded bg-neutral-200" />
+                                    <div className="h-[2px] w-1/2 rounded bg-neutral-200" />
+                                  </div>
+                                </div>
+                                {/* 페이지 2 */}
+                                <div
+                                  className="animate-book-page-2 bg-primary-0 absolute inset-0 rounded-r-sm shadow-sm"
+                                  style={{
+                                    transformOrigin: 'left center',
+                                    backfaceVisibility: 'hidden',
+                                  }}
+                                >
+                                  <div className="mx-2 mt-2 space-y-1">
+                                    <div className="h-[2px] w-2/3 rounded bg-neutral-200" />
+                                    <div className="h-[2px] w-4/5 rounded bg-neutral-200" />
+                                  </div>
+                                </div>
+                                {/* 페이지 1 (맨 위) */}
+                                <div
+                                  className="animate-book-page-1 absolute inset-0 rounded-r-sm bg-white shadow-sm"
+                                  style={{
+                                    transformOrigin: 'left center',
+                                    backfaceVisibility: 'hidden',
+                                  }}
+                                >
+                                  <div className="mx-2 mt-2 space-y-1">
+                                    <div className="h-[2px] w-1/2 rounded bg-neutral-300" />
+                                    <div className="h-[2px] w-3/4 rounded bg-neutral-200" />
+                                    <div className="h-[2px] w-2/3 rounded bg-neutral-200" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                             <p className="text-body-3-regular text-neutral-500">
                               유사 판례를 찾고 있어요...
                             </p>
@@ -567,16 +621,24 @@ const ComplaintWizardPage: React.FC = () => {
       <Footer />
 
       {showExitModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4">
-          <CharacterModal
-            variant="exit"
-            onCancel={() => setShowExitModal(false)}
-            onConfirm={() => {
-              setShowExitModal(false);
-              resetWizard();
-              navigate('/');
-            }}
-          />
+        <div
+          className="animate-overlay-in fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/40 px-4"
+          onClick={() => setShowExitModal(false)}
+        >
+          <div
+            className="animate-pop-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CharacterModal
+              variant="exit"
+              onCancel={() => setShowExitModal(false)}
+              onConfirm={() => {
+                setShowExitModal(false);
+                resetWizard();
+                navigate('/');
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

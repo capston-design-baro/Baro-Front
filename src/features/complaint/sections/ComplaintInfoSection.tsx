@@ -70,7 +70,8 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
     const [unknownOfficePhone, setUnknownOfficePhone] = useState(false);
     const [unknownHomePhone, setUnknownHomePhone] = useState(false);
 
-    const allExtraPrivate = unknownOccupation && unknownOfficeAddress && unknownOfficePhone && unknownHomePhone;
+    const allExtraPrivate =
+      unknownOccupation && unknownOfficeAddress && unknownOfficePhone && unknownHomePhone;
 
     const handleToggleAllExtra = (checked: boolean) => {
       setUnknownOccupation(checked);
@@ -137,10 +138,21 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
     useEffect(() => {
       if (err) setErr(null);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [name, email, phone, addr1, occupation, officePhone, homePhone, officeAddr1,
-      unknownOccupation, unknownOfficeAddress, unknownOfficePhone, unknownHomePhone]);
+    }, [
+      name,
+      email,
+      phone,
+      addr1,
+      occupation,
+      officePhone,
+      homePhone,
+      officeAddr1,
+      unknownOccupation,
+      unknownOfficeAddress,
+      unknownOfficePhone,
+      unknownHomePhone,
+    ]);
     const homePhoneDigits = homePhone.replace(/\D/g, '');
-
 
     const handleCheckboxChange = (
       checked: boolean,
@@ -289,7 +301,10 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
       'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
     ].join(' ');
 
-    const disabledInputClass = [inputClass, 'disabled:bg-neutral-100 disabled:text-neutral-400'].join(' ');
+    const disabledInputClass = [
+      inputClass,
+      'disabled:bg-neutral-100 disabled:text-neutral-400',
+    ].join(' ');
 
     return (
       <section
@@ -342,12 +357,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
               {/* 카드 본문 - 추가 정보 */}
               <div className="grid grid-cols-2 gap-x-6 gap-y-3 px-5 py-4">
-                {renderIdCardField(
-                  '직업',
-                  occupation,
-                  Boolean(occupation),
-                  unknownOccupation,
-                )}
+                {renderIdCardField('직업', occupation, Boolean(occupation), unknownOccupation)}
                 {renderIdCardField(
                   '사무실 전화번호',
                   officePhone,
@@ -390,27 +400,55 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
               {/* 이름 */}
               <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-                <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">이름</span>
-                <input id="name" type="text" className={`flex-1 ${inputClass}`} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="홍길동" />
+                <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">이름</span>
+                <input
+                  id="name"
+                  type="text"
+                  className={`flex-1 ${inputClass}`}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
+                  placeholder="홍길동"
+                />
               </div>
 
               {/* 이메일 */}
               <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-                <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">이메일</span>
-                <input id="email" type="email" className={`flex-1 ${inputClass}`} value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" placeholder="example@email.com" />
+                <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">이메일</span>
+                <input
+                  id="email"
+                  type="email"
+                  className={`flex-1 ${inputClass}`}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  placeholder="example@email.com"
+                />
               </div>
 
               {/* 전화번호 */}
               <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-                <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">전화번호</span>
-                <input id="phone" type="tel" inputMode="numeric" placeholder="010-1234-5678" value={phone} onChange={handlePhoneChange} className={`flex-1 ${inputClass}`} autoComplete="tel" />
+                <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">전화번호</span>
+                <input
+                  id="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder="010-1234-5678"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  className={`flex-1 ${inputClass}`}
+                  autoComplete="tel"
+                />
               </div>
 
               {/* 주소 */}
               <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-                <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">주소</span>
+                <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">주소</span>
                 <div className="flex-1">
-                  <DaumPostcodeButton onSelect={handleAddressSelect} address={hasAddress ? { city: addr1, district: addr2, town: addr3 } : undefined} />
+                  <DaumPostcodeButton
+                    onSelect={handleAddressSelect}
+                    address={hasAddress ? { city: addr1, district: addr2, town: addr3 } : undefined}
+                  />
                 </div>
               </div>
 
@@ -430,46 +468,120 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
               {/* 직업 */}
               <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-                <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">직업</span>
-                <input disabled={unknownOccupation} value={occupation} onChange={(e) => setOccupation(e.target.value)} className={`flex-1 ${disabledInputClass}`} placeholder={unknownOccupation ? '비공개' : '예: 회사원, 자영업자 등'} type="text" />
+                <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">직업</span>
+                <input
+                  disabled={unknownOccupation}
+                  value={occupation}
+                  onChange={(e) => setOccupation(e.target.value)}
+                  className={`flex-1 ${disabledInputClass}`}
+                  placeholder={unknownOccupation ? '비공개' : '예: 회사원, 자영업자 등'}
+                  type="text"
+                />
                 <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                  <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownOccupation} onChange={(e) => handleCheckboxChange(e.target.checked, setUnknownOccupation, setOccupation)} />
+                  <input
+                    type="checkbox"
+                    className="h-3.5 w-3.5 cursor-pointer"
+                    checked={unknownOccupation}
+                    onChange={(e) =>
+                      handleCheckboxChange(e.target.checked, setUnknownOccupation, setOccupation)
+                    }
+                  />
                   비공개
                 </label>
               </div>
 
               {/* 사무실 주소 */}
               <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-                <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">사무실 주소</span>
+                <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">사무실 주소</span>
                 <div className="flex-1">
                   {unknownOfficeAddress ? (
-                    <div className="rounded-200 flex h-9 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">비공개</div>
+                    <div className="rounded-200 flex h-9 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">
+                      비공개
+                    </div>
                   ) : (
-                    <DaumPostcodeButton onSelect={handleOfficeAddressSelect} address={hasOfficeAddress ? { city: officeAddr1, district: officeAddr2, town: officeAddr3 } : undefined} />
+                    <DaumPostcodeButton
+                      onSelect={handleOfficeAddressSelect}
+                      address={
+                        hasOfficeAddress
+                          ? { city: officeAddr1, district: officeAddr2, town: officeAddr3 }
+                          : undefined
+                      }
+                    />
                   )}
                 </div>
                 <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                  <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownOfficeAddress} onChange={(e) => { handleCheckboxChange(e.target.checked, setUnknownOfficeAddress, setOfficeAddr1, setOfficeAddr2, setOfficeAddr3); if (e.target.checked) { setErr(null); setHasOfficeAddress(false); } }} />
+                  <input
+                    type="checkbox"
+                    className="h-3.5 w-3.5 cursor-pointer"
+                    checked={unknownOfficeAddress}
+                    onChange={(e) => {
+                      handleCheckboxChange(
+                        e.target.checked,
+                        setUnknownOfficeAddress,
+                        setOfficeAddr1,
+                        setOfficeAddr2,
+                        setOfficeAddr3,
+                      );
+                      if (e.target.checked) {
+                        setErr(null);
+                        setHasOfficeAddress(false);
+                      }
+                    }}
+                  />
                   비공개
                 </label>
               </div>
 
               {/* 사무실 전화번호 */}
               <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-                <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">사무실 번호</span>
-                <input type="tel" inputMode="numeric" placeholder={unknownOfficePhone ? '비공개' : '02-1234-5678'} value={officePhone} onChange={handleOfficePhoneChange} disabled={unknownOfficePhone} className={`flex-1 ${disabledInputClass}`} autoComplete="tel" />
+                <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">사무실 번호</span>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder={unknownOfficePhone ? '비공개' : '02-1234-5678'}
+                  value={officePhone}
+                  onChange={handleOfficePhoneChange}
+                  disabled={unknownOfficePhone}
+                  className={`flex-1 ${disabledInputClass}`}
+                  autoComplete="tel"
+                />
                 <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                  <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownOfficePhone} onChange={(e) => { if (e.target.checked) setOfficePhone(''); setUnknownOfficePhone(e.target.checked); }} />
+                  <input
+                    type="checkbox"
+                    className="h-3.5 w-3.5 cursor-pointer"
+                    checked={unknownOfficePhone}
+                    onChange={(e) => {
+                      if (e.target.checked) setOfficePhone('');
+                      setUnknownOfficePhone(e.target.checked);
+                    }}
+                  />
                   비공개
                 </label>
               </div>
 
               {/* 자택 전화번호 */}
               <div className="flex items-center gap-4 px-5 py-3">
-                <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">자택 번호</span>
-                <input type="tel" inputMode="numeric" placeholder={unknownHomePhone ? '비공개' : '02-1234-5678'} value={homePhone} onChange={handleHomePhoneChange} disabled={unknownHomePhone} className={`flex-1 ${disabledInputClass}`} autoComplete="tel" />
+                <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">자택 번호</span>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder={unknownHomePhone ? '비공개' : '02-1234-5678'}
+                  value={homePhone}
+                  onChange={handleHomePhoneChange}
+                  disabled={unknownHomePhone}
+                  className={`flex-1 ${disabledInputClass}`}
+                  autoComplete="tel"
+                />
                 <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                  <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownHomePhone} onChange={(e) => { if (e.target.checked) setHomePhone(''); setUnknownHomePhone(e.target.checked); }} />
+                  <input
+                    type="checkbox"
+                    className="h-3.5 w-3.5 cursor-pointer"
+                    checked={unknownHomePhone}
+                    onChange={(e) => {
+                      if (e.target.checked) setHomePhone('');
+                      setUnknownHomePhone(e.target.checked);
+                    }}
+                  />
                   비공개
                 </label>
               </div>

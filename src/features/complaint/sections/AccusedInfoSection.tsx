@@ -1,4 +1,11 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import DaumPostcodeButton from '@/shared/ui/DaumPostcodeButton';
 import type { DaumPostcodeResult } from '@/shared/ui/DaumPostcodeButton';
@@ -136,8 +143,21 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
   useEffect(() => {
     if (err) setErr(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, email, phone, addr1, occupation, officeAddr1, etc,
-    unknownName, unknownEmail, unknownAddr, unknownPhone, unknownOccupation, unknownOfficeAddress]);
+  }, [
+    name,
+    email,
+    phone,
+    addr1,
+    occupation,
+    officeAddr1,
+    etc,
+    unknownName,
+    unknownEmail,
+    unknownAddr,
+    unknownPhone,
+    unknownOccupation,
+    unknownOfficeAddress,
+  ]);
 
   // 라벨 렌더러
 
@@ -351,53 +371,123 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
             <div className="flex items-center justify-between border-b border-neutral-100 bg-neutral-50 px-5 py-3">
               <span className="text-detail-bold text-neutral-500">기본 정보</span>
               <label className="text-detail-regular inline-flex cursor-pointer items-center gap-1.5 text-neutral-500">
-                <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={allBasicUnknown} onChange={(e) => handleToggleAllBasic(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 cursor-pointer"
+                  checked={allBasicUnknown}
+                  onChange={(e) => handleToggleAllBasic(e.target.checked)}
+                />
                 전체 정보 없음
               </label>
             </div>
 
             {/* 이름 */}
             <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-              <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">이름</span>
-              <input disabled={unknownName} value={name} onChange={(e) => setName(e.target.value)} className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 flex-1 border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400" placeholder={unknownName ? '정보 없음' : '이름 입력'} type="text" />
+              <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">이름</span>
+              <input
+                disabled={unknownName}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 flex-1 border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400"
+                placeholder={unknownName ? '정보 없음' : '이름 입력'}
+                type="text"
+              />
               <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownName} onChange={(e) => handleCheckboxChange(e.target.checked, setUnknownName, setName)} />
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 cursor-pointer"
+                  checked={unknownName}
+                  onChange={(e) => handleCheckboxChange(e.target.checked, setUnknownName, setName)}
+                />
                 정보 없음
               </label>
             </div>
 
             {/* 이메일 */}
             <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-              <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">이메일</span>
-              <input disabled={unknownEmail} value={email} onChange={(e) => setEmail(e.target.value)} className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 flex-1 border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400" placeholder={unknownEmail ? '정보 없음' : '이메일 입력'} type="text" />
+              <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">이메일</span>
+              <input
+                disabled={unknownEmail}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 flex-1 border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400"
+                placeholder={unknownEmail ? '정보 없음' : '이메일 입력'}
+                type="text"
+              />
               <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownEmail} onChange={(e) => handleCheckboxChange(e.target.checked, setUnknownEmail, setEmail)} />
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 cursor-pointer"
+                  checked={unknownEmail}
+                  onChange={(e) =>
+                    handleCheckboxChange(e.target.checked, setUnknownEmail, setEmail)
+                  }
+                />
                 정보 없음
               </label>
             </div>
 
             {/* 전화번호 */}
             <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-              <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">전화번호</span>
-              <input type="tel" inputMode="numeric" placeholder={unknownPhone ? '정보 없음' : '010-1234-5678'} value={phone} onChange={handlePhoneChange} disabled={unknownPhone} className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 flex-1 border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400" autoComplete="tel" />
+              <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">전화번호</span>
+              <input
+                type="tel"
+                inputMode="numeric"
+                placeholder={unknownPhone ? '정보 없음' : '010-1234-5678'}
+                value={phone}
+                onChange={handlePhoneChange}
+                disabled={unknownPhone}
+                className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 flex-1 border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400"
+                autoComplete="tel"
+              />
               <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownPhone} onChange={(e) => { if (e.target.checked) setPhone(''); setUnknownPhone(e.target.checked); }} />
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 cursor-pointer"
+                  checked={unknownPhone}
+                  onChange={(e) => {
+                    if (e.target.checked) setPhone('');
+                    setUnknownPhone(e.target.checked);
+                  }}
+                />
                 정보 없음
               </label>
             </div>
 
             {/* 주소 */}
             <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-              <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">주소</span>
+              <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">주소</span>
               <div className="flex-1">
                 {unknownAddr ? (
-                  <div className="rounded-200 flex h-9 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">정보 없음</div>
+                  <div className="rounded-200 flex h-9 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">
+                    정보 없음
+                  </div>
                 ) : (
-                  <DaumPostcodeButton onSelect={handleAddressSelect} address={hasAddress ? { city: addr1, district: addr2, town: addr3 } : undefined} />
+                  <DaumPostcodeButton
+                    onSelect={handleAddressSelect}
+                    address={hasAddress ? { city: addr1, district: addr2, town: addr3 } : undefined}
+                  />
                 )}
               </div>
               <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownAddr} onChange={(e) => { handleCheckboxChange(e.target.checked, setUnknownAddr, setAddr1, setAddr2, setAddr3); if (e.target.checked) { setErr(null); setHasAddress(false); } }} />
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 cursor-pointer"
+                  checked={unknownAddr}
+                  onChange={(e) => {
+                    handleCheckboxChange(
+                      e.target.checked,
+                      setUnknownAddr,
+                      setAddr1,
+                      setAddr2,
+                      setAddr3,
+                    );
+                    if (e.target.checked) {
+                      setErr(null);
+                      setHasAddress(false);
+                    }
+                  }}
+                />
                 정보 없음
               </label>
             </div>
@@ -406,40 +496,87 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
             <div className="flex items-center justify-between border-b border-neutral-100 bg-neutral-50 px-5 py-3">
               <span className="text-detail-bold text-neutral-500">추가 정보</span>
               <label className="text-detail-regular inline-flex cursor-pointer items-center gap-1.5 text-neutral-500">
-                <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={allExtraUnknown} onChange={(e) => handleToggleAllExtra(e.target.checked)} />
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 cursor-pointer"
+                  checked={allExtraUnknown}
+                  onChange={(e) => handleToggleAllExtra(e.target.checked)}
+                />
                 전체 정보 없음
               </label>
             </div>
 
             {/* 직업 */}
             <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-              <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">직업</span>
-              <input disabled={unknownOccupation} value={occupation} onChange={(e) => setOccupation(e.target.value)} className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 flex-1 border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400" placeholder={unknownOccupation ? '정보 없음' : '예: 회사원, 자영업자 등'} type="text" />
+              <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">직업</span>
+              <input
+                disabled={unknownOccupation}
+                value={occupation}
+                onChange={(e) => setOccupation(e.target.value)}
+                className="rounded-200 text-body-3-regular focus:border-primary-400 focus:ring-primary-400 h-9 flex-1 border border-neutral-300 px-3 outline-none focus:ring-2 disabled:bg-neutral-100 disabled:text-neutral-400"
+                placeholder={unknownOccupation ? '정보 없음' : '예: 회사원, 자영업자 등'}
+                type="text"
+              />
               <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownOccupation} onChange={(e) => handleCheckboxChange(e.target.checked, setUnknownOccupation, setOccupation)} />
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 cursor-pointer"
+                  checked={unknownOccupation}
+                  onChange={(e) =>
+                    handleCheckboxChange(e.target.checked, setUnknownOccupation, setOccupation)
+                  }
+                />
                 정보 없음
               </label>
             </div>
 
             {/* 사무실 주소 */}
             <div className="flex items-center gap-4 border-b border-neutral-100 px-5 py-3">
-              <span className="w-20 shrink-0 text-body-3-bold text-neutral-600">사무실 주소</span>
+              <span className="text-body-3-bold w-20 shrink-0 text-neutral-600">사무실 주소</span>
               <div className="flex-1">
                 {unknownOfficeAddress ? (
-                  <div className="rounded-200 flex h-9 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">정보 없음</div>
+                  <div className="rounded-200 flex h-9 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">
+                    정보 없음
+                  </div>
                 ) : (
-                  <DaumPostcodeButton onSelect={handleOfficeAddressSelect} address={hasOfficeAddress ? { city: officeAddr1, district: officeAddr2, town: officeAddr3 } : undefined} />
+                  <DaumPostcodeButton
+                    onSelect={handleOfficeAddressSelect}
+                    address={
+                      hasOfficeAddress
+                        ? { city: officeAddr1, district: officeAddr2, town: officeAddr3 }
+                        : undefined
+                    }
+                  />
                 )}
               </div>
               <label className="text-detail-regular inline-flex shrink-0 cursor-pointer items-center gap-1 text-neutral-500">
-                <input type="checkbox" className="h-3.5 w-3.5 cursor-pointer" checked={unknownOfficeAddress} onChange={(e) => { handleCheckboxChange(e.target.checked, setUnknownOfficeAddress, setOfficeAddr1, setOfficeAddr2, setOfficeAddr3); if (e.target.checked) { setErr(null); setHasOfficeAddress(false); } }} />
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 cursor-pointer"
+                  checked={unknownOfficeAddress}
+                  onChange={(e) => {
+                    handleCheckboxChange(
+                      e.target.checked,
+                      setUnknownOfficeAddress,
+                      setOfficeAddr1,
+                      setOfficeAddr2,
+                      setOfficeAddr3,
+                    );
+                    if (e.target.checked) {
+                      setErr(null);
+                      setHasOfficeAddress(false);
+                    }
+                  }}
+                />
                 정보 없음
               </label>
             </div>
 
             {/* 기타 정보 */}
             <div className="flex items-start gap-4 px-5 py-3">
-              <span className="w-20 shrink-0 pt-2 text-body-3-bold text-neutral-600">기타 정보</span>
+              <span className="text-body-3-bold w-20 shrink-0 pt-2 text-neutral-600">
+                기타 정보
+              </span>
               <textarea
                 value={etc}
                 onChange={(e) => setEtc(e.target.value)}

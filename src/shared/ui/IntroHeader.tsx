@@ -12,7 +12,7 @@ const IntroHeader: React.FC<{
   if (lines.length === 0) return null;
 
   return (
-    <div className={`mb-6 flex items-start gap-3 md:mb-8 md:gap-4 ${className}`}>
+    <div className={`mt-4 mb-6 flex items-start gap-3 md:mt-6 md:mb-8 md:gap-4 ${className}`}>
       {/* 바로 캐릭터 */}
       <img
         src={characterUrl}
