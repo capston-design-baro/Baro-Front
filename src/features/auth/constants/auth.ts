@@ -1,0 +1,12 @@
+// 토큰 및 쿠키 관련 상수 정의
+export const ACCESS_TOKEN_KEY = 'accessToken';
+export const REFRESH_TOKEN_KEY = 'refreshToken';
+
+export const ACCESS_MAX_AGE = 60 * 60; // 1시간
+export const REFRESH_MAX_AGE = 60 * 60 * 24; // 1일
+
+// 쿠키 공통 옵션
+export const COOKIE_OPTIONS = {
+  path: '/', // 모든 경로에서 쿠키 접근 가능
+  sameSite: 'strict' as const, // 다른 도메인 요청 시 쿠키 전송 차단 (CSRF 방지)
+};

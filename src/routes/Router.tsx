@@ -1,14 +1,13 @@
-import AgreementsPage from '@/pages/AgreementPage';
-import ComplaintWizardPage from '@/pages/ComplaintWizardPage';
-import FaqPage from '@/pages/FaqPage';
-import LoginPage from '@/pages/LoginPage';
-import MainPage from '@/pages/MainPage';
-import MyComplaintsPage from '@/pages/MyComplaintsPage';
-import CrimeTypePage from '@/pages/PrecedentPage';
-import SignupPage from '@/pages/SignupPage';
 import { Route, Routes } from 'react-router-dom';
 
-// import SignupPage from '@/pages/SignupPage';
+import AgreementsPage from '@/features/auth/pages/AgreementPage';
+import LoginPage from '@/features/auth/pages/LoginPage';
+import SignupPage from '@/features/auth/pages/SignupPage';
+import ComplaintWizardPage from '@/features/complaint/pages/ComplaintWizardPage';
+import CrimeTypePage from '@/features/crime-types/pages/PrecedentPage';
+import FaqPage from '@/features/faq/pages/FaqPage';
+import MainPage from '@/features/home/pages/MainPage';
+import MyComplaintsPage from '@/features/my-complaints/pages/MyComplaintsPage';
 
 const Router = () => {
   return (
@@ -31,28 +30,22 @@ const Router = () => {
       />
 
       {/* "/signup" 경로 */}
-      {
-        <Route
-          path="/signup"
-          element={<SignupPage />}
-        />
-      }
+      <Route
+        path="/signup"
+        element={<SignupPage />}
+      />
 
       {/* "/complaint" 경로 */}
-      {
-        <Route
-          path="/complaint"
-          element={<ComplaintWizardPage />}
-        />
-      }
+      <Route
+        path="/complaint"
+        element={<ComplaintWizardPage />}
+      />
 
       {/* "/faq" 경로 */}
-      {
-        <Route
-          path="/faq"
-          element={<FaqPage />}
-        />
-      }
+      <Route
+        path="/faq"
+        element={<FaqPage />}
+      />
 
       {/* "/precedent" 경로 */}
       <Route
