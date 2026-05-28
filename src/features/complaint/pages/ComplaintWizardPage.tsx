@@ -67,9 +67,20 @@ const ComplaintWizardPage: React.FC = () => {
   const nextRaw = useComplaintWizard((s) => s.next);
   const prev = useComplaintWizard((s) => s.prev);
   const resetWizard = useComplaintWizard((s) => s.reset);
+  const allChecked = useComplaintWizard((s) => s.allChecked());
   const setStep = useComplaintWizard((s) => s.setStep);
 
   const [isChatCompleted, setIsChatCompleted] = useState(false);
+
+  // 이 페이지에서 html 스크롤 차단 (document가 viewport보다 커지는 것 방지)
+  useEffect(() => {
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.height = '100%';
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+    };
+  }, []);
 
   const [entryMode, setEntryMode] = useState<'new' | 'resume' | null>(null);
 
@@ -296,12 +307,15 @@ const ComplaintWizardPage: React.FC = () => {
   const chatMode: 'new' | 'resume' = resumeMode ? 'resume' : 'new';
 
   return (
-    <div className="bg-neutral-0 flex min-h-screen w-full flex-col">
+    <div className="bg-neutral-0 flex h-screen w-full flex-col overflow-hidden">
       <Header />
-      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4">
-        <WizardProgress onExit={handleExit} />
-        {/* 위자드 본문: 0~7단계 (420px 카드) */}
-        <div className="mx-auto w-full max-w-[420px]">
+      <main className="mx-auto flex min-h-0 w-full max-w-[1200px] flex-1 flex-col overflow-hidden px-6 py-4">
+        <WizardProgress
+          onExit={handleExit}
+          className="mb-4 shrink-0"
+        />
+        {/* 위자드 본문: 0~7단계 */}
+        <div className={step >= 8 ? 'hidden' : 'flex min-h-0 flex-1 flex-col'}>
           {/* 0: 시작 선택 (새로 작성 / 이어쓰기 / 목록 보기) */}
           {step === 0 && (
             <ComplaintEntrySection
@@ -312,23 +326,23 @@ const ComplaintWizardPage: React.FC = () => {
           )}
 
           {/* 1: 인트로 / 안내 */}
-          <div className={step === 1 ? 'block' : 'hidden'}>
+          <div className={step === 1 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ComplaintIntroSection />
           </div>
 
           {/* 2: 고소인 기본정보 */}
-          <div className={step === 2 ? 'block' : 'hidden'}>
+          <div className={step === 2 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ComplainantInfoSection ref={complainantRef} />
           </div>
 
           {/* 3: 고소인 추가정보 */}
-          <div className={step === 3 ? 'block' : 'hidden'}>
+          <div className={step === 3 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ComplainantExtraInfoSection ref={complainantExtraRef} />
           </div>
 
           {/* 4: 피고소인 기본정보 */}
           {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
-            <div className={step === 4 ? 'block' : 'hidden'}>
+            <div className={step === 4 ? 'flex flex-1 flex-col' : 'hidden'}>
               <AccusedInfoSection
                 ref={accusedRef}
                 complaintId={complaintId}
@@ -338,7 +352,7 @@ const ComplaintWizardPage: React.FC = () => {
 
           {/* 5: 피고소인 추가정보 */}
           {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
-            <div className={step === 5 ? 'block' : 'hidden'}>
+            <div className={step === 5 ? 'flex flex-1 flex-col' : 'hidden'}>
               <AccusedExtraInfoSection
                 ref={accusedExtraRef}
                 complaintId={complaintId}
@@ -347,7 +361,7 @@ const ComplaintWizardPage: React.FC = () => {
           )}
 
           {/* 6: 채팅 안내 */}
-          <div className={step === 6 ? 'block' : 'hidden'}>
+          <div className={step === 6 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ChatInfoSection />
           </div>
 
@@ -362,8 +376,8 @@ const ComplaintWizardPage: React.FC = () => {
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 8 && (
-            <div className="flex flex-1 gap-2">
-              <div className="flex flex-1">
+            <div className="flex min-h-0 flex-1 gap-4">
+              <div className="flex min-h-0 flex-1">
                 <ChatWindowSection
                   complaintId={complaintId}
                   mode={chatMode}
@@ -382,67 +396,119 @@ const ComplaintWizardPage: React.FC = () => {
                 />
               </div>
 
-              <aside className="rounded-200 bg-neutral-0 mt-2 h-[498px] w-[340px] border border-neutral-200 p-4 xl:h-[576px]">
-                <h2 className="text-body-1-bold mb-2">AI가 찾은 핵심 키워드</h2>
-                <p className="text-body-3-regular mb-4 text-neutral-700">
-                  {ragKeyword
-                    ? `"${ragKeyword}"`
-                    : '사건 개요를 입력하면, AI가 핵심 키워드를 분석해서 보여드려요.'}
-                </p>
+              <aside className="flex min-h-0 w-[340px] shrink-0 flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
+                {/* 헤더 */}
+                <div className="flex items-center gap-2 border-b border-neutral-100 px-5 py-3">
+                  <div className="bg-primary-100 flex h-7 w-7 items-center justify-center rounded-full">
+                    <span
+                      className="material-symbols-outlined text-primary-400"
+                      style={{ fontSize: '16px' }}
+                    >
+                      search
+                    </span>
+                  </div>
+                  <h2 className="text-body-3-bold text-neutral-800">AI 분석 결과</h2>
+                </div>
 
-                {ragKeyword && (
-                  <>
-                    <h3 className="text-body-2-bold mb-1">검색 기준</h3>
-                    <p className="text-body-3-regular mb-3 text-neutral-600">
-                      유사 판례는 "{ragKeyword}"를 중심으로 검색했어요.
-                    </p>
-                  </>
-                )}
-
-                <h3 className="text-body-2-bold mb-2">유사 판례</h3>
-
-                {ragCases.length === 0 ? (
-                  ragSearchStarted ? (
-                    <p className="animate-wave-fill inline-block">유사 판례를 찾고 있어요...</p>
+                {/* 키워드 섹션 */}
+                <div className="border-b border-neutral-100 px-5 py-4">
+                  <p className="text-detail-regular mb-2 text-neutral-400">핵심 키워드</p>
+                  {ragKeyword ? (
+                    <span className="bg-primary-0 text-body-3-bold text-primary-500 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5">
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: '16px' }}
+                      >
+                        tag
+                      </span>
+                      {ragKeyword}
+                    </span>
                   ) : (
-                    <p className="text-caption-regular text-neutral-500">
-                      아직 불러온 판례가 없어요. 사건 개요를 입력하면 관련 판례를 보여드릴게요.
+                    <p className="text-body-3-regular text-neutral-400">
+                      사건 개요를 입력하면 AI가 분석해드려요
                     </p>
-                  )
-                ) : (
-                  <ul className="flex flex-col gap-3">
-                    {ragCases.map((c, idx) => (
-                      <li key={c.case_no || idx}>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCase(c)}
-                          className={[
-                            'rounded-200 bg-neutral-0 w-full border border-neutral-200 px-3 py-2',
-                            'flex items-center justify-between gap-3',
-                            'hover:border-primary-100 hover:bg-primary-25/40',
-                            'transition-colors duration-200',
-                          ].join(' ')}
-                        >
-                          <div className="flex flex-col text-left">
-                            <span className="text-caption-regular text-neutral-500">사건 번호</span>
-                            <span className="text-body-4-bold text-neutral-900">{c.case_no}</span>
-                          </div>
-                          <div className="flex flex-col items-end gap-1">
-                            <span className="text-detail-regular text-primary-600 mt-1 inline-flex items-center gap-1">
-                              자세히 보기
-                              <span
-                                className="material-symbols-outlined"
-                                style={{ fontSize: '16px' }}
-                              >
-                                open_in_new
-                              </span>
+                  )}
+                </div>
+
+                {/* 유사 판례 섹션 */}
+                <div className="flex flex-1 flex-col overflow-hidden px-5 py-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-detail-regular text-neutral-400">유사 판례</p>
+                    {ragCases.length > 0 && (
+                      <span className="text-detail-bold text-primary-400">{ragCases.length}건</span>
+                    )}
+                  </div>
+
+                  <div className="balaw-scrollbar flex-1 overflow-y-auto">
+                    {ragCases.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        {ragSearchStarted ? (
+                          <>
+                            <span
+                              className="material-symbols-outlined text-primary-300 mb-2 animate-spin"
+                              style={{ fontSize: '28px' }}
+                            >
+                              progress_activity
                             </span>
-                          </div>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                            <p className="text-body-3-regular text-neutral-500">
+                              유사 판례를 찾고 있어요...
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <span
+                              className="material-symbols-outlined mb-2 text-neutral-300"
+                              style={{ fontSize: '28px' }}
+                            >
+                              gavel
+                            </span>
+                            <p className="text-body-3-regular text-neutral-400">
+                              아직 불러온 판례가 없어요
+                            </p>
+                            <p className="text-detail-regular mt-1 text-neutral-300">
+                              사건 개요를 입력하면 관련 판례를 보여드릴게요
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <ul className="flex flex-col gap-2">
+                        {ragCases.map((c, idx) => (
+                          <li key={c.case_no || idx}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedCase(c)}
+                              className={[
+                                'group w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3',
+                                'flex flex-col gap-1.5 text-left',
+                                'hover:border-primary-200 hover:bg-primary-0/30',
+                                'transition-all duration-200',
+                              ].join(' ')}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-detail-regular text-neutral-400">
+                                  사건 번호
+                                </span>
+                                <span
+                                  className="material-symbols-outlined group-hover:text-primary-400 text-neutral-300 transition-colors"
+                                  style={{ fontSize: '16px' }}
+                                >
+                                  arrow_forward
+                                </span>
+                              </div>
+                              <span className="text-body-3-bold text-neutral-800">{c.case_no}</span>
+                              {c.label && (
+                                <span className="text-detail-regular line-clamp-1 text-neutral-500">
+                                  {c.label}
+                                </span>
+                              )}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
               </aside>
             </div>
           )}
@@ -462,15 +528,17 @@ const ComplaintWizardPage: React.FC = () => {
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
           step === 10 && <ComplaintDownloadSection complaintId={complaintId} />}
-        <WizardNavButtons
-          onPrev={prev}
-          onNext={handleNext}
-          isNextDisabled={isGenerating || (step === 8 && !isChatCompleted)}
-          disablePrev={step === 0 || step === 8 || step === 9}
-          nextLabel={
-            step === 10 ? '종료' : step === 8 && isGenerating ? '고소장 작성 중...' : '다음'
-          }
-        />
+        {step !== 8 && (
+          <WizardNavButtons
+            onPrev={prev}
+            onNext={handleNext}
+            isNextDisabled={
+              isGenerating || (step === 0 && entryMode === null) || (step === 1 && !allChecked)
+            }
+            disablePrev={step === 0 || step === 9}
+            nextLabel={step === 10 ? '종료' : '다음'}
+          />
+        )}
         <GeneratingModal open={showGeneratingModal} />
       </main>
       <Footer />

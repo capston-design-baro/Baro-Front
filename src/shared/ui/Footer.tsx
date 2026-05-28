@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <footer className="w-full snap-end border-t border-neutral-200 bg-neutral-50">
+    <footer className="w-full shrink-0 snap-end border-t border-neutral-200 bg-neutral-50">
       <div className="mx-auto w-full max-w-[1280px] px-8 pt-4 pb-2">
         {/* 상단 영역 */}
         <div className="flex flex-col gap-6 sm:flex-row sm:justify-between">

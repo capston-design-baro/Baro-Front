@@ -31,8 +31,8 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
     <section
       aria-label={`고소장 DOCX 다운로드 (ID: ${complaintId})`}
       className={[
-        'mx-auto flex flex-col items-center',
-        'h-[600px] w-full max-w-[1000px]',
+        'mx-auto flex flex-col items-center justify-center',
+        'w-full flex-1',
         'bg-neutral-0 pt-6 pb-6',
       ].join(' ')}
     >
@@ -48,7 +48,7 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
 
       <div
         className={[
-          'mt-8 flex min-h-0 w-full max-w-[520px] flex-1 flex-col',
+          'mt-8 flex min-h-0 w-full max-w-[520px] flex-1 flex-col justify-center',
           'rounded-200 bg-neutral-0 border border-neutral-200 shadow-sm',
           'px-6 py-5',
         ].join(' ')}

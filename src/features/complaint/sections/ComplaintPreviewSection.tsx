@@ -88,8 +88,7 @@ const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
           title="완성된 고소장 미리 보기"
           lines={[
             '바로가 완성한 고소장 초안이에요.',
-            '모두 정확히 작성 됐는지 확인해보고,',
-            '다음으로 넘어가서 다운로드 받아 보세요.',
+            '모두 정확히 작성 됐는지 확인해보고, 다음으로 넘어가서 다운로드 받아 보세요.',
           ]}
           center
           showArrow
