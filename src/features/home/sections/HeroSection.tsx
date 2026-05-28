@@ -45,19 +45,36 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onClickStart }) => {
             <br className="sm:hidden" /> 단계별로 쉽고 빠르게 완성해보세요.
           </p>
 
-          <Button
-            variant="primary"
-            size="lg"
-            className="group w-56 sm:w-64"
-            onClick={handleClick}
-          >
-            <span className="flex items-center justify-center gap-2">
-              고소장 작성 시작하기
-              <span className="material-symbols-outlined !text-[20px] transition-transform duration-300 group-hover:translate-x-1">
-                arrow_forward
+          <div className="flex flex-col items-center gap-3 sm:items-start">
+            <Button
+              variant="primary"
+              size="lg"
+              className="group w-56 sm:w-64"
+              onClick={handleClick}
+            >
+              <span className="flex items-center justify-center gap-2">
+                고소장 작성 시작하기
+                <span className="material-symbols-outlined !text-[20px] transition-transform duration-300 group-hover:translate-x-1">
+                  arrow_forward
+                </span>
               </span>
-            </span>
-          </Button>
+            </Button>
+            {user && (
+              <Button
+                variant="outline"
+                size="lg"
+                className="group w-56 sm:w-64"
+                onClick={() => navigate('/complaints')}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  내 고소장 목록 보기
+                  <span className="material-symbols-outlined !text-[20px] transition-transform duration-300 group-hover:translate-x-1">
+                    arrow_forward
+                  </span>
+                </span>
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* 캐릭터 영역 */}
