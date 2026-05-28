@@ -52,7 +52,7 @@ const initialPrechecks: PrecheckQuestion[] = [
 
 const INITIAL_STATE: ComplaintWizardState = {
   step: 0,
-  stepsTotal: 11,
+  stepsTotal: 9,
   prechecks: initialPrechecks,
   offense: null,
 };

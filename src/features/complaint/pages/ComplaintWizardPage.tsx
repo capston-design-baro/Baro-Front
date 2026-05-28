@@ -20,23 +20,14 @@ import {
 } from '@/features/complaint/apis/complaints';
 import WizardNavButtons from '@/features/complaint/components/WizardNavButtons';
 import WizardProgress from '@/features/complaint/components/WizardProgress';
-import AccusedExtraInfoSection, {
-  type AccusedExtraInfo,
-  type AccusedExtraInfoSectionHandle,
-} from '@/features/complaint/sections/AccusedExtraInfoSection';
 import AccusedInfoSection, {
-  type AccusedBasicInfo,
   type AccusedInfoSectionHandle,
 } from '@/features/complaint/sections/AccusedInfoSection';
 import ChatInfoSection from '@/features/complaint/sections/ChatInfoSection';
 import ChatWindowSection from '@/features/complaint/sections/ChatWindowSection';
 import ComplaintDownloadSection from '@/features/complaint/sections/ComplaintDownloadSection';
 import ComplaintEntrySection from '@/features/complaint/sections/ComplaintEntrySection';
-import type { ComplainantExtraInfoSectionHandle } from '@/features/complaint/sections/ComplaintExtraInfoSection';
-import type { ComplainantExtraInfo } from '@/features/complaint/sections/ComplaintExtraInfoSection';
-import ComplainantExtraInfoSection from '@/features/complaint/sections/ComplaintExtraInfoSection';
 import type { ComplainantInfoSectionHandle } from '@/features/complaint/sections/ComplaintInfoSection';
-import type { ComplaintBasicInfo } from '@/features/complaint/sections/ComplaintInfoSection';
 import ComplainantInfoSection from '@/features/complaint/sections/ComplaintInfoSection';
 import ComplaintIntroSection from '@/features/complaint/sections/ComplaintIntroSection';
 import ComplaintPreviewSection from '@/features/complaint/sections/ComplaintPreviewSection';
@@ -73,7 +64,7 @@ const ComplaintWizardPage: React.FC = () => {
 
   // 채팅 단계에서만 html 스크롤 차단
   useEffect(() => {
-    if (step === 8) {
+    if (step === 6) {
       document.documentElement.style.overflow = 'hidden';
       document.documentElement.style.height = '100%';
     } else {
@@ -98,9 +89,7 @@ const ComplaintWizardPage: React.FC = () => {
   }, []);
 
   const complainantRef = useRef<ComplainantInfoSectionHandle>(null);
-  const complainantExtraRef = useRef<ComplainantExtraInfoSectionHandle>(null);
   const accusedRef = useRef<AccusedInfoSectionHandle>(null);
-  const accusedExtraRef = useRef<AccusedExtraInfoSectionHandle>(null);
   const evidenceRef = useRef<EvidenceInfoSectionHandle>(null);
 
   // AI 메타 정보 (이 페이지에서만 관리)
@@ -109,8 +98,6 @@ const ComplaintWizardPage: React.FC = () => {
   const [ragSearchStarted, setRagSearchStarted] = useState(false);
 
   const [complaintId, setComplaintId] = useState<number | null>(initialComplaintIdFromState);
-  const [complainantBasicInfo, setComplainantBasicInfo] = useState<ComplaintBasicInfo | null>(null);
-  const [accusedBasicInfo, setAccusedBasicInfo] = useState<AccusedBasicInfo | null>(null);
 
   const [generatedComplaint, setGeneratedComplaint] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -130,7 +117,7 @@ const ComplaintWizardPage: React.FC = () => {
   useEffect(() => {
     if (resumeMode && initialComplaintIdFromState) {
       setComplaintId(initialComplaintIdFromState);
-      setStep(8); // 0: 엔트리, 1: 인트로, ..., 7: 증거, 8: 채팅
+      setStep(6); // 0: 엔트리, 1: 인트로, 2: 고소인, 3: 피고소인, 4: 채팅안내, 5: 증거, 6: 채팅
     }
   }, [resumeMode, initialComplaintIdFromState, setStep]);
 
@@ -157,36 +144,22 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    // 2: 고소인 기본정보 → 로컬 상태만 저장
+    // 2: 고소인 정보 (기본+추가 통합) → complaint 생성 + 관련 사건 등록
     if (step === 2) {
       if (!complainantRef.current) return;
 
       try {
-        const basic = await complainantRef.current.save();
-        setComplainantBasicInfo(basic);
-        nextRaw();
-      } catch {
-        // 섹션 내부에서 에러 처리
-      }
-      return;
-    }
-
-    // 3: 고소인 추가정보 → complaint 생성 + 관련 사건 등록
-    if (step === 3) {
-      if (!complainantBasicInfo || !complainantExtraRef.current) return;
-
-      try {
-        const extra: ComplainantExtraInfo = await complainantExtraRef.current.save();
+        const info = await complainantRef.current.save();
 
         const payload: ComplainantInfoCreate = {
-          complainant_name: complainantBasicInfo.name,
-          complainant_email: complainantBasicInfo.unknownEmail ? '' : complainantBasicInfo.email,
-          complainant_address: complainantBasicInfo.unknownAddr ? '' : complainantBasicInfo.address,
-          complainant_phone: complainantBasicInfo.unknownPhone ? '' : complainantBasicInfo.phone,
-          complainant_job: extra.unknownOccupation ? '' : extra.occupation,
-          complainant_office_address: extra.unknownOfficeAddress ? '' : extra.officeAddress,
-          complainant_office_phone: extra.unknownOfficePhone ? '' : extra.officePhone,
-          complainant_home_phone: extra.unknownHomePhone ? '' : extra.homePhone,
+          complainant_name: info.name,
+          complainant_email: info.unknownEmail ? '' : info.email,
+          complainant_address: info.unknownAddr ? '' : info.address,
+          complainant_phone: info.unknownPhone ? '' : info.phone,
+          complainant_job: info.unknownOccupation ? '' : info.occupation,
+          complainant_office_address: info.unknownOfficeAddress ? '' : info.officeAddress,
+          complainant_office_phone: info.unknownOfficePhone ? '' : info.officePhone,
+          complainant_home_phone: info.unknownHomePhone ? '' : info.homePhone,
         };
 
         const res = await createComplaint(payload);
@@ -217,36 +190,21 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    // 4: 피고소인 기본정보
-    if (step === 4) {
-      try {
-        const basic = await accusedRef.current?.save();
-        if (basic) {
-          setAccusedBasicInfo(basic);
-          nextRaw();
-        }
-      } catch {
-        // 섹션 내부에서 에러 처리
-      }
-      return;
-    }
-
-    // 5: 피고소인 추가정보 → registerAccused
-    if (step === 5) {
-      if (!complaintId || !accusedBasicInfo) return;
-      if (!accusedExtraRef.current) return;
+    // 3: 피고소인 정보 (기본 + 추가 통합) → registerAccused
+    if (step === 3) {
+      if (!complaintId) return;
+      if (!accusedRef.current) return;
 
       try {
-        const extra: AccusedExtraInfo = await accusedExtraRef.current.save();
-
+        const info = await accusedRef.current.save();
         const payload: AccusedInfoCreate = {
-          accused_name: accusedBasicInfo.name,
-          accused_email: accusedBasicInfo.email,
-          accused_address: accusedBasicInfo.address,
-          accused_phone: accusedBasicInfo.phone,
-          accused_job: extra.occupation,
-          accused_office_address: extra.officeAddress,
-          accused_etc: extra.etc,
+          accused_name: info.name,
+          accused_email: info.email,
+          accused_address: info.address,
+          accused_phone: info.phone,
+          accused_job: info.occupation,
+          accused_office_address: info.officeAddress,
+          accused_etc: info.etc,
         };
 
         await registerAccused(complaintId, payload);
@@ -257,8 +215,8 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    // 7: 증거 섹션 → registerEvidence 후 채팅 단계(8)로
-    if (step === 7) {
+    // 5: 증거 섹션 → registerEvidence 후 채팅 단계(6)로
+    if (step === 5) {
       if (!complaintId) return;
       if (!evidenceRef.current) return;
 
@@ -278,8 +236,8 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    // 8: 채팅 완료 후 → 최종 고소장 생성 + 미리보기(9)
-    if (step === 8) {
+    // 6: 채팅 완료 후 → 최종 고소장 생성 + 미리보기(7)
+    if (step === 6) {
       if (!complaintId) return;
 
       // 버튼 누르는 즉시 모달 띄우기
@@ -307,7 +265,7 @@ const ComplaintWizardPage: React.FC = () => {
       return;
     }
 
-    if (step === 10) {
+    if (step === 8) {
       resetWizard(); // 위자드 상태 초기화
       navigate('/'); // 홈으로 이동
       return;
@@ -321,18 +279,18 @@ const ComplaintWizardPage: React.FC = () => {
 
   return (
     <div
-      className={`bg-neutral-0 flex w-full flex-col ${step === 8 ? 'h-screen overflow-hidden' : 'min-h-screen'}`}
+      className={`bg-neutral-0 flex w-full flex-col ${step === 6 ? 'h-screen overflow-hidden' : 'min-h-screen'}`}
     >
       <Header />
       <main
-        className={`mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4 ${step === 8 ? 'min-h-0 overflow-hidden' : ''}`}
+        className={`mx-auto flex w-full max-w-[1200px] flex-1 flex-col px-6 py-4 ${step === 6 ? 'min-h-0 overflow-hidden' : ''}`}
       >
         <WizardProgress
           onExit={handleExit}
           className="mb-4 shrink-0"
         />
         {/* 위자드 본문: 0~7단계 */}
-        <div className={step >= 8 ? 'hidden' : 'flex min-h-0 flex-1 flex-col'}>
+        <div className={step >= 6 ? 'hidden' : 'flex min-h-0 flex-1 flex-col'}>
           {/* 0: 시작 선택 (새로 작성 / 이어쓰기 / 목록 보기) */}
           {step === 0 && (
             <ComplaintEntrySection
@@ -347,19 +305,14 @@ const ComplaintWizardPage: React.FC = () => {
             <ComplaintIntroSection />
           </div>
 
-          {/* 2: 고소인 기본정보 */}
+          {/* 2: 고소인 정보 */}
           <div className={step === 2 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ComplainantInfoSection ref={complainantRef} />
           </div>
 
-          {/* 3: 고소인 추가정보 */}
-          <div className={step === 3 ? 'flex flex-1 flex-col' : 'hidden'}>
-            <ComplainantExtraInfoSection ref={complainantExtraRef} />
-          </div>
-
-          {/* 4: 피고소인 기본정보 */}
+          {/* 3: 피고소인 정보 */}
           {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
-            <div className={step === 4 ? 'flex flex-1 flex-col' : 'hidden'}>
+            <div className={step === 3 ? 'flex flex-1 flex-col' : 'hidden'}>
               <AccusedInfoSection
                 ref={accusedRef}
                 complaintId={complaintId}
@@ -367,32 +320,22 @@ const ComplaintWizardPage: React.FC = () => {
             </div>
           )}
 
-          {/* 5: 피고소인 추가정보 */}
-          {typeof complaintId === 'number' && Number.isFinite(complaintId) && complaintId > 0 && (
-            <div className={step === 5 ? 'flex flex-1 flex-col' : 'hidden'}>
-              <AccusedExtraInfoSection
-                ref={accusedExtraRef}
-                complaintId={complaintId}
-              />
-            </div>
-          )}
-
-          {/* 6: 채팅 안내 */}
-          <div className={step === 6 ? 'flex flex-1 flex-col' : 'hidden'}>
+          {/* 4: 채팅 안내 */}
+          <div className={step === 4 ? 'flex flex-1 flex-col' : 'hidden'}>
             <ChatInfoSection />
           </div>
 
-          {/* 7: 증거 제출 여부 확인 */}
+          {/* 5: 증거 제출 */}
           {typeof complaintId === 'number' &&
             Number.isFinite(complaintId) &&
             complaintId > 0 &&
-            step === 7 && <EvidenceInfoSection ref={evidenceRef} />}
+            step === 5 && <EvidenceInfoSection ref={evidenceRef} />}
         </div>
         {/* 8: 실제 채팅창 + 오른쪽 메타 패널 */}
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
-          step === 8 && (
+          step === 6 && (
             <div className="flex min-h-0 flex-1 gap-4">
               <div className="flex min-h-0 flex-1">
                 <ChatWindowSection
@@ -590,7 +533,7 @@ const ComplaintWizardPage: React.FC = () => {
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
-          step === 9 &&
+          step === 7 &&
           generatedComplaint && (
             <div className="flex min-h-0 flex-1 flex-col">
               <ComplaintPreviewSection
@@ -603,20 +546,20 @@ const ComplaintWizardPage: React.FC = () => {
         {typeof complaintId === 'number' &&
           Number.isFinite(complaintId) &&
           complaintId > 0 &&
-          step === 10 && (
+          step === 8 && (
             <div className="flex min-h-0 flex-1 flex-col">
               <ComplaintDownloadSection complaintId={complaintId} />
             </div>
           )}
-        {step !== 8 && (
+        {step !== 6 && (
           <WizardNavButtons
             onPrev={prev}
             onNext={handleNext}
             isNextDisabled={
               isGenerating || (step === 0 && entryMode === null) || (step === 1 && !allChecked)
             }
-            disablePrev={step === 0 || step === 9}
-            nextLabel={step === 10 ? '종료' : '다음'}
+            disablePrev={step === 0 || step === 7}
+            nextLabel={step === 8 ? '종료' : '다음'}
           />
         )}
         <GeneratingModal open={showGeneratingModal} />

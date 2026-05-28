@@ -11,14 +11,12 @@ const STEP_LABELS: Record<number, { icon: string; label: string }> = {
   0: { icon: 'play_circle', label: '시작하기' },
   1: { icon: 'info', label: '안내 확인' },
   2: { icon: 'person', label: '고소인 정보' },
-  3: { icon: 'person_add', label: '고소인 추가 정보' },
-  4: { icon: 'group', label: '피고소인 정보' },
-  5: { icon: 'group_add', label: '피고소인 추가 정보' },
-  6: { icon: 'chat', label: '채팅 안내' },
-  7: { icon: 'folder_open', label: '증거 제출' },
-  8: { icon: 'smart_toy', label: 'AI 상담' },
-  9: { icon: 'description', label: '고소장 생성' },
-  10: { icon: 'download', label: '고소장 다운로드' },
+  3: { icon: 'group', label: '피고소인 정보' },
+  4: { icon: 'chat', label: '채팅 안내' },
+  5: { icon: 'folder_open', label: '증거 제출' },
+  6: { icon: 'smart_toy', label: 'AI 상담' },
+  7: { icon: 'description', label: '고소장 생성' },
+  8: { icon: 'download', label: '고소장 다운로드' },
 };
 
 const WizardProgress: React.FC<Props> = ({ onExit, className = '' }) => {

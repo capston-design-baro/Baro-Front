@@ -52,7 +52,7 @@ const DaumPostcodeButton: React.FC<Props> = ({ onSelect, address }) => {
   // 주소 선택 완료 상태
   if (hasAddress) {
     return (
-      <div className="rounded-200 border-primary-200 bg-primary-0/50 flex h-10 w-full items-center gap-3 border px-3">
+      <div className="rounded-200 border-primary-200 bg-primary-0/50 flex h-9 w-full items-center gap-3 border px-3">
         <span className="text-body-3-regular flex-1 text-neutral-900">
           {[address.city, address.district, address.town].filter(Boolean).join(' ')}
         </span>
@@ -74,7 +74,7 @@ const DaumPostcodeButton: React.FC<Props> = ({ onSelect, address }) => {
       <button
         type="button"
         onClick={handleOpen}
-        className="rounded-200 hover:border-primary-300 hover:bg-primary-0/30 flex h-10 w-full items-center gap-3 border border-neutral-300 px-3 text-left transition-colors"
+        className="rounded-200 hover:border-primary-300 hover:bg-primary-0/30 flex h-9 w-full items-center gap-3 border border-neutral-300 px-3 text-left transition-colors"
       >
         <span
           className="material-symbols-outlined text-neutral-400"
