@@ -4,7 +4,6 @@ import DaumPostcodeButton from '@/shared/ui/DaumPostcodeButton';
 import type { DaumPostcodeResult } from '@/shared/ui/DaumPostcodeButton';
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import IntroHeader from '@/shared/ui/IntroHeader';
-import { splitAddressTo3FromString } from '@/shared/utils/krContact';
 
 // 부모에서 사용할 타입
 export type AccusedBasicInfo = {
@@ -34,9 +33,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
   const [addr1, setAddr1] = useState('');
   const [addr2, setAddr2] = useState('');
   const [addr3, setAddr3] = useState('');
-  const [p1, setP1] = useState('');
-  const [p2, setP2] = useState('');
-  const [p3, setP3] = useState('');
+  const [phone, setPhone] = useState('');
 
   // 모름 토글
   const [unknownName, setUnknownName] = useState(false);
@@ -52,27 +49,29 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
   // 주소가 주소 찾기로 한 번이라도 세팅된 적 있는지
   const [hasAddress, setHasAddress] = useState(false);
 
-  // 주소 필드 클릭 시: 아직 검색 안했으면 에러만 보여주기
-  const handleAddressFieldClick = () => {
-    // "모름"이면 그냥 아무것도 하지 않음
-    if (unknownAddr) return;
-
-    // 주소가 비어 있고, 주소 찾기도 안 한 상태면 에러
-    if (!hasAddress && !addr1 && !addr2 && !addr3) {
-      setErr('주소 찾기 버튼을 눌러 주소를 검색해주세요.');
-    }
-  };
-
-  // 주소 선택 콜백 (다음 API에서 선택되면 호출)
+  // 주소 선택 콜백
   const handleAddressSelect = (data: DaumPostcodeResult) => {
-    const { a1, a2, a3 } = splitAddressTo3FromString(data.roadAddress);
-    setAddr1(a1);
-    setAddr2(a2);
-    setAddr3(a3);
+    setAddr1(data.sido);
+    setAddr2(data.sigungu);
+    setAddr3(data.bname);
     setHasAddress(true);
-    setUnknownAddr(false); // 검색하면 모름 자동 해제
+    setUnknownAddr(false);
     setErr(null);
   };
+
+  // 전화번호 포맷팅
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(formatPhone(e.target.value));
+  };
+
+  const phoneDigits = phone.replace(/\D/g, '');
 
   // 공통 라벨 렌더러 (고소인 섹션과 동일 스타일)
   const renderLabel = (text: string, required: boolean) => {
@@ -100,11 +99,10 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
   }, [addr1, addr2, addr3, unknownAddr]);
 
   // 전화번호 문자열
-  const phone = useMemo(() => {
+  const phoneValue = useMemo(() => {
     if (unknownPhone) return '';
-    if (!p1 && !p2 && !p3) return '';
-    return [p1, p2, p3].join('-').replace(/--+/g, '-');
-  }, [p1, p2, p3, unknownPhone]);
+    return phoneDigits;
+  }, [phoneDigits, unknownPhone]);
 
   // 유효성 검사 + 최종 객체 만들기
   const buildBasicInfo = (): AccusedBasicInfo => {
@@ -128,7 +126,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
       setErr(msg);
       throw new Error(msg);
     }
-    if (!unknownPhone && (!p1 || !p2 || !p3)) {
+    if (!unknownPhone && phoneDigits.length < 10) {
       const msg = '연락처를 입력하거나 "모름"을 선택해주세요.';
       setErr(msg);
       throw new Error(msg);
@@ -140,7 +138,7 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
       name: unknownName ? ' ' : name.trim(),
       email: unknownEmail ? ' ' : email.trim(),
       address: unknownAddr ? null : address,
-      phone: unknownPhone ? ' ' : phone,
+      phone: unknownPhone ? ' ' : phoneValue,
       unknownName,
       unknownEmail,
       unknownAddr,
@@ -177,19 +175,13 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
 
   return (
     <section
-      className={[
-        'flex flex-col items-center justify-between',
-        'h-[600px] w-full max-w-[1000px]',
-        'pb-6',
-        'bg-neutral-0',
-      ].join(' ')}
+      className={['flex flex-col items-center', 'w-full flex-1', 'pb-6', 'bg-neutral-0'].join(' ')}
     >
       <IntroHeader
         title="고소장 작성하기"
         lines={[
           '상대방에 대한 기본 정보를 작성해주세요.',
-          '알고 있는 범위 내에서만',
-          '상대방 정보를 작성해도 괜찮아요.',
+          '알고 있는 범위 내에서만 상대방 정보를 작성해도 괜찮아요.',
         ]}
         center
         showArrow
@@ -198,257 +190,144 @@ const AccusedInfoSection = forwardRef<AccusedInfoSectionHandle, Props>(({ compla
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="mt-6 flex w-[420px] flex-col gap-5"
+        className="mt-6 flex w-[420px] flex-1 flex-col justify-center gap-5"
       >
-        {/* 입력 필드들 */}
-        <div className="flex flex-1 flex-col justify-center gap-5 px-5">
-          {/* 이름 */}
-          <div className="flex flex-col gap-2">
-            {renderLabel('이름', true)}
-            <div className="flex items-center gap-3">
-              <span
-                className="material-symbols-outlined text-primary-600/50"
-                style={{ fontSize: '24px' }}
-              >
-                person
-              </span>
-
+        {/* 입력 필드 카드 */}
+        <div className="flex flex-1 items-center justify-center">
+          <div className="rounded-300 w-full max-w-[520px] border border-neutral-200 bg-white shadow-sm">
+            {/* 이름 */}
+            <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+              <div className="flex items-center justify-between">
+                {renderLabel('이름', true)}
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownName}
+                    onChange={(e) =>
+                      handleCheckboxChange(e.target.checked, setUnknownName, setName)
+                    }
+                  />
+                  모름
+                </label>
+              </div>
               <input
                 disabled={unknownName}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className={[
-                  'rounded-200 h-10 flex-1 px-3',
+                  'rounded-200 h-10 w-full px-3',
                   'border border-neutral-300',
                   'disabled:bg-neutral-100 disabled:text-neutral-400',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                  'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
                 ].join(' ')}
                 placeholder={unknownName ? '모름' : '이름 입력'}
                 type="text"
               />
-
-              <label
-                className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
-                ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownName}
-                  onChange={(e) => handleCheckboxChange(e.target.checked, setUnknownName, setName)}
-                />
-                모름
-              </label>
             </div>
-          </div>
 
-          {/* 이메일 */}
-          <div className="flex flex-col gap-2">
-            {renderLabel('이메일', true)}
-            <div className="flex items-center gap-3">
-              <span
-                className="material-symbols-outlined text-primary-600/50"
-                style={{ fontSize: '24px' }}
-              >
-                email
-              </span>
-
+            {/* 이메일 */}
+            <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+              <div className="flex items-center justify-between">
+                {renderLabel('이메일', true)}
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownEmail}
+                    onChange={(e) =>
+                      handleCheckboxChange(e.target.checked, setUnknownEmail, setEmail)
+                    }
+                  />
+                  모름
+                </label>
+              </div>
               <input
                 disabled={unknownEmail}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={[
-                  'rounded-200 h-10 flex-1 px-3',
+                  'rounded-200 h-10 w-full px-3',
                   'border border-neutral-300',
                   'disabled:bg-neutral-100 disabled:text-neutral-400',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                  'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
                 ].join(' ')}
                 placeholder={unknownEmail ? '모름' : '이메일 입력'}
                 type="text"
               />
-
-              <label
-                className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
-                ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownEmail}
-                  onChange={(e) =>
-                    handleCheckboxChange(e.target.checked, setUnknownEmail, setEmail)
-                  }
-                />
-                모름
-              </label>
             </div>
-          </div>
 
-          {/* 주소 */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              {/* 주소 라벨 */}
-              {renderLabel('주소', true)}
-
-              {/* 주소 검색 버튼 */}
-              <DaumPostcodeButton onSelect={handleAddressSelect} />
-            </div>
-            <div className="flex items-center gap-3">
-              <span
-                className="material-symbols-outlined text-primary-600/50"
-                style={{ fontSize: '24px' }}
-              >
-                location_on
-              </span>
-
-              <div className="grid w-full grid-cols-3 gap-2">
-                <input
-                  disabled={unknownAddr}
-                  value={addr1}
-                  readOnly
-                  onClick={handleAddressFieldClick}
-                  onFocus={handleAddressFieldClick}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownAddr ? '모름' : '시/도'}
-                  type="text"
-                />
-                <input
-                  disabled={unknownAddr}
-                  value={addr2}
-                  readOnly
-                  onClick={handleAddressFieldClick}
-                  onFocus={handleAddressFieldClick}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownAddr ? '모름' : '시/군/구'}
-                  type="text"
-                />
-                <input
-                  disabled={unknownAddr}
-                  value={addr3}
-                  readOnly
-                  onClick={handleAddressFieldClick}
-                  onFocus={handleAddressFieldClick}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownAddr ? '모름' : '읍/면/동'}
-                  type="text"
-                />
+            {/* 주소 */}
+            <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+              <div className="flex items-center justify-between">
+                {renderLabel('주소', true)}
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownAddr}
+                    onChange={(e) => {
+                      handleCheckboxChange(
+                        e.target.checked,
+                        setUnknownAddr,
+                        setAddr1,
+                        setAddr2,
+                        setAddr3,
+                      );
+                      if (e.target.checked) {
+                        setErr(null);
+                        setHasAddress(false);
+                      }
+                    }}
+                  />
+                  모름
+                </label>
               </div>
-
-              <label
-                className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
-                ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownAddr}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-
-                    handleCheckboxChange(checked, setUnknownAddr, setAddr1, setAddr2, setAddr3);
-
-                    if (checked) {
-                      // "주소 모름"으로 바꾸면 주소 관련 에러는 지워준다
-                      setErr(null);
-                      setHasAddress(false); // 선택사항: 모름이면 hasAddress도 false로
-                    }
-                  }}
+              {unknownAddr ? (
+                <div className="rounded-200 flex h-10 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">
+                  모름
+                </div>
+              ) : (
+                <DaumPostcodeButton
+                  onSelect={handleAddressSelect}
+                  address={hasAddress ? { city: addr1, district: addr2, town: addr3 } : undefined}
                 />
-                모름
-              </label>
+              )}
             </div>
-          </div>
 
-          {/* 연락처 */}
-          <div className="flex flex-col gap-2">
-            {renderLabel('전화번호', true)}
-            <div className="flex items-center gap-3">
-              <span
-                className="material-symbols-outlined text-primary-600/50"
-                style={{ fontSize: '24px' }}
-              >
-                phone_in_talk
-              </span>
-
-              <div className="grid w-full grid-cols-3 gap-2">
-                <input
-                  disabled={unknownPhone}
-                  value={p1}
-                  onChange={(e) => setP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownPhone ? '모름' : '010'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownPhone}
-                  value={p2}
-                  onChange={(e) => setP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownPhone ? '모름' : '1234'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownPhone}
-                  value={p3}
-                  onChange={(e) => setP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownPhone ? '모름' : '5678'}
-                  inputMode="numeric"
-                />
+            {/* 전화번호 */}
+            <div className="flex flex-col gap-2 px-5 py-4">
+              <div className="flex items-center justify-between">
+                {renderLabel('전화번호', true)}
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownPhone}
+                    onChange={(e) => {
+                      if (e.target.checked) setPhone('');
+                      setUnknownPhone(e.target.checked);
+                    }}
+                  />
+                  모름
+                </label>
               </div>
-
-              <label
+              <input
+                id="phone"
+                type="tel"
+                inputMode="numeric"
+                placeholder={unknownPhone ? '모름' : '010-1234-5678'}
+                value={phone}
+                onChange={handlePhoneChange}
+                disabled={unknownPhone}
                 className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
+                  'rounded-200 h-10 w-full px-3',
+                  'border border-neutral-300',
+                  'disabled:bg-neutral-100 disabled:text-neutral-400',
+                  'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
                 ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownPhone}
-                  onChange={(e) =>
-                    handleCheckboxChange(e.target.checked, setUnknownPhone, setP1, setP2, setP3)
-                  }
-                />
-                모름
-              </label>
+                autoComplete="tel"
+              />
             </div>
           </div>
         </div>

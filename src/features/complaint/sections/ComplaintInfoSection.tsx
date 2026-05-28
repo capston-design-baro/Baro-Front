@@ -7,7 +7,7 @@ import type { DaumPostcodeResult } from '@/shared/ui/DaumPostcodeButton';
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import IntroHeader from '@/shared/ui/IntroHeader';
 import Button from '@/shared/ui/common/Button';
-import { splitAddressTo3FromString, splitPhoneKR } from '@/shared/utils/krContact';
+import { splitAddressTo3FromString } from '@/shared/utils/krContact';
 
 import { getMe } from '@/features/auth/apis/auth';
 
@@ -40,31 +40,35 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
     const [addr1, setAddr1] = useState('');
     const [addr2, setAddr2] = useState('');
     const [addr3, setAddr3] = useState('');
-    const [p1, setP1] = useState('');
-    const [p2, setP2] = useState('');
-    const [p3, setP3] = useState('');
+    const [phone, setPhone] = useState('');
 
     // UI 상태 관리
     const [err, setErr] = useState<string | null>(null); // 에러 메시지만 유지
 
     const [hasAddress, setHasAddress] = useState(false);
 
-    // 주소 필드 클릭 시 에러 띄우기
-    const handleAddressFieldClick = () => {
-      if (!hasAddress) {
-        setErr('주소 찾기 버튼을 눌러 주소를 선택해주세요.');
-      }
-    };
-
-    // 주소 선택 콜백 (다음 API에서 선택되면 호출)
+    // 주소 선택 콜백
     const handleAddressSelect = (data: DaumPostcodeResult) => {
-      const { a1, a2, a3 } = splitAddressTo3FromString(data.roadAddress);
-      setAddr1(a1);
-      setAddr2(a2);
-      setAddr3(a3);
+      setAddr1(data.sido);
+      setAddr2(data.sigungu);
+      setAddr3(data.bname);
       setHasAddress(true);
       setErr(null);
     };
+
+    // 전화번호 포맷팅
+    const formatPhone = (value: string) => {
+      const digits = value.replace(/\D/g, '').slice(0, 11);
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+      return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPhone(formatPhone(e.target.value));
+    };
+
+    const phoneDigits = phone.replace(/\D/g, '');
 
     const renderLabel = (text: string, required: boolean) => {
       const labelText = required ? '(필수)' : '(선택)';
@@ -101,10 +105,7 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
         setHasAddress(Boolean(a1));
 
-        const { p1: _1, p2: _2, p3: _3 } = splitPhoneKR(me.phone_number);
-        setP1(_1);
-        setP2(_2);
-        setP3(_3);
+        setPhone(formatPhone(me.phone_number ?? ''));
       } catch (e: unknown) {
         const ax = e as AxiosError | undefined;
         const status = ax?.response?.status;
@@ -125,13 +126,12 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
       }
 
       const address = [addr1, addr2, addr3].filter(Boolean).join(' ').trim();
-      const phone = [p1, p2, p3].join('-').replace(/--+/g, '-').trim();
 
       return {
         name: name.trim(),
         email: email.trim(),
         address,
-        phone,
+        phone: phoneDigits,
         // 아직 "모름/비공개" 체크 UI가 없으니 기본값은 false
         unknownName: false,
         unknownEmail: false,
@@ -168,19 +168,15 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
 
     return (
       <section
-        className={[
-          'flex flex-col items-center justify-between',
-          'h-[600px] w-full max-w-[1000px]',
-          'pb-6',
-          'bg-neutral-0',
-        ].join(' ')}
+        className={['flex flex-col items-center', 'w-full flex-1', 'pb-6', 'bg-neutral-0'].join(
+          ' ',
+        )}
       >
         <IntroHeader
           title="고소장 작성하기"
           lines={[
             '고소장을 작성하려면 내 정보를 적어야 해요.',
-            '로그인 시 입력한 정보를 불러올 수도 있고,',
-            '직접 입력할 수도 있어요.',
+            '로그인 시 입력한 정보를 불러올 수도 있고, 직접 입력할 수도 있어요.',
           ]}
           center
           showArrow
@@ -189,38 +185,34 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className="mt-2 flex w-[420px] flex-col gap-5"
+          className="mt-2 flex w-[420px] flex-1 flex-col justify-center gap-5"
         >
-          {/* 내 정보 불러오기 버튼 */}
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLoadFromProfile}
-            >
-              내 정보 불러오기
-            </Button>
-          </div>
-
-          {/* 입력 필드들 */}
-          <div className="flex flex-1 flex-col justify-center gap-5 px-5">
-            {/* 이름 */}
-            <div className="flex flex-col gap-2">
-              {renderLabel('이름', true)}
-              <div className="flex items-center gap-4">
-                <span
-                  className="material-symbols-outlined text-primary-600/50"
-                  style={{ fontSize: '24px' }}
+          {/* 입력 필드 카드 */}
+          <div className="flex flex-1 items-center justify-center">
+            <div className="rounded-300 w-full max-w-[520px] border border-neutral-200 bg-white shadow-sm">
+              {/* 카드 헤더 */}
+              <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-3">
+                <span className="text-body-3-bold text-neutral-700">내 정보</span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="xs"
+                  onClick={handleLoadFromProfile}
                 >
-                  person
-                </span>
+                  불러오기
+                </Button>
+              </div>
+
+              {/* 이름 */}
+              <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+                {renderLabel('이름', true)}
                 <input
                   id="name"
                   type="text"
                   className={[
-                    'rounded-200 h-10 flex-1 px-3',
+                    'rounded-200 h-10 w-full px-3',
                     'border border-neutral-300',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                    'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
                   ].join(' ')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -228,25 +220,17 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
                   placeholder="홍길동"
                 />
               </div>
-            </div>
 
-            {/* 이메일 */}
-            <div className="flex flex-col gap-2">
-              {renderLabel('이메일', false)} {/* 필수로 바꾸고 싶으면 true */}
-              <div className="flex items-center gap-4">
-                <span
-                  className="material-symbols-outlined text-primary-600/50"
-                  style={{ fontSize: '24px' }}
-                >
-                  email
-                </span>
+              {/* 이메일 */}
+              <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+                {renderLabel('이메일', false)}
                 <input
                   id="email"
                   type="email"
                   className={[
-                    'rounded-200 h-10 flex-1 px-3',
+                    'rounded-200 h-10 w-full px-3',
                     'border border-neutral-300',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                    'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
                   ].join(' ')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -254,122 +238,33 @@ const ComplainantInfoSection = forwardRef<ComplainantInfoSectionHandle, Props>(
                   placeholder="example@email.com"
                 />
               </div>
-            </div>
 
-            {/* 주소 */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                {/* 주소 라벨 */}
+              {/* 주소 */}
+              <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
                 {renderLabel('주소', true)}
-
-                {/* 주소 검색 버튼 */}
-                <DaumPostcodeButton onSelect={handleAddressSelect} />
+                <DaumPostcodeButton
+                  onSelect={handleAddressSelect}
+                  address={hasAddress ? { city: addr1, district: addr2, town: addr3 } : undefined}
+                />
               </div>
-              <div className="flex items-center gap-4">
-                <span
-                  className="material-symbols-outlined text-primary-600/50"
-                  style={{ fontSize: '24px' }}
-                >
-                  location_on
-                </span>
-                <div className="grid w-full grid-cols-3 gap-2">
-                  <input
-                    id="addr1"
-                    value={addr1}
-                    readOnly
-                    onClick={handleAddressFieldClick}
-                    onFocus={handleAddressFieldClick}
-                    onChange={(e) => setAddr1(e.target.value)}
-                    className={[
-                      'rounded-200 h-10 flex-1 px-3 text-center',
-                      'border border-neutral-300',
-                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                    ].join(' ')}
-                    placeholder="시/도"
-                  />
-                  <input
-                    id="addr2"
-                    value={addr2}
-                    readOnly
-                    onClick={handleAddressFieldClick}
-                    onFocus={handleAddressFieldClick}
-                    onChange={(e) => setAddr2(e.target.value)}
-                    className={[
-                      'rounded-200 h-10 flex-1 px-3 text-center',
-                      'border border-neutral-300',
-                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                    ].join(' ')}
-                    placeholder="시/군/구"
-                  />
-                  <input
-                    id="addr3"
-                    value={addr3}
-                    readOnly
-                    onClick={handleAddressFieldClick}
-                    onFocus={handleAddressFieldClick}
-                    onChange={(e) => setAddr3(e.target.value)}
-                    className={[
-                      'rounded-200 h-10 flex-1 px-3 text-center',
-                      'border border-neutral-300',
-                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                    ].join(' ')}
-                    placeholder="읍/면/동"
-                  />
-                </div>
-              </div>
-            </div>
 
-            {/* 연락처 */}
-            <div className="flex flex-col gap-2">
-              {renderLabel('전화번호', true)}
-              <div className="flex items-center gap-4">
-                <span
-                  className="material-symbols-outlined text-primary-600/50"
-                  style={{ fontSize: '24px' }}
-                >
-                  phone_in_talk
-                </span>
-                <div className="grid w-full grid-cols-3 gap-2">
-                  <input
-                    id="phone1"
-                    maxLength={3}
-                    value={p1}
-                    onChange={(e) => setP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                    className={[
-                      'rounded-200 h-10 flex-1 px-3 text-center',
-                      'border border-neutral-300',
-                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                    ].join(' ')}
-                    placeholder="010"
-                    inputMode="numeric"
-                  />
-                  <input
-                    id="phone2"
-                    maxLength={4}
-                    value={p2}
-                    onChange={(e) => setP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                    className={[
-                      'rounded-200 h-10 flex-1 px-3 text-center',
-                      'border border-neutral-300',
-                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                    ].join(' ')}
-                    placeholder="1234"
-                    inputMode="numeric"
-                  />
-                  <input
-                    id="phone3"
-                    maxLength={4}
-                    value={p3}
-                    onChange={(e) => setP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                    className={[
-                      'rounded-200 h-10 flex-1 px-3 text-center',
-                      'border border-neutral-300',
-                      'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                    ].join(' ')}
-                    placeholder="5678"
-                    inputMode="numeric"
-                  />
-                </div>
+              {/* 전화번호 */}
+              <div className="flex flex-col gap-2 px-5 py-4">
+                {renderLabel('전화번호', true)}
+                <input
+                  id="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder="010-1234-5678"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  className={[
+                    'rounded-200 h-10 w-full px-3',
+                    'border border-neutral-300',
+                    'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
+                  ].join(' ')}
+                  autoComplete="tel"
+                />
               </div>
             </div>
           </div>

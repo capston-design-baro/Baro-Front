@@ -4,7 +4,6 @@ import DaumPostcodeButton from '@/shared/ui/DaumPostcodeButton';
 import type { DaumPostcodeResult } from '@/shared/ui/DaumPostcodeButton';
 import FormErrorMessage from '@/shared/ui/FormErrorMessage';
 import IntroHeader from '@/shared/ui/IntroHeader';
-import { splitAddressTo3FromString } from '@/shared/utils/krContact';
 
 // 고소인 추가 정보 타입
 export type ComplainantExtraInfo = {
@@ -27,18 +26,11 @@ const ComplainantExtraInfoSection = forwardRef<ComplainantExtraInfoSectionHandle
 
   // 입력값 상태
   const [occupation, setOccupation] = useState('');
-
   const [officeAddr1, setOfficeAddr1] = useState('');
   const [officeAddr2, setOfficeAddr2] = useState('');
   const [officeAddr3, setOfficeAddr3] = useState('');
-
-  const [officeP1, setOfficeP1] = useState('');
-  const [officeP2, setOfficeP2] = useState('');
-  const [officeP3, setOfficeP3] = useState('');
-
-  const [homeP1, setHomeP1] = useState('');
-  const [homeP2, setHomeP2] = useState('');
-  const [homeP3, setHomeP3] = useState('');
+  const [officePhone, setOfficePhone] = useState('');
+  const [homePhone, setHomePhone] = useState('');
 
   // 비공개 토글
   const [unknownOccupation, setUnknownOccupation] = useState(false);
@@ -47,31 +39,28 @@ const ComplainantExtraInfoSection = forwardRef<ComplainantExtraInfoSectionHandle
   const [unknownHomePhone, setUnknownHomePhone] = useState(false);
 
   const [err, setErr] = useState<string | null>(null);
-
-  // 주소가 주소 찾기로 한 번이라도 세팅된 적 있는지
   const [hasAddress, setHasAddress] = useState(false);
 
-  // 주소 필드 클릭 시: 아직 검색 안했으면 에러만 보여주기
-  const handleAddressFieldClick = () => {
-    // "모름"이면 그냥 아무것도 하지 않음
-    if (unknownOfficeAddress) return;
-
-    // 주소가 비어 있고, 주소 찾기도 안 한 상태면 에러
-    if (!hasAddress && !officeAddr1 && !officeAddr2 && !officeAddr3) {
-      setErr('주소 찾기 버튼을 눌러 주소를 검색해주세요.');
-    }
-  };
-
-  // 주소 선택 콜백 (다음 API에서 선택되면 호출)
+  // 주소 선택 콜백
   const handleAddressSelect = (data: DaumPostcodeResult) => {
-    const { a1, a2, a3 } = splitAddressTo3FromString(data.roadAddress);
-    setOfficeAddr1(a1);
-    setOfficeAddr2(a2);
-    setOfficeAddr3(a3);
+    setOfficeAddr1(data.sido);
+    setOfficeAddr2(data.sigungu);
+    setOfficeAddr3(data.bname);
     setHasAddress(true);
     setUnknownOfficeAddress(false);
     setErr(null);
   };
+
+  // 전화번호 포맷팅
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  };
+
+  const officePhoneDigits = officePhone.replace(/\D/g, '');
+  const homePhoneDigits = homePhone.replace(/\D/g, '');
 
   const renderLabel = (text: string, required: boolean) => {
     const labelText = required ? '(필수)' : '(선택)';
@@ -96,17 +85,15 @@ const ComplainantExtraInfoSection = forwardRef<ComplainantExtraInfoSectionHandle
     return [officeAddr1, officeAddr2, officeAddr3].filter(Boolean).join(' ').trim();
   }, [officeAddr1, officeAddr2, officeAddr3, unknownOfficeAddress]);
 
-  const officePhone = useMemo(() => {
+  const officePhoneValue = useMemo(() => {
     if (unknownOfficePhone) return '';
-    if (!officeP1 && !officeP2 && !officeP3) return '';
-    return [officeP1, officeP2, officeP3].join('-').replace(/--+/g, '-');
-  }, [officeP1, officeP2, officeP3, unknownOfficePhone]);
+    return officePhoneDigits;
+  }, [officePhoneDigits, unknownOfficePhone]);
 
-  const homePhone = useMemo(() => {
+  const homePhoneValue = useMemo(() => {
     if (unknownHomePhone) return '';
-    if (!homeP1 && !homeP2 && !homeP3) return '';
-    return [homeP1, homeP2, homeP3].join('-').replace(/--+/g, '-');
-  }, [homeP1, homeP2, homeP3, unknownHomePhone]);
+    return homePhoneDigits;
+  }, [homePhoneDigits, unknownHomePhone]);
 
   const handleCheckboxChange = (
     checked: boolean,
@@ -117,7 +104,6 @@ const ComplainantExtraInfoSection = forwardRef<ComplainantExtraInfoSectionHandle
     if (checked) setters.forEach((setter) => setter(''));
   };
 
-  // 최종 객체 만들기 (유효성 검사는 안 하고 그대로 넘김)
   const buildExtraInfo = (): ComplainantExtraInfo => {
     if (!unknownOccupation && !occupation.trim()) {
       const msg = '직업을 입력하거나 "비공개"를 선택해주세요.';
@@ -129,12 +115,12 @@ const ComplainantExtraInfoSection = forwardRef<ComplainantExtraInfoSectionHandle
       setErr(msg);
       throw new Error(msg);
     }
-    if (!unknownOfficePhone && !officePhone) {
+    if (!unknownOfficePhone && officePhoneDigits.length < 9) {
       const msg = '사무실 전화번호를 입력하거나 "비공개"를 선택해주세요.';
       setErr(msg);
       throw new Error(msg);
     }
-    if (!unknownHomePhone && !homePhone) {
+    if (!unknownHomePhone && homePhoneDigits.length < 9) {
       const msg = '자택 전화번호를 입력하거나 "비공개"를 선택해주세요.';
       setErr(msg);
       throw new Error(msg);
@@ -145,8 +131,8 @@ const ComplainantExtraInfoSection = forwardRef<ComplainantExtraInfoSectionHandle
     return {
       occupation: unknownOccupation ? '비공개' : occupation.trim(),
       officeAddress: unknownOfficeAddress ? '비공개' : officeAddress.trim(),
-      officePhone: unknownOfficePhone ? '비공개' : officePhone,
-      homePhone: unknownHomePhone ? '비공개' : homePhone,
+      officePhone: unknownOfficePhone ? '비공개' : officePhoneValue,
+      homePhone: unknownHomePhone ? '비공개' : homePhoneValue,
       unknownOccupation,
       unknownOfficeAddress,
       unknownOfficePhone,
@@ -172,12 +158,7 @@ const ComplainantExtraInfoSection = forwardRef<ComplainantExtraInfoSectionHandle
 
   return (
     <section
-      className={[
-        'flex flex-col items-center justify-between',
-        'h-[600px] w-full max-w-[1000px]',
-        'pb-6',
-        'bg-neutral-0',
-      ].join(' ')}
+      className={['flex flex-col items-center', 'w-full flex-1', 'pb-6', 'bg-neutral-0'].join(' ')}
     >
       <IntroHeader
         title="고소장 작성하기"
@@ -192,296 +173,150 @@ const ComplainantExtraInfoSection = forwardRef<ComplainantExtraInfoSectionHandle
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="mt-6 flex w-[420px] flex-col gap-5"
+        className="mt-2 flex w-full flex-1 flex-col justify-center gap-5"
       >
-        <div className="flex flex-1 flex-col justify-center gap-6 px-5">
-          {/* 직업 */}
-          <div className="flex flex-col gap-2">
-            {renderLabel('직업', true)}
-            <div className="flex items-center gap-3">
-              <span
-                className="material-symbols-outlined text-primary-600/50"
-                style={{ fontSize: '24px' }}
-              >
-                work
-              </span>
+        {/* 입력 필드 카드 */}
+        <div className="flex flex-1 items-center justify-center">
+          <div className="rounded-300 w-full max-w-[520px] border border-neutral-200 bg-white shadow-sm">
+            {/* 직업 */}
+            <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+              <div className="flex items-center justify-between">
+                {renderLabel('직업', true)}
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownOccupation}
+                    onChange={(e) =>
+                      handleCheckboxChange(e.target.checked, setUnknownOccupation, setOccupation)
+                    }
+                  />
+                  비공개
+                </label>
+              </div>
               <input
                 disabled={unknownOccupation}
                 value={occupation}
                 onChange={(e) => setOccupation(e.target.value)}
                 className={[
-                  'rounded-200 h-10 flex-1 px-3',
+                  'rounded-200 h-10 w-full px-3',
                   'border border-neutral-300',
                   'disabled:bg-neutral-100 disabled:text-neutral-400',
-                  'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
+                  'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
                 ].join(' ')}
                 placeholder={unknownOccupation ? '비공개' : '예: 회사원, 자영업자 등'}
                 type="text"
               />
-              <label
-                className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
-                ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownOccupation}
-                  onChange={(e) =>
-                    handleCheckboxChange(e.target.checked, setUnknownOccupation, setOccupation)
+            </div>
+
+            {/* 사무실 주소 */}
+            <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+              <div className="flex items-center justify-between">
+                {renderLabel('사무실 주소', true)}
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownOfficeAddress}
+                    onChange={(e) => {
+                      handleCheckboxChange(
+                        e.target.checked,
+                        setUnknownOfficeAddress,
+                        setOfficeAddr1,
+                        setOfficeAddr2,
+                        setOfficeAddr3,
+                      );
+                      if (e.target.checked) {
+                        setErr(null);
+                        setHasAddress(false);
+                      }
+                    }}
+                  />
+                  비공개
+                </label>
+              </div>
+              {unknownOfficeAddress ? (
+                <div className="rounded-200 flex h-10 w-full items-center border border-neutral-300 bg-neutral-100 px-3 text-neutral-400">
+                  비공개
+                </div>
+              ) : (
+                <DaumPostcodeButton
+                  onSelect={handleAddressSelect}
+                  address={
+                    hasAddress
+                      ? { city: officeAddr1, district: officeAddr2, town: officeAddr3 }
+                      : undefined
                   }
                 />
-                비공개
-              </label>
+              )}
             </div>
-          </div>
 
-          {/* 사무실 주소 */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              {/* 주소 라벨 */}
-              {renderLabel('사무실 주소', true)}
-
-              {/* 주소 검색 버튼 */}
-              <DaumPostcodeButton onSelect={handleAddressSelect} />
-            </div>
-            <div className="flex items-center gap-3">
-              <span
-                className="material-symbols-outlined text-primary-600/50"
-                style={{ fontSize: '24px' }}
-              >
-                location_city
-              </span>
-              <div className="grid w-full grid-cols-3 gap-2">
-                <input
-                  disabled={unknownOfficeAddress}
-                  value={officeAddr1}
-                  readOnly
-                  onClick={handleAddressFieldClick}
-                  onFocus={handleAddressFieldClick}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownOfficeAddress ? '비공개' : '시/도'}
-                  type="text"
-                />
-                <input
-                  disabled={unknownOfficeAddress}
-                  value={officeAddr2}
-                  readOnly
-                  onClick={handleAddressFieldClick}
-                  onFocus={handleAddressFieldClick}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownOfficeAddress ? '비공개' : '시/군/구'}
-                  type="text"
-                />
-                <input
-                  disabled={unknownOfficeAddress}
-                  value={officeAddr3}
-                  readOnly
-                  onClick={handleAddressFieldClick}
-                  onFocus={handleAddressFieldClick}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownOfficeAddress ? '비공개' : '읍/면/동'}
-                  type="text"
-                />
+            {/* 사무실 전화번호 */}
+            <div className="flex flex-col gap-2 border-b border-neutral-100 px-5 py-4">
+              <div className="flex items-center justify-between">
+                {renderLabel('사무실 전화번호', true)}
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownOfficePhone}
+                    onChange={(e) => {
+                      if (e.target.checked) setOfficePhone('');
+                      setUnknownOfficePhone(e.target.checked);
+                    }}
+                  />
+                  비공개
+                </label>
               </div>
-              <label
+              <input
+                type="tel"
+                inputMode="numeric"
+                placeholder={unknownOfficePhone ? '비공개' : '02-1234-5678'}
+                value={officePhone}
+                onChange={(e) => setOfficePhone(formatPhone(e.target.value))}
+                disabled={unknownOfficePhone}
                 className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
+                  'rounded-200 h-10 w-full px-3',
+                  'border border-neutral-300',
+                  'disabled:bg-neutral-100 disabled:text-neutral-400',
+                  'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
                 ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownOfficeAddress}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-
-                    handleCheckboxChange(
-                      checked,
-                      setUnknownOfficeAddress,
-                      setOfficeAddr1,
-                      setOfficeAddr2,
-                      setOfficeAddr3,
-                    );
-
-                    if (checked) {
-                      // "주소 모름"으로 바꾸면 주소 관련 에러는 지워준다
-                      setErr(null);
-                      setHasAddress(false); // 선택사항: 모름이면 hasAddress도 false로
-                    }
-                  }}
-                />
-                비공개
-              </label>
+                autoComplete="tel"
+              />
             </div>
-          </div>
 
-          {/* 사무실 전화번호 */}
-          <div className="flex flex-col gap-2">
-            {renderLabel('사무실 전화번호', true)}
-            <div className="flex items-center gap-3">
-              <span
-                className="material-symbols-outlined text-primary-600/50"
-                style={{ fontSize: '24px' }}
-              >
-                call
-              </span>
-              <div className="grid w-full grid-cols-3 gap-2">
-                <input
-                  disabled={unknownOfficePhone}
-                  value={officeP1}
-                  onChange={(e) => setOfficeP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownOfficePhone ? '비공개' : '02'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownOfficePhone}
-                  value={officeP2}
-                  onChange={(e) => setOfficeP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownOfficePhone ? '비공개' : '1234'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownOfficePhone}
-                  value={officeP3}
-                  onChange={(e) => setOfficeP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownOfficePhone ? '비공개' : '5678'}
-                  inputMode="numeric"
-                />
+            {/* 자택 전화번호 */}
+            <div className="flex flex-col gap-2 px-5 py-4">
+              <div className="flex items-center justify-between">
+                {renderLabel('자택 전화번호', true)}
+                <label className="text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 cursor-pointer"
+                    checked={unknownHomePhone}
+                    onChange={(e) => {
+                      if (e.target.checked) setHomePhone('');
+                      setUnknownHomePhone(e.target.checked);
+                    }}
+                  />
+                  비공개
+                </label>
               </div>
-              <label
+              <input
+                type="tel"
+                inputMode="numeric"
+                placeholder={unknownHomePhone ? '비공개' : '02-1234-5678'}
+                value={homePhone}
+                onChange={(e) => setHomePhone(formatPhone(e.target.value))}
+                disabled={unknownHomePhone}
                 className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
+                  'rounded-200 h-10 w-full px-3',
+                  'border border-neutral-300',
+                  'disabled:bg-neutral-100 disabled:text-neutral-400',
+                  'focus:border-primary-400 focus:ring-primary-400 outline-none focus:ring-2',
                 ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownOfficePhone}
-                  onChange={(e) =>
-                    handleCheckboxChange(
-                      e.target.checked,
-                      setUnknownOfficePhone,
-                      setOfficeP1,
-                      setOfficeP2,
-                      setOfficeP3,
-                    )
-                  }
-                />
-                비공개
-              </label>
-            </div>
-          </div>
-
-          {/* 자택 전화번호 */}
-          <div className="flex flex-col gap-2">
-            {renderLabel('자택 전화번호', true)}
-            <div className="flex items-center gap-3">
-              <span
-                className="material-symbols-outlined text-primary-600/50"
-                style={{ fontSize: '24px' }}
-              >
-                home
-              </span>
-              <div className="grid w-full grid-cols-3 gap-2">
-                <input
-                  disabled={unknownHomePhone}
-                  value={homeP1}
-                  onChange={(e) => setHomeP1(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownHomePhone ? '비공개' : '02'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownHomePhone}
-                  value={homeP2}
-                  onChange={(e) => setHomeP2(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownHomePhone ? '비공개' : '1234'}
-                  inputMode="numeric"
-                />
-                <input
-                  disabled={unknownHomePhone}
-                  value={homeP3}
-                  onChange={(e) => setHomeP3(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={[
-                    'rounded-200 h-10 flex-1 px-3 text-center',
-                    'border border-neutral-300',
-                    'disabled:bg-neutral-100 disabled:text-neutral-400',
-                    'focus:border-primary-400 focus:ring-primary-0 outline-none focus:ring-2',
-                  ].join(' ')}
-                  placeholder={unknownHomePhone ? '비공개' : '5678'}
-                  inputMode="numeric"
-                />
-              </div>
-              <label
-                className={[
-                  'text-detail-regular inline-flex cursor-pointer items-center gap-2 text-neutral-700',
-                  'shrink-0 whitespace-nowrap',
-                ].join(' ')}
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 cursor-pointer"
-                  checked={unknownHomePhone}
-                  onChange={(e) =>
-                    handleCheckboxChange(
-                      e.target.checked,
-                      setUnknownHomePhone,
-                      setHomeP1,
-                      setHomeP2,
-                      setHomeP3,
-                    )
-                  }
-                />
-                비공개
-              </label>
+                autoComplete="tel"
+              />
             </div>
           </div>
         </div>
