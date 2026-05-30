@@ -42,7 +42,7 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
         />
         <div className="animate-bubble-up border-primary-100 bg-primary-0/40 rounded-2xl border px-6 py-4 text-center">
           <p className="text-body-2-bold md:text-body-1-bold text-neutral-800">
-            {downloaded ? '다운로드가 완료됐어요!' : '고소장이 완성됐어요!'}
+            {downloaded ? '다운로드가 완료됐어요!' : '고소장 초안이 준비됐어요!'}
           </p>
           <p className="text-body-3-regular md:text-body-2-regular mt-1 text-neutral-500">
             {downloaded
@@ -102,7 +102,19 @@ const ComplaintDownloadSection: React.FC<ComplaintDownloadSectionProps> = ({ com
               check_circle
             </span>
             <p className="text-detail-regular text-neutral-600">
-              완성된 문서를 인쇄해 제출하거나 전자문서로 보관하세요
+              작성한 문서를 인쇄해 제출하거나 전자문서로 보관하세요
+            </p>
+          </div>
+          <div className="flex items-start gap-2">
+            <span
+              className="material-symbols-outlined mt-0.5 text-neutral-400"
+              style={{ fontSize: '16px' }}
+            >
+              info
+            </span>
+            <p className="text-detail-regular text-neutral-500">
+              본 초안은 법률 자문이 아닌 참고용 문서예요. 법적 효력을 보장하지 않으니, 제출 전
+              내용을 직접 확인하고 필요하면 변호사 상담을 권장해요
             </p>
           </div>
         </div>
