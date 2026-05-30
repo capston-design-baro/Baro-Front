@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 
 import { bootstrapAuth } from '@/shared/lib/bootstrapAuth';
+import ServiceNoticeModal from '@/shared/ui/ServiceNoticeModal';
 
 import Router from './routes/Router';
 
@@ -20,6 +21,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Router />
+        <ServiceNoticeModal />
       </BrowserRouter>
     </QueryClientProvider>
   );

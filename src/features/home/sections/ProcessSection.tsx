@@ -33,7 +33,7 @@ const ProcessSection: React.FC = () => {
             이렇게 진행돼요
           </h2>
           <p className="text-body-3-regular sm:text-body-2-regular text-neutral-500">
-            간단한 3단계로 고소장을 완성할 수 있어요.
+            간단한 3단계로 고소장 초안을 직접 만들 수 있어요.
           </p>
         </header>
 

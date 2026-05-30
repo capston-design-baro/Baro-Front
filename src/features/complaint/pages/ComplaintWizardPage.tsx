@@ -390,7 +390,7 @@ const ComplaintWizardPage: React.FC = () => {
                     </span>
                   ) : (
                     <p className="text-body-3-regular text-neutral-400">
-                      사건 개요를 입력하면 AI가 분석해드려요
+                      사건 개요를 입력하면 관련 정보를 정리해드려요
                     </p>
                   )}
                 </div>

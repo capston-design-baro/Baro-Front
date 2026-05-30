@@ -7,8 +7,8 @@ export interface FeatureItem {
 export const FEATURES: FeatureItem[] = [
   {
     icon: 'psychology',
-    title: 'AI 기반 법률 분석',
-    description: '인공지능이 사건을 분석하고\n적합한 법률 조항을 찾아드려요.',
+    title: 'AI 작성 도우미',
+    description: '입력하신 내용을\n고소장 형식에 맞게 정리하도록 도와드려요.',
   },
   {
     icon: 'schedule',
