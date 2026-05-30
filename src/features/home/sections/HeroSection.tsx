@@ -41,8 +41,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onClickStart }) => {
           </h1>
 
           <p className="text-body-2-regular sm:text-body-1-regular mb-8 max-w-[400px] text-neutral-500">
-            AI가 안내하는 고소장 작성,
-            <br className="sm:hidden" /> 단계별로 쉽고 빠르게 완성해보세요.
+            AI와 함께 직접 쓰는 고소장 초안,
+            <br className="sm:hidden" /> 단계별로 쉽고 빠르게 만들어보세요.
           </p>
 
           <div className="flex flex-col items-center gap-3 sm:items-start">

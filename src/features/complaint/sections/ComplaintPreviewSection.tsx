@@ -72,14 +72,22 @@ const ComplaintPreviewSection: React.FC<ComplaintPreviewSectionProps> = ({
       className="mx-auto flex w-full max-w-[640px] flex-1 flex-col gap-4"
     >
       <IntroHeader
-        title="완성된 고소장 미리 보기"
+        title="고소장 초안 미리 보기"
         lines={[
-          '바로가 완성한 고소장 초안이에요.',
-          '모두 정확히 작성 됐는지 확인해보고, 다음으로 넘어가서 다운로드 받아 보세요.',
+          '입력하신 내용을 바탕으로 정리한 고소장 초안이에요.',
+          '내용이 정확한지 직접 확인한 뒤 다음으로 넘어가 다운로드해 주세요.',
         ]}
         center
         showArrow
       />
+
+      {/* 면책 고지 */}
+      <p className="text-detail-regular rounded-lg bg-neutral-50 px-4 py-3 text-center text-neutral-500">
+        본 초안은 법률 자문이 아닌, 입력 내용을 정리한 참고용 문서예요.
+        <br />
+        법적 효력을 보장하지 않으니 제출 전 내용을 직접 확인하고, 필요하면 변호사 상담을 받아보시길
+        권장해요.
+      </p>
 
       {/* 문서 카드 */}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">

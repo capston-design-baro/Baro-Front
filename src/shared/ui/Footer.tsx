@@ -26,8 +26,8 @@ const Footer: React.FC = () => {
     <footer className="w-full shrink-0 snap-end border-t border-neutral-200 bg-neutral-50">
       <div className="mx-auto w-full max-w-[1280px] px-8 pt-4 pb-2">
         {/* 상단 영역 */}
-        <div className="flex flex-col gap-6 sm:flex-row sm:justify-between">
-          {/* 좌측: 로고 + 슬로건 */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:gap-6">
+          {/* 좌측: 로고 + 면책 + 저작권 */}
           <div className="flex flex-col gap-2">
             <img
               src={logoUrl}
@@ -35,14 +35,31 @@ const Footer: React.FC = () => {
               className="h-6 w-auto cursor-pointer self-start"
               onClick={() => navigate('/')}
             />
-            <p className="text-detail-regular text-neutral-400">AI 법률 서비스, 바로에서 쉽게.</p>
+
+            {/* 모바일 전용: 그룹 헤더 없이 링크를 한 줄로 압축 */}
+            <nav className="flex flex-wrap gap-x-4 gap-y-1 sm:hidden">
+              {FOOTER_LINKS.flatMap((group) => group.items).map((item) => (
+                <button
+                  key={item.to}
+                  type="button"
+                  onClick={() => navigate(item.to)}
+                  className="text-detail-regular text-neutral-500 transition-colors duration-200 hover:text-neutral-900"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+
+            <p className="text-detail-regular max-w-[420px] text-neutral-300">
+              바로는 법률 자문이 아닌, 직접 작성을 돕는 정보 제공 도구입니다.
+            </p>
             <p className="text-detail-regular text-neutral-300">
               © {year} BaLaw. All rights reserved.
             </p>
           </div>
 
-          {/* 우측: 링크 그룹 */}
-          <div className="flex gap-12">
+          {/* 우측: 데스크탑 전용 그룹 링크 */}
+          <div className="hidden gap-12 sm:flex">
             {FOOTER_LINKS.map((group) => (
               <div
                 key={group.title}

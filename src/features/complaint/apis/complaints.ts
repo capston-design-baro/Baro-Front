@@ -98,9 +98,17 @@ export async function registerAccused(complaintId: number, data: AccusedInfoCrea
   return res.data;
 }
 
-/** AI 세션 시작 */
-export async function initChatSession(complaintId: number, text: string) {
-  const res = await api.post(`${BASE_URL}/complaints/${complaintId}/chat/init`, { text });
+/**
+ * AI 세션 시작
+ *
+ * @param offense 사용자가 직접 선택한 죄목(예: '사기'). 서비스가 죄목을 판단하지 않고
+ *                사용자 선택값을 그대로 백엔드에 전달한다. (백엔드 미지원 시 무시되어도 무방)
+ */
+export async function initChatSession(complaintId: number, text: string, offense?: string) {
+  const res = await api.post(`${BASE_URL}/complaints/${complaintId}/chat/init`, {
+    text,
+    ...(offense ? { offense } : {}),
+  });
 
   const data = res.data as ChatInitResponse;
 

@@ -35,7 +35,7 @@ const GeneratingModal: React.FC<GeneratingModalProps> = ({ open }) => {
         {/* 타이핑 애니메이션 텍스트 */}
         <div className="flex flex-col items-center gap-3">
           <p className="animate-typing text-body-2-bold text-neutral-800">
-            바로가 고소장을 작성하고 있어요
+            고소장 초안을 정리하고 있어요
           </p>
           <p className="animate-typing-delay-1 text-body-3-regular text-neutral-500">
             입력해 주신 내용을 바탕으로 초안을 정리 중이에요

@@ -21,7 +21,7 @@ export const STEPS: Step[] = [
   {
     number: 3,
     icon: 'description',
-    title: '고소장 완성',
-    description: '작성된 고소장을 확인하고\n바로 다운로드하세요.',
+    title: '고소장 초안 완성',
+    description: '작성한 초안을 확인하고\n바로 다운로드하세요.',
   },
 ];

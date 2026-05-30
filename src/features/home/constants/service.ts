@@ -11,7 +11,7 @@ export const SERVICES: Service[] = [
   {
     id: 'find',
     title: '범죄 유형 안내',
-    description: '어떤 범죄에 해당하는지 알아보세요.',
+    description: '어떤 범죄 유형이 있는지 알아보세요.',
     icon: 'content_paste_search',
     to: '/precedent',
   },

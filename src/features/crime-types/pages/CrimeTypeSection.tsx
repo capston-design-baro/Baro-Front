@@ -45,7 +45,7 @@ const CrimeTypeSection: React.FC = () => {
         {/* 헤더 */}
         <SectionHeader
           title="범죄 유형 안내"
-          description="어떤 유형으로 고소해야 할지 모르겠다면, 아래에서 확인해보세요."
+          description="어떤 범죄 유형이 있는지 궁금하다면, 아래에서 살펴보세요."
         />
 
         {/* 형사 / 민사 Pill 탭 */}
