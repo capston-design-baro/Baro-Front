@@ -74,6 +74,17 @@ function isAiMetaMessage(content: ChatMessageHistoryItem['content']): content is
 
 const DONE_PHRASE = '필수 정보가 충족되었습니다. 고소장을 작성해드릴게요.';
 
+/**
+ * 백엔드가 보내는 완료 멘트("...고소장을 작성해드릴게요")는 "대행" 뉘앙스라
+ * 감지는 원문(DONE_PHRASE)으로 그대로 하되, 화면에 보여줄 때만 안전한 문구로 치환한다.
+ */
+const DONE_PHRASE_DISPLAY =
+  '필수 정보가 모두 모였어요. 다음 단계에서 고소장 초안을 정리해 드릴게요.';
+
+function toDisplayText(text: string): string {
+  return text.includes(DONE_PHRASE) ? text.split(DONE_PHRASE).join(DONE_PHRASE_DISPLAY) : text;
+}
+
 /** 이어쓰기 인트로 문구 (선택한 죄목이 있으면 반영) */
 function buildResumeIntro(saved: SavedOffenseSelection | null) {
   if (saved) {
@@ -212,7 +223,9 @@ const ChatWindowSection: React.FC<Props> = ({
             }
 
             const text =
-              typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+              typeof msg.content === 'string'
+                ? toDisplayText(msg.content)
+                : JSON.stringify(msg.content);
 
             restored.push({
               id: `hist-${idx}`,
@@ -449,7 +462,7 @@ const ChatWindowSection: React.FC<Props> = ({
         firstQuestionMsg = {
           id: `q-first-${Date.now()}`,
           side: 'left',
-          text: reply || '사건에 대해 조금 더 자세히 알려주세요.',
+          text: toDisplayText(reply) || '사건에 대해 조금 더 자세히 알려주세요.',
           time: fmtTime(),
         };
 
@@ -516,7 +529,7 @@ const ChatWindowSection: React.FC<Props> = ({
       const botMsg: Msg = {
         id: `r-${Date.now()}`,
         side: 'left',
-        text: reply,
+        text: toDisplayText(reply),
         time: fmtTime(),
       };
 
