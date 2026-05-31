@@ -86,6 +86,13 @@ export type ChatMessageHistoryItem = {
   created_at: string;
 };
 
+export type ChatHistoryResponse = {
+  messages: ChatMessageHistoryItem[];
+  offense?: string | null;
+  rag_keyword?: string | null;
+  rag_cases?: RagCase[] | null;
+};
+
 /** 고소인 정보 등록 */
 export async function createComplaint(data: ComplainantInfoCreate): Promise<Complaint> {
   const res = await api.post(`${BASE_URL}/complaints/info/complainant`, data);
@@ -181,10 +188,9 @@ export async function getMyComplaints() {
 }
 
 /** 채팅 히스토리 */
-export async function getChatHistory(complaintId: number): Promise<ChatMessageHistoryItem[]> {
+export async function getChatHistory(complaintId: number): Promise<ChatHistoryResponse> {
   const res = await api.get(`${BASE_URL}/complaints/${complaintId}/chat/history`);
-  const data = res.data as { messages: ChatMessageHistoryItem[] };
-  return data.messages ?? [];
+  return res.data as ChatHistoryResponse;
 }
 
 /** 삭제 */
