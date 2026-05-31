@@ -2,7 +2,11 @@ import type { AxiosError } from 'axios';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { ChatMetaPayload, RagCase } from '@/features/complaint/apis/complaints';
+import type {
+  ChatHistoryResponse,
+  ChatMetaPayload,
+  RagCase,
+} from '@/features/complaint/apis/complaints';
 import {
   type ChatMessageHistoryItem,
   getChatHistory,
@@ -196,31 +200,24 @@ const ChatWindowSection: React.FC<Props> = ({
 
     const loadHistory = async () => {
       try {
-        const history: ChatMessageHistoryItem[] = await getChatHistory(complaintId);
+        const response: ChatHistoryResponse = await getChatHistory(complaintId);
+        const history = response.messages ?? [];
 
-        if (!history || history.length === 0) {
-          // 히스토리도 없고 ai_session_id도 없으면 사건 경위 입력 단계로
+        if (history.length === 0) {
           if (!initialAiSessionId) {
             setPhase('askSummary');
           }
-          // AI 질문 내역이 없으니 사건 경위 입력을 한 번 더 안내
           setMsgs([...introMsgs(), caseSummaryMsg()]);
         } else {
           const restored: Msg[] = [];
-          let lastMeta: ChatMetaPayload | undefined;
 
           const AUTO_MSG = '위 사건 개요를 기반으로, 이어서 질문을 해 주세요.';
 
           history.forEach((msg, idx) => {
-            if (isAiMetaMessage(msg.content)) {
-              lastMeta = msg.content;
-              return;
-            }
+            // 서버가 메타 메시지를 이미 필터링하지만, 하위호환을 위해 방어적으로 체크
+            if (isAiMetaMessage(msg.content)) return;
 
-            // 자동 발송 메시지는 히스토리에서 숨김
-            if (typeof msg.content === 'string' && msg.content === AUTO_MSG) {
-              return;
-            }
+            if (typeof msg.content === 'string' && msg.content === AUTO_MSG) return;
 
             const text =
               typeof msg.content === 'string'
@@ -236,7 +233,6 @@ const ChatWindowSection: React.FC<Props> = ({
             });
           });
 
-          // 백엔드 히스토리에 실제 AI 질문이 있었는지 확인
           const hasAiQuestion = history.some(
             (msg) =>
               msg.role === 'assistant' &&
@@ -244,7 +240,6 @@ const ChatWindowSection: React.FC<Props> = ({
               msg.content !== AUTO_MSG,
           );
 
-          // AI 질문이 있었고 마지막이 사용자 답변이면, 이어서 답변하도록 안내
           const last = history[history.length - 1];
           if (hasAiQuestion && last && last.role === 'user') {
             restored.push({
@@ -255,10 +250,8 @@ const ChatWindowSection: React.FC<Props> = ({
             });
           }
 
-          // 맨 위에 인트로 + 선택 유형 요약, AI 질문이 없으면 사건 경위 안내를 마지막에 추가
           setMsgs([...introMsgs(), ...restored, ...(hasAiQuestion ? [] : [caseSummaryMsg()])]);
 
-          // 히스토리 안에 DONE_PHRASE가 있으면 완료 상태로 취급
           const hasDone = history.some(
             (msg) =>
               msg.role === 'assistant' &&
@@ -268,15 +261,17 @@ const ChatWindowSection: React.FC<Props> = ({
 
           if (hasDone) {
             setIsCompleted(true);
-            onComplete?.(); // 부모(ComplaintWizardPage)의 isChatCompleted = true
+            onComplete?.();
           }
 
-          if (lastMeta) {
+          // 메타 정보를 응답 최상위 필드에서 가져옴 (서버가 complaints 테이블에서 제공)
+          const hasResponseMeta =
+            response.offense || response.rag_keyword || response.rag_cases?.length;
+          if (hasResponseMeta) {
             onInitMeta?.({
-              // 죄목 라벨은 사용자가 고른 값을 우선 사용
-              offense: saved?.offense || lastMeta.offense || '',
-              rag_keyword: lastMeta.rag_keyword ?? null,
-              rag_cases: lastMeta.rag_cases ?? [],
+              offense: saved?.offense || response.offense || '',
+              rag_keyword: response.rag_keyword ?? null,
+              rag_cases: response.rag_cases ?? [],
             });
           } else if (saved) {
             onInitMeta?.({ offense: saved.offense, rag_keyword: null, rag_cases: [] });
